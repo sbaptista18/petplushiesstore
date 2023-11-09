@@ -55,7 +55,7 @@ const LazyImage = ({ src, alt }) => {
 
   return (
     <ImageWrapper>
-      <Placeholder ref={refPlaceholder} style={{ backgroundImage: `url(/public/images/logo.svg)` }} />
+      <Placeholder ref={refPlaceholder} style={{ backgroundImage: `` }} />
       <StyledLazyLoad once>
         <StyledImage
           onLoad={removePlaceholder}
