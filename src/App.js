@@ -2,6 +2,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import styled from 'styled-components';
 import Content from 'layout/Content';
 import Header from 'layout/Header';
+import Footer from 'layout/Footer';
 
 import "./App.scss";
 
@@ -17,12 +18,13 @@ const App = () => {
     <Router>
       <Header />
       <Content />
+      <Footer />
     </Router>
   );
 }
 
 const PageContainer = styled.div`
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 `;
