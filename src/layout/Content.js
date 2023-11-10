@@ -19,6 +19,7 @@ Content.propTypes = {
 
 const Container = styled.div`
   margin-top: var(--menu-height);
+  min-height: calc(100vh - var(--menu-height) - 277px);
 `;
 
 export default Content;

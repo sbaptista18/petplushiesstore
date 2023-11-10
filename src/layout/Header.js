@@ -1,27 +1,31 @@
 import styled from "styled-components";
 import { Layout, Menu, Col } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { MenuOutlined } from "@ant-design/icons";
 
 import Logo from "assets/images/logo.png";
 
 const { Header } = Layout;
 
-const menuItems = [
-  {
-    key: 1,
-    label: "Sobre Nos",
-  },
-  {
-    key: 2,
-    label: "Loja",
-  },
-  {
-    key: 3,
-    label: "Contactos",
-  },
-];
+const onClickSectionRegistry = {
+  home: (history) => history.push(""),
+  "sobre-nos": (history) => history.push("sobre-nos"),
+  produtos: (history) => history.push("produtos"),
+  contactos: (history) => history.push("contactos"),
+};
+
+const buildMenuItemProps = (key) => {
+  return {
+    key,
+    label: _.startCase(key),
+  };
+};
+
+const pages = ["sobre-nos", "produtos", "contactos"];
 
 const PPS_Header = () => {
+  const history = useHistory();
+
   return (
     <StyledHeader>
       <Col span={6}>
@@ -30,7 +34,14 @@ const PPS_Header = () => {
         </StyledLink>
       </Col>
       <Col span={18}>
-        <Menu mode="horizontal" items={menuItems} />
+        <Menu
+          mode="horizontal"
+          overflowedIndicator={<MenuOutlined />}
+          items={pages.map(buildMenuItemProps)}
+          onClick={({ key }) => {
+            onClickSectionRegistry[key](history);
+          }}
+        />
       </Col>
     </StyledHeader>
   );
