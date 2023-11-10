@@ -1,13 +1,27 @@
 import { Breadcrumb } from "antd";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import { useHistory } from "react-router-dom";
 
 import { KebabToTitleCase } from "fragments";
 
+const onClickSectionRegistry = {
+  home: (history) => history.push(""),
+  "sobre-nos": (history) => history.push("/sobre-nos"),
+  produtos: (history) => history.push("/produtos"),
+  contactos: (history) => history.push("/contactos"),
+};
+
 const Breadcrumbs = ({ page, item }) => {
+  const history = useHistory();
   return (
     <StyledBreadcrumb separator=">">
-      <Breadcrumb.Item href={page}>
+      <Breadcrumb.Item
+        href={page}
+        onClick={({ key }) => {
+          onClickSectionRegistry[key](history);
+        }}
+      >
         {page == "/" ? "Home" : KebabToTitleCase(page.replace("/", ""))}
       </Breadcrumb.Item>
       <Breadcrumb.Item>{item}</Breadcrumb.Item>
