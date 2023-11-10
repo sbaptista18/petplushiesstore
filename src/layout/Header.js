@@ -2,9 +2,9 @@ import styled from "styled-components";
 import { Layout, Menu, Col } from "antd";
 import { Link } from "react-router-dom";
 
-const { Header } = Layout;
-
 import Logo from "assets/images/logo.png";
+
+const { Header } = Layout;
 
 const menuItems = [
   {
