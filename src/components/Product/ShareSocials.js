@@ -14,8 +14,6 @@ const ShareSocials = ({ item, page }) => {
             "https://www.facebook.com/sharer.php?u=https://www.petplushies.pt/" +
             page +
             "/" +
-            item.id +
-            "/" +
             (item.name ? ToKebabCase(item.name) : item.url)
           }
           target="_blank"
@@ -30,8 +28,6 @@ const ShareSocials = ({ item, page }) => {
           href={
             "https://twitter.com/share?url=https://www.petplushies.pt/" +
             page +
-            "/" +
-            item.id +
             "/" +
             (item.name ? ToKebabCase(item.name) : item.url)
           }
@@ -48,10 +44,8 @@ const ShareSocials = ({ item, page }) => {
             "https://pinterest.com/pin/create/button/?url=https://www.petplushies.pt/" +
             page +
             "/" +
-            item.id +
-            "/" +
             (item.name ? ToKebabCase(item.name) : item.url) +
-            "&media=https://www.petplushies.pt/public/images/" +
+            "&media=https://www.petplushies.pt/public/images" +
             item.picture +
             "&description=" +
             item.name
