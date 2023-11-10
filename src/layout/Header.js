@@ -9,9 +9,9 @@ const { Header } = Layout;
 
 const onClickSectionRegistry = {
   home: (history) => history.push(""),
-  "sobre-nos": (history) => history.push("sobre-nos"),
-  produtos: (history) => history.push("produtos"),
-  contactos: (history) => history.push("contactos"),
+  "sobre-nos": (history) => history.push("/sobre-nos"),
+  produtos: (history) => history.push("/produtos"),
+  contactos: (history) => history.push("/contactos"),
 };
 
 const buildMenuItemProps = (key) => {
