@@ -1,8 +1,8 @@
-import { BrowserRouter as Router } from 'react-router-dom';
-import styled from 'styled-components';
-import Content from 'layout/Content';
-import Header from 'layout/Header';
-import Footer from 'layout/Footer';
+import { BrowserRouter as Router } from "react-router-dom";
+import styled from "styled-components";
+import Content from "layout/Content";
+import Header from "layout/Header";
+import Footer from "layout/Footer";
 
 import "./App.scss";
 
@@ -10,10 +10,9 @@ const AppWrapper = () => (
   <PageContainer>
     <App />
   </PageContainer>
-)
+);
 
 const App = () => {
-  
   return (
     <Router>
       <Header />
@@ -21,7 +20,7 @@ const App = () => {
       <Footer />
     </Router>
   );
-}
+};
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -29,4 +28,4 @@ const PageContainer = styled.div`
   flex-direction: column;
 `;
 
-export default AppWrapper
+export default AppWrapper;

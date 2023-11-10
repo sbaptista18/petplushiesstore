@@ -1,4 +1,3 @@
-
 import { useRef } from "react";
 import styled, { keyframes } from "styled-components";
 import PropTypes from "prop-types";
@@ -44,7 +43,6 @@ const StyledLazyLoad = styled(LazyLoad)`
 `;
 
 const LazyImage = ({ src, alt }) => {
-
   const refPlaceholder = useRef();
   const refImg = useRef();
 
@@ -71,7 +69,7 @@ const LazyImage = ({ src, alt }) => {
 
 LazyImage.propTypes = {
   src: PropTypes.string.isRequired,
-  alt: PropTypes.string.isRequired
+  alt: PropTypes.string.isRequired,
 };
 
 export default LazyImage;

@@ -1,5 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&display=swap');
-@import 'antd/dist/antd.css';
+@import url("https://fonts.googleapis.com/css2?family=Sniglet&display=swap");
+@import "antd/dist/antd.css";
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
 
 :root {
   --white: #fff;
@@ -10,7 +12,7 @@
   --green-onhover: #0c9a88;
   --light-green: #e2fff9;
   --light-green-active: #afe9dd;
-  --aqua-green: #56D0B8;
+  --aqua-green: #56d0b8;
   --dark-gray: #667589;
   --light-gray: #f1f7fd;
   --dark-orange: #dc7404;
@@ -36,11 +38,12 @@ body {
   animation-timing-function: linear;
   color: var(--navy-blue);
   background-color: var(--white);
-  font-family: 'Rubik';
+  font-family: "Sniglet";
   font-size: 16px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
 }
 
 body,
@@ -53,7 +56,7 @@ html {
   display: flex;
   flex-direction: column;
   padding: 22px 36px 22px 22px;
-  transition: .5s;
+  transition: 0.5s;
   top: 58px;
   left: -10px;
   width: 280px;

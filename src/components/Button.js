@@ -1,26 +1,29 @@
-import styled from 'styled-components';
-import { Button } from 'antd';
+import styled from "styled-components";
+import { Button } from "antd";
+import PropTypes from "prop-types";
 
-export default ({ size, type, color, text, ...rest }) => {
+const Btn = ({ size, type, color, text, ...rest }) => {
   return (
-    <StyledButton
-      size={size}
-      type={type}
-      className={color}
-      {...rest}
-    >
+    <StyledButton size={size} type={type} className={color} {...rest}>
       <span>{text}</span>
     </StyledButton>
-  )
-}
+  );
+};
+
+Btn.propTypes = {
+  size: PropTypes.string,
+  type: PropTypes.string.isRequired,
+  color: PropTypes.string,
+  text: PropTypes.string.isRequired,
+};
 
 const StyledButton = styled(Button)`
   border-radius: 31px;
-  font-family: 'Rubik';
+  font-family: "Sniglet";
   padding: 10px 25px;
   border: none;
   box-shadow: none;
-  transition: .1s;
+  transition: 0.1s;
   cursor: pointer;
 
   &.ant-btn-lg {
@@ -134,3 +137,5 @@ const StyledButton = styled(Button)`
     outline: 2px solid var(--blue);
   }
 `;
+
+export default Btn;
