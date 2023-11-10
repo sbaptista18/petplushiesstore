@@ -1,19 +1,14 @@
-import styled from 'styled-components';
-import { Layout } from 'antd';
+import styled from "styled-components";
+import { Layout } from "antd";
 
 const { Footer } = Layout;
 
 const PPS_Footer = () => {
-  return (
-    <StyledFooter>
-      'tis the footer
-    </StyledFooter>
-  )
+  return <StyledFooter>'tis the footer</StyledFooter>;
 };
 
 const StyledFooter = styled(Footer)`
   display: flex;
-  width: 100vw;
   padding: 20px 65px;
   background-color: var(--dark-gray);
 
@@ -23,4 +18,4 @@ const StyledFooter = styled(Footer)`
   }
 `;
 
-export default PPS_Footer
+export default PPS_Footer;

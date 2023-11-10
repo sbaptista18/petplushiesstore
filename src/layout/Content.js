@@ -1,22 +1,24 @@
-import { Route, Switch } from 'react-router-dom';
-import pages from 'pages';
-import styled from 'styled-components';
-import PropTypes from 'prop-types';
+import { Route, Switch } from "react-router-dom";
+import pages from "pages";
+import styled from "styled-components";
+import PropTypes from "prop-types";
 
 const Content = () => (
   <Container>
     <Switch>
-      {pages.map((props) => <Route {...props} key={props.path} />)}
+      {pages.map((props) => (
+        <Route {...props} key={props.path} />
+      ))}
     </Switch>
   </Container>
 );
 
 Content.propTypes = {
-  path: PropTypes.string
+  path: PropTypes.string,
 };
 
 const Container = styled.div`
   margin-top: var(--menu-height);
-`
+`;
 
 export default Content;

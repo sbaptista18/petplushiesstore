@@ -1,15 +1,11 @@
-import styled from 'styled-components';
-import { Layout, Row } from 'antd';
-import { Link } from 'react-router-dom';
+import styled from "styled-components";
+import { Layout, Row } from "antd";
+import { Link } from "react-router-dom";
 
 const { Header } = Layout;
 
 const PPS_Header = () => {
-  return (
-    <StyledHeader>
-      'tis the header
-    </StyledHeader>
-  )
+  return <StyledHeader>'tis the header</StyledHeader>;
 };
 
 const StyledHeader = styled(Header)`
@@ -27,4 +23,4 @@ const StyledHeader = styled(Header)`
   }
 `;
 
-export default PPS_Header
+export default PPS_Header;

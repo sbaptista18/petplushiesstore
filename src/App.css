@@ -8,7 +8,7 @@
   --green-onhover: #0c9a88;
   --light-green: #e2fff9;
   --light-green-active: #afe9dd;
-  --aqua-green: #56D0B8;
+  --aqua-green: #56d0b8;
   --dark-gray: #667589;
   --light-gray: #f1f7fd;
   --dark-orange: #dc7404;
@@ -33,7 +33,7 @@ body {
   animation-timing-function: linear;
   color: var(--navy-blue);
   background-color: var(--white);
-  font-family: 'Rubik';
+  font-family: "Rubik";
   font-size: 16px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
