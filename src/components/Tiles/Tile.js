@@ -1,28 +1,44 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { InputNumber } from "antd";
+import { InputNumber, Col } from "antd";
 
 import { Button } from "components";
 
 import { LazyImage } from "fragments";
 
-const Tile = ({ picture, title, price, sale_price, category, flag, size }) => {
+const Tile = ({
+  picture,
+  name,
+  price,
+  sale_price,
+  category,
+  flag,
+  size,
+  stock,
+}) => {
   const onChange = (value) => {
     console.log("changed", value);
   };
   return (
-    <Container size={size}>
+    <Container span={size == "large" ? "8" : "5"}>
       {flag && <Flag>{flag}</Flag>}
       {category && <Category>{category}</Category>}
-      <LazyImage src={picture} alt={title + " - Pet Plushies"} />
+      <LazyImage src={picture} alt={name + " - Pet Plushies"} />
       <Text>
-        <Title size={size}>{title}</Title>
+        <Title size={size}>{name}</Title>
         <PriceContainer>
-          <Price flag={flag}>{price}</Price>
-          {flag == "sale" && <Sale>{sale_price}</Sale>}
+          <Price flag={flag}>{price}&euro;</Price>
+          {flag == "sale" && <Sale>{sale_price}&euro;</Sale>}
         </PriceContainer>
         <InputNumber min={1} max={10} defaultValue={1} onChange={onChange} />
-        <StyledButton size="large" type="primary" text="add to cart" />
+        <Link to={"/produtos/" + ToKebabCase(name)}>
+          <StyledButton
+            disabled={stock == 0 ? "disabled" : ""}
+            size="large"
+            type="primary"
+            text="add to cart"
+          />
+        </Link>
       </Text>
     </Container>
   );
@@ -30,20 +46,21 @@ const Tile = ({ picture, title, price, sale_price, category, flag, size }) => {
 
 Tile.propTypes = {
   picture: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  price: PropTypes.string.isRequired,
-  sale_price: PropTypes.string,
+  name: PropTypes.string.isRequired,
+  price: PropTypes.number.isRequired,
+  sale_price: PropTypes.number,
   category: PropTypes.string,
   flag: PropTypes.string,
-  size: PropTypes.string.isRequired,
+  size: PropTypes.string,
+  stock: PropTypes.number.isRequired,
 };
 
-const Container = styled.div`
-  width: ${(props) => (props.size == "large" ? "500px" : "200px")};
+const Container = styled(Col)`
   height: auto;
   display: flex;
   position: relative;
   flex-direction: column;
+  margin: 10px 0;
 `;
 
 const Flag = styled.div`

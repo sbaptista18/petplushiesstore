@@ -4,34 +4,22 @@ import PropTypes from "prop-types";
 
 import { LazyImage } from "fragments";
 
-import Image1 from "assets/images/batcat-1.jpg";
-
-const Slideshow = ({ settings }) => {
+const Slideshow = ({ pictures, settings }) => {
   return (
     <StyledSlider {...settings}>
-      <div>
-        <LazyImage src={Image1} alt={" - Pet Plushies"} />
-      </div>
-      <div>
-        <LazyImage src={Image1} alt={" - Pet Plushies"} />
-      </div>
-      <div>
-        <LazyImage src={Image1} alt={" - Pet Plushies"} />
-      </div>
-      <div>
-        <LazyImage src={Image1} alt={" - Pet Plushies"} />
-      </div>
-      <div>
-        <LazyImage src={Image1} alt={" - Pet Plushies"} />
-      </div>
-      <div>
-        <LazyImage src={Image1} alt={" - Pet Plushies"} />
-      </div>
+      {pictures.map((p) => {
+        return (
+          <div key={p}>
+            <LazyImage src={p} alt={" - Pet Plushies"} />
+          </div>
+        );
+      })}
     </StyledSlider>
   );
 };
 
 Slideshow.propTypes = {
+  pictures: PropTypes.array.isRequired,
   settings: PropTypes.object.isRequired,
 };
 

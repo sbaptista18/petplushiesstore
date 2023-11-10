@@ -4,13 +4,12 @@ import { Col, InputNumber } from "antd";
 
 import { Button } from "components";
 
-const AddToCart = ({ title, sku, price, sale_price, flag }) => {
+const AddToCart = ({ sku, price, sale_price, flag }) => {
   const onChange = (value) => {
     console.log("changed", value);
   };
   return (
     <Container>
-      <Title>{title}</Title>
       <Sku>REF: {sku}</Sku>
       <PriceContainer>
         <Price flag={flag}>{price}</Price>
@@ -23,8 +22,7 @@ const AddToCart = ({ title, sku, price, sale_price, flag }) => {
 };
 
 AddToCart.propTypes = {
-  title: PropTypes.string.isRequired,
-  sku: PropTypes.string.isRequired,
+  sku: PropTypes.number.isRequired,
   price: PropTypes.string.isRequired,
   sale_price: PropTypes.string,
   flag: PropTypes.string,
@@ -32,10 +30,6 @@ AddToCart.propTypes = {
 
 const Container = styled(Col)`
   flex-direction: column;
-`;
-
-const Title = styled.div`
-  font-size: ${(props) => (props.size == "large" ? "25px" : "20px")};
 `;
 
 const Sku = styled.div``;
@@ -48,6 +42,7 @@ const Price = styled.div`
   color: ${(props) => (props.flag == "sale" ? "gray" : "black")};
   text-decoration: ${(props) =>
     props.flag == "sale" ? "line-through" : "none"};
+  font-size: 48px;
 `;
 
 const Sale = styled(Price)`
@@ -57,6 +52,7 @@ const Sale = styled(Price)`
 
 const StyledButton = styled(Button)`
   margin-top: 15px;
+  margin-left: 15px;
 `;
 
 export default AddToCart;
