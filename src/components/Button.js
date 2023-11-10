@@ -2,10 +2,16 @@ import styled from "styled-components";
 import { Button } from "antd";
 import PropTypes from "prop-types";
 
-const Btn = ({ size, type, color, text, ...rest }) => {
+const Btn = ({ size, type, color, text, disabled, ...rest }) => {
   return (
-    <StyledButton size={size} type={type} className={color} {...rest}>
-      <span>{text}</span>
+    <StyledButton
+      disabled={disabled}
+      size={size}
+      type={type}
+      className={color}
+      {...rest}
+    >
+      <span>{disabled ? "out of stock" : text}</span>
     </StyledButton>
   );
 };
@@ -15,6 +21,7 @@ Btn.propTypes = {
   type: PropTypes.string.isRequired,
   color: PropTypes.string,
   text: PropTypes.string.isRequired,
+  disabled: PropTypes.string,
 };
 
 const StyledButton = styled(Button)`
@@ -25,6 +32,10 @@ const StyledButton = styled(Button)`
   box-shadow: none;
   transition: 0.1s;
   cursor: pointer;
+
+  & > span {
+    text-transform: capitalize;
+  }
 
   &.ant-btn-lg {
     font-size: 14px;
