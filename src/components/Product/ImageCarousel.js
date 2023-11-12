@@ -2,18 +2,14 @@ import Slider from "react-slick";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
-import { LazyImage } from "fragments";
-
 const Slideshow = ({ pictures, settings }) => {
   return (
     <StyledSlider {...settings}>
-      {pictures.map((p) => {
-        return (
-          <div key={p}>
-            <LazyImage src={p} alt={" - Pet Plushies"} />
-          </div>
-        );
-      })}
+      {pictures[0]?.map((imageUrl, index) => (
+        <div key={index}>
+          <img src={imageUrl} alt={" - Pet Plushies"} />
+        </div>
+      ))}
     </StyledSlider>
   );
 };
@@ -30,6 +26,11 @@ const StyledSlider = styled(Slider)`
 
   & div {
     height: 100%;
+
+    & img {
+      width: 100%;
+      height: auto;
+    }
   }
 
   & .slick-dots {

@@ -45,10 +45,10 @@ const ShareSocials = ({ item, page }) => {
             page +
             "/" +
             (item.name ? ToKebabCase(item.name) : item.url) +
-            "&media=https://www.petplushies.pt/public/images" +
+            "&media=" +
             item.picture +
             "&description=" +
-            item.name
+            item.desc
           }
           target="_blank"
         >

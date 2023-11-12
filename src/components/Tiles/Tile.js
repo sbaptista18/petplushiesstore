@@ -15,6 +15,7 @@ const Tile = ({
   flag,
   size,
   stock,
+  url,
 }) => {
   const onChange = (value) => {
     console.log("changed", value);
@@ -31,7 +32,7 @@ const Tile = ({
           {flag == "sale" && <Sale>{sale_price}&euro;</Sale>}
         </PriceContainer>
         <InputNumber min={1} max={10} defaultValue={1} onChange={onChange} />
-        <Link to={"/produtos/" + ToKebabCase(name)}>
+        <Link to={"/produtos/" + url}>
           <StyledButton
             disabled={stock == 0 ? "disabled" : ""}
             size="large"
@@ -53,6 +54,7 @@ Tile.propTypes = {
   flag: PropTypes.string,
   size: PropTypes.string,
   stock: PropTypes.number.isRequired,
+  url: PropTypes.string,
 };
 
 const Container = styled(Col)`

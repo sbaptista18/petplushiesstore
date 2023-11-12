@@ -17,7 +17,7 @@ const Breadcrumbs = ({ page, item }) => {
 
 Breadcrumbs.propTypes = {
   page: PropTypes.string.isRequired,
-  item: PropTypes.string.isRequired,
+  item: PropTypes.string,
 };
 
 const StyledBreadcrumb = styled(Breadcrumb)`

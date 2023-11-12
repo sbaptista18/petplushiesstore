@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 import { Button } from "components";
 
-import { LazyImage, ToKebabCase } from "fragments";
+import { LazyImage } from "fragments";
 
 const Tile = ({
   picture,
@@ -16,6 +16,7 @@ const Tile = ({
   flag,
   size,
   stock,
+  url,
 }) => {
   return (
     <Container span={size == "large" ? "8" : "5"}>
@@ -28,12 +29,12 @@ const Tile = ({
           <Price flag={flag}>{price}&euro;</Price>
           {flag == "sale" && <Sale>{sale_price}&euro;</Sale>}
         </PriceContainer>
-        <Link to={"/produtos/" + ToKebabCase(name)}>
+        <Link to={"/produtos/" + url}>
           <StyledButton
             disabled={stock == 0 ? "disabled" : ""}
             size="large"
             type="primary"
-            text="add to cart"
+            text="Ver produto"
           />
         </Link>
       </Text>
@@ -50,6 +51,7 @@ Tile.propTypes = {
   flag: PropTypes.string,
   size: PropTypes.string,
   stock: PropTypes.number.isRequired,
+  url: PropTypes.string,
 };
 
 const Container = styled(Col)`
