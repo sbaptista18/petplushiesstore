@@ -14,6 +14,7 @@
   "author": "silviabaptista18@gmail.com",
   "license": "ISC",
   "dependencies": {
+    "@ant-design/icons": "^5.2.6",
     "antd": "^4.20.6",
     "axios": "^1.6.1",
     "lodash": "^4.17.21",

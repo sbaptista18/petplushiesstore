@@ -1,4 +1,5 @@
 import AboutUs from "./AboutUs";
+import Cart from "./Cart";
 import ContactUs from "./ContactUs";
 import FAQ from "./FAQ";
 import Homepage from "./Homepage";
@@ -10,6 +11,7 @@ import Product from "./Products/Product";
 
 export default [
   AboutUs,
+  Cart,
   ContactUs,
   FAQ,
   Homepage,
