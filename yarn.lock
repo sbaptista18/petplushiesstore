@@ -24,6 +24,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ant-design/colors@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "@ant-design/colors@npm:7.0.0"
+  dependencies:
+    "@ctrl/tinycolor": ^3.4.0
+  checksum: 419e98d9cb823ff0935024f4278f7b9c5896805dce4c93d667b5a4d76b03f5fa969b32d1998ee761113da43063e2b23a94c330ad6e865f03fbbb2579907e7fdb
+  languageName: node
+  linkType: hard
+
 "@ant-design/icons-svg@npm:^4.3.0":
   version: 4.3.1
   resolution: "@ant-design/icons-svg@npm:4.3.1"
@@ -45,6 +54,22 @@ __metadata:
     react: ">=16.0.0"
     react-dom: ">=16.0.0"
   checksum: abd3603ea951983a8bfa7f4c7e6fcc787ccdc4804faa8bb8641b6904a95cf5fc04753cf636a6c5b5b798f371f4075fddae29684779bb16e2a025b727ab2c8ad3
+  languageName: node
+  linkType: hard
+
+"@ant-design/icons@npm:^5.2.6":
+  version: 5.2.6
+  resolution: "@ant-design/icons@npm:5.2.6"
+  dependencies:
+    "@ant-design/colors": ^7.0.0
+    "@ant-design/icons-svg": ^4.3.0
+    "@babel/runtime": ^7.11.2
+    classnames: ^2.2.6
+    rc-util: ^5.31.1
+  peerDependencies:
+    react: ">=16.0.0"
+    react-dom: ">=16.0.0"
+  checksum: 2f571699b1903383cd09faa78e4cce34973debb0e7ec6223b9d9a0a6ab2b2f0c876072db62bbd4e6a45e864df5447343315e066abeffaf58aa5b97df3acc89f1
   languageName: node
   linkType: hard
 
@@ -6416,6 +6441,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "pet-plushies-store@workspace:."
   dependencies:
+    "@ant-design/icons": ^5.2.6
     "@babel/core": ^7.14.8
     "@babel/preset-env": ^7.14.8
     "@babel/preset-react": ^7.14.5
@@ -7609,7 +7635,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rc-util@npm:^5.0.1, rc-util@npm:^5.0.6, rc-util@npm:^5.16.0, rc-util@npm:^5.16.1, rc-util@npm:^5.17.0, rc-util@npm:^5.18.1, rc-util@npm:^5.19.2, rc-util@npm:^5.2.0, rc-util@npm:^5.2.1, rc-util@npm:^5.20.1, rc-util@npm:^5.21.0, rc-util@npm:^5.21.2, rc-util@npm:^5.22.5, rc-util@npm:^5.23.0, rc-util@npm:^5.24.4, rc-util@npm:^5.25.2, rc-util@npm:^5.26.0, rc-util@npm:^5.27.0, rc-util@npm:^5.32.2, rc-util@npm:^5.35.1, rc-util@npm:^5.36.0, rc-util@npm:^5.37.0, rc-util@npm:^5.38.0, rc-util@npm:^5.6.1, rc-util@npm:^5.9.4":
+"rc-util@npm:^5.0.1, rc-util@npm:^5.0.6, rc-util@npm:^5.16.0, rc-util@npm:^5.16.1, rc-util@npm:^5.17.0, rc-util@npm:^5.18.1, rc-util@npm:^5.19.2, rc-util@npm:^5.2.0, rc-util@npm:^5.2.1, rc-util@npm:^5.20.1, rc-util@npm:^5.21.0, rc-util@npm:^5.21.2, rc-util@npm:^5.22.5, rc-util@npm:^5.23.0, rc-util@npm:^5.24.4, rc-util@npm:^5.25.2, rc-util@npm:^5.26.0, rc-util@npm:^5.27.0, rc-util@npm:^5.31.1, rc-util@npm:^5.32.2, rc-util@npm:^5.35.1, rc-util@npm:^5.36.0, rc-util@npm:^5.37.0, rc-util@npm:^5.38.0, rc-util@npm:^5.6.1, rc-util@npm:^5.9.4":
   version: 5.38.1
   resolution: "rc-util@npm:5.38.1"
   dependencies:

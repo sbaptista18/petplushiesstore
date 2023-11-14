@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Layout, Menu, Col } from "antd";
 import { Link, useHistory } from "react-router-dom";
-import { MenuOutlined } from "@ant-design/icons";
+import { MenuOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 
 import Logo from "assets/images/logo.png";
 
@@ -33,7 +33,7 @@ const PPS_Header = () => {
           <img src={Logo} />
         </StyledLink>
       </Col>
-      <Col span={18}>
+      <MenuContainer span={18}>
         <Menu
           mode="horizontal"
           overflowedIndicator={<MenuOutlined />}
@@ -42,7 +42,10 @@ const PPS_Header = () => {
             onClickSectionRegistry[key](history);
           }}
         />
-      </Col>
+        <IconLink to="/carrinho">
+          <ShoppingCartOutlined />
+        </IconLink>
+      </MenuContainer>
     </StyledHeader>
   );
 };
@@ -64,6 +67,7 @@ const StyledHeader = styled(Header)`
     background: transparent;
     border: none;
     font-size: 16px;
+    width: 700px;
 
     & li {
       display: flex;
@@ -77,6 +81,23 @@ const StyledLink = styled(Link)`
   display: flex;
   flex: 0 1 auto;
   height: 100%;
+`;
+
+const MenuContainer = styled(Col)`
+  width: auto;
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const IconLink = styled(StyledLink)`
+  width: 70px;
+  align-items: center;
+  justify-content: center;
+  color: black;
+
+  &:hover {
+    color: #1890ff;
+  }
 `;
 
 export default PPS_Header;
