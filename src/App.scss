@@ -6,22 +6,8 @@
 :root {
   --white: #fff;
   --black: #080c13;
-  --navy-blue: #18273c;
-  --dark-green: #085b51;
-  --green: #0e8173;
-  --green-onhover: #0c9a88;
-  --light-green: #e2fff9;
-  --light-green-active: #afe9dd;
-  --aqua-green: #56d0b8;
   --dark-gray: #667589;
-  --light-gray: #f1f7fd;
-  --dark-orange: #dc7404;
-  --dark-orange-onhover: #e08624;
-  --dark-orange-active: #c36704;
-  --light-orange: #fdcf70;
-  --light-orange2: #fdeee0;
   --blue: #08bef3;
-  --beige: #fff4dd;
   --menu-height: 150px;
 }
 
@@ -69,4 +55,10 @@ html {
   border-right: 0;
   border-top: 0;
   z-index: 3;
+}
+
+.ant-input,
+.ant-input-password {
+  border-radius: 5px;
+  border: 1px solid black;
 }

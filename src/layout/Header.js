@@ -1,7 +1,11 @@
 import styled from "styled-components";
 import { Layout, Menu, Col } from "antd";
 import { Link, useHistory } from "react-router-dom";
-import { MenuOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import {
+  MenuOutlined,
+  ShoppingCartOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 
 import Logo from "assets/images/logo.png";
 
@@ -44,6 +48,9 @@ const PPS_Header = () => {
         />
         <IconLink to="/carrinho">
           <ShoppingCartOutlined />
+        </IconLink>
+        <IconLink to="/login">
+          <UserOutlined />
         </IconLink>
       </MenuContainer>
     </StyledHeader>
