@@ -8,6 +8,8 @@ import ShippingReturns from "./LegalInfo/ShippingReturns";
 import TermsConditions from "./LegalInfo/TermsConditions";
 import Products from "./Products";
 import Product from "./Products/Product";
+import SignIn from "./SignIn";
+import LogIn from "./LogIn";
 
 export default [
   AboutUs,
@@ -20,4 +22,6 @@ export default [
   Product,
   ShippingReturns,
   TermsConditions,
+  SignIn,
+  LogIn,
 ];

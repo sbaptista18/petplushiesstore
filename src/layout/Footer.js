@@ -90,6 +90,10 @@ const StyledFooter = styled(Footer)`
       align-items: center;
       justify-content: center;
     }
+
+    & .ant-menu-item {
+      background: transparent;
+    }
   }
 `;
 
