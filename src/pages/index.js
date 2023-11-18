@@ -10,6 +10,7 @@ import Products from "./Products";
 import Product from "./Products/Product";
 import SignIn from "./SignIn";
 import LogIn from "./LogIn";
+import Checkout from "./Checkout";
 
 export default [
   AboutUs,
@@ -24,4 +25,5 @@ export default [
   TermsConditions,
   SignIn,
   LogIn,
+  Checkout,
 ];
