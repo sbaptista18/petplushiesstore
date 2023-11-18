@@ -1,9 +1,10 @@
 import styled from "styled-components";
 import { Row, Col, Table } from "antd";
+import { Link } from "react-router-dom";
 
 import { Button } from "components";
 
-import products from "./mock_products";
+import products from "../../data/mock_products";
 import table_render from "./table_render";
 
 const Cart = () => {
@@ -37,7 +38,13 @@ const Cart = () => {
               <div>Subtotal</div>
               <div>120&euro;</div>
             </Total>
-            <StyledButton size="large" type="primary" text="Finalizar compra" />
+            <Link to="/finalizar-compra">
+              <StyledButton
+                size="large"
+                type="primary"
+                text="Finalizar compra"
+              />
+            </Link>
           </Col>
         </StyledRow>
       </ContentLocked>

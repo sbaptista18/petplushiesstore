@@ -1,83 +1,72 @@
 import styled from "styled-components";
-import { Row, Form, Input } from "antd";
+import { Checkbox, Col, Form, Input, Row } from "antd";
+import { Link } from "react-router-dom";
+
 import { Button } from "components";
 
+const formItemLayout = {
+  labelCol: {
+    xs: {
+      span: 24,
+    },
+    sm: {
+      span: 8,
+    },
+  },
+  wrapperCol: {
+    xs: {
+      span: 24,
+    },
+    sm: {
+      span: 16,
+    },
+  },
+};
+const tailFormItemLayout = {
+  wrapperCol: {
+    xs: {
+      span: 24,
+      offset: 0,
+    },
+    sm: {
+      span: 16,
+      offset: 8,
+    },
+  },
+};
+
 const SignIn = () => {
+  const [form] = Form.useForm();
   const onFinish = (values) => {
-    console.log("Success:", values);
+    console.log("Received values of form: ", values);
   };
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
+
   return (
     <Container>
       <ContentLocked>
         <StyledH1>Registar conta</StyledH1>
         <div>
           <Form
-            name="basic"
-            labelCol={{
-              span: 8,
-            }}
-            wrapperCol={{
-              span: 16,
-            }}
+            {...formItemLayout}
+            form={form}
+            name="register"
+            onFinish={onFinish}
             style={{
               maxWidth: 600,
             }}
-            initialValues={{
-              remember: true,
-            }}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
-            autoComplete="off"
+            scrollToFirstError
           >
             <Form.Item
-              label="Nome de utilizador"
-              name="username"
-              rules={[
-                {
-                  required: true,
-                  message: "Por favor insira o nome de utilizador!",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-
-            <Form.Item
-              label="Password"
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: "Por favor insira a password!",
-                },
-              ]}
-            >
-              <Input.Password />
-            </Form.Item>
-
-            <Form.Item
-              label="Confirmar password"
-              name="conf-password"
-              rules={[
-                {
-                  required: true,
-                  message: "Por favor confirme a password!",
-                },
-              ]}
-            >
-              <Input.Password />
-            </Form.Item>
-            <Form.Item
-              label="E-mail"
               name="email"
+              label="E-mail"
               rules={[
                 {
-                  required: true,
-                  message: "Por favor insira um e-mail valido!",
                   type: "email",
+                  message: "O e-mail inserido nao e valido.",
+                },
+                {
+                  required: true,
+                  message: "Por favor insira o seu e-mail.",
                 },
               ]}
             >
@@ -85,14 +74,113 @@ const SignIn = () => {
             </Form.Item>
 
             <Form.Item
-              wrapperCol={{
-                offset: 8,
-                span: 16,
-              }}
+              name="password"
+              label="Password"
+              rules={[
+                {
+                  required: true,
+                  message: "Por favor escolha a sua password.",
+                },
+              ]}
+              hasFeedback
             >
+              <Input.Password />
+            </Form.Item>
+
+            <Form.Item
+              name="confirm"
+              label="Confirmar Password"
+              dependencies={["password"]}
+              hasFeedback
+              rules={[
+                {
+                  required: true,
+                  message: "Por favor confirme a password que escolheu.",
+                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("password") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("As passwords nao correspondem.")
+                    );
+                  },
+                }),
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+
+            <Form.Item
+              name="username"
+              label="Nome de utilizador"
+              tooltip="O texto que inserir neste campo e o que sera usado para fazer login na sua conta."
+              rules={[
+                {
+                  required: true,
+                  message: "Por favor insira um nome de utilizador!",
+                  whitespace: true,
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              label="Captcha"
+              extra="So queremos ter a certeza que e um humano."
+            >
+              <Row gutter={8}>
+                <Col span={12}>
+                  <Form.Item
+                    name="captcha"
+                    noStyle
+                    rules={[
+                      {
+                        required: true,
+                        message: "Por favor insira o captcha que obteu.",
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <StyledButton
+                    size="large"
+                    text="Obter captcha"
+                    type="primary"
+                  />
+                </Col>
+              </Row>
+            </Form.Item>
+
+            <Form.Item
+              name="agreement"
+              valuePropName="checked"
+              rules={[
+                {
+                  validator: (_, value) =>
+                    value
+                      ? Promise.resolve()
+                      : Promise.reject(
+                          new Error("Tem de aceitar os Termos & Condicoes")
+                        ),
+                },
+              ]}
+              {...tailFormItemLayout}
+            >
+              <Checkbox>
+                Declaro que li os{" "}
+                <Link to="/termos-e-condicoes" target="_blank">
+                  Termos & Condicoes
+                </Link>
+              </Checkbox>
+            </Form.Item>
+            <Form.Item {...tailFormItemLayout}>
               <StyledButton
                 size="large"
-                color="green"
                 text="Registar conta"
                 type="primary"
                 htmlType="submit"
