@@ -1,11 +1,11 @@
 import styled from "styled-components";
-import { useState, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { Row, Col, Collapse, Slider } from "antd";
+import { Row, Col, Collapse, Slider, Select, Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
 import { Breadcrumbs, TileNoInput } from "components";
-
-import { ToKebabCase } from "fragments";
 
 const { Panel } = Collapse;
 
@@ -14,63 +14,163 @@ const flagText = (stock) => {
   if (stock > 0) {
     if (stock == 1) text = "last in stock!";
     else if (stock <= 5 && stock != 1) text = "last units in stock!";
+    else text = "";
   } else text = "out of stock";
 
   return text;
 };
 
+const SortDropdown = ({ onSelect }) => {
+  const handleSortChange = (value) => {
+    onSelect(value);
+  };
+  return (
+    <SortSelect
+      defaultValue="Ordenar lista por..."
+      onChange={handleSortChange}
+      options={[
+        {
+          value: "id_DESC",
+          label: "Recentes",
+        },
+        {
+          value: "price_ASC",
+          label: "Preco: Baixo -> Alto",
+        },
+        {
+          value: "price_DESC",
+          label: "Preco: Alto -> Baixo",
+        },
+      ]}
+    ></SortSelect>
+  );
+};
+
+SortDropdown.propTypes = {
+  onSelect: PropTypes.func.isRequired,
+};
+
 const Products = () => {
+  const [sortOption, setSortOption] = useState("id_DESC");
+  const [categoryFilter, setCategoryFilter] = useState(2);
+  const [catHasProducts, setCatHasProducts] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [noResults, setNoResults] = useState(false);
+
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
 
-  const isFetchingRef = useRef(false);
-
   useEffect(() => {
     const fetchProducts = async () => {
-      if (!isFetchingRef.current) {
-        isFetchingRef.current = true;
+      setLoading(true);
+      setNoResults(false);
+      setError(false);
 
+      if (catHasProducts) {
         try {
           const response = await axios.get(
-            `https://prestashop.petplushies.pt/api/products?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&output_format=JSON`
+            `https://prestashop.petplushies.pt/api/products?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&output_format=JSON&filter[id_category_default]=${categoryFilter}&sort=${sortOption}`
           );
 
-          const mappedProducts = response.data.products.map((item) => {
-            return {
-              key: item.id,
-              name: item.name[0].value,
-              price: _.toNumber(item.price),
-              picture: `https://prestashop.petplushies.pt/${item.associations.images[0].id}-large_default/${item.link_rewrite[0].value}.jpg`, // You may need to set the actual picture value
-              stock: item.associations.stock_availables[0].id,
-              flag: flagText(item.associations.stock_availables[0].id),
-              url: item.link_rewrite[0].value,
-            };
-          });
+          if (response.data.length == 0) {
+            setNoResults(true);
+            setLoading(false);
+            setError(false);
+          } else {
+            const mappedProducts = await Promise.all(
+              response.data.products.map(async (item) => {
+                const stock = await fetchStock(
+                  item.associations.stock_availables[0].id
+                );
+                return {
+                  key: item.id,
+                  name: item.name[0].value,
+                  price: _.toNumber(item.price),
+                  stock: stock,
+                  picture: `https://prestashop.petplushies.pt/${item.associations.images[0].id}-large_default/${item.link_rewrite[0].value}.jpg`,
+                  url: item.link_rewrite[0].value,
+                };
+              })
+            );
+
+            setProducts(mappedProducts);
+            setLoading(false);
+          }
+        } catch (error) {
+          setError(true);
+        }
+      } else {
+        try {
+          const response = await axios.get(
+            `https://prestashop.petplushies.pt/api/products?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&output_format=JSON&sort=${sortOption}`
+          );
+
+          const mappedProducts = await Promise.all(
+            response.data.products.map(async (item) => {
+              const stock = await fetchStock(
+                item.associations.stock_availables[0].id
+              );
+              return {
+                key: item.id,
+                name: item.name[0].value,
+                price: _.toNumber(item.price),
+                stock: stock,
+                picture: `https://prestashop.petplushies.pt/${item.associations.images[0].id}-large_default/${item.link_rewrite[0].value}.jpg`,
+                url: item.link_rewrite[0].value,
+              };
+            })
+          );
 
           setProducts(mappedProducts);
+          setLoading(false);
         } catch (error) {
-          console.log(error);
+          setError(true);
         }
-
-        isFetchingRef.current = false;
       }
     };
 
-    !isFetchingRef.current && fetchProducts();
-  }, []);
+    fetchProducts(); // Call the function directly
+  }, [sortOption, categoryFilter, catHasProducts]);
 
+  //FETCH CATEGORIES
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(
-          `https://prestashop.petplushies.pt/api/categories?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=[name]&output_format=JSON`
+          `https://prestashop.petplushies.pt/api/categories?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&output_format=JSON`
         );
+
+        const categoriesWithProducts = [];
+
+        const processCategory = (category) => {
+          if (category.has_products && category.has_products.length > 0) {
+            categoriesWithProducts.push(category.id);
+          }
+
+          if (category.children && category.children.length > 0) {
+            category.children.forEach((subCategory) => {
+              processCategory(subCategory);
+            });
+          }
+        };
+
+        response.data.categories.forEach((category) => {
+          processCategory(category);
+        });
+
+        setCatHasProducts(categoriesWithProducts.length > 0);
 
         const mappedCategories = response.data.categories.map((item) => {
           return {
+            id: item.id,
+            id_parent: item.id_parent,
+            level_depth: item.level_depth,
             name: item.name[1].value,
+            has_products: item.associations.products,
+            children: item.children, // Assuming your API returns children in this structure
           };
         });
 
@@ -83,6 +183,7 @@ const Products = () => {
     fetchCategories();
   }, []);
 
+  //FETCH PRICE RANGE
   useEffect(() => {
     const fetchPriceRange = async () => {
       try {
@@ -117,6 +218,30 @@ const Products = () => {
     fetchPriceRange();
   }, []);
 
+  const handleSortChange = (value) => {
+    setSortOption(value);
+  };
+
+  const handleCategoryChange = (value1) => {
+    setCategoryFilter(value1);
+    setCatHasProducts(true);
+  };
+
+  const fetchStock = async (stockIds) => {
+    try {
+      const response = await axios.get(
+        `https://prestashop.petplushies.pt/api/stock_availables/${stockIds}?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&output_format=JSON`
+      );
+
+      const quantities = response.data.stock_available.quantity;
+      return quantities;
+    } catch (error) {
+      console.error("Error fetching stock:", error);
+      // You might want to return a default value or handle the error differently
+      return 0; // Default value for stock
+    }
+  };
+
   return (
     <Container>
       <ContentLocked>
@@ -128,14 +253,30 @@ const Products = () => {
             <Collapse defaultActiveKey={["1"]} accordion>
               <Panel header="Categoria" key="1">
                 <ul>
-                  {categories?.map((c, index) => {
-                    return (
-                      <li key={index}>
-                        <a href={`/categoria/${ToKebabCase(c.name)}`}>
-                          {c.name}
-                        </a>
-                      </li>
-                    );
+                  {categories?.map((c) => {
+                    if (c.has_products != undefined) {
+                      if (c.id_parent == 1) {
+                        return false;
+                      } else if (c.id_parent == 2) {
+                        return (
+                          <CategoryListItem
+                            key={c.id}
+                            onClick={() => handleCategoryChange(c.id)}
+                          >
+                            {c.name}
+                          </CategoryListItem>
+                        );
+                      } else {
+                        return (
+                          <CategoryListSubItem
+                            key={c.id}
+                            onClick={() => handleCategoryChange(c.id)}
+                          >
+                            {c.name}
+                          </CategoryListSubItem>
+                        );
+                      }
+                    }
                   })}
                 </ul>
               </Panel>
@@ -153,28 +294,73 @@ const Products = () => {
               </Panel>
             </Collapse>
           </Col>
-          <Col span={16}>
-            <ProductRow>
-              {products?.map((p) => {
-                return (
-                  <TileNoInput
-                    key={p.key}
-                    name={p.name}
-                    price={p.price}
-                    picture={p.picture}
-                    stock={p.stock}
-                    flag={p.flag}
-                    url={p.url}
-                  />
-                );
-              })}
-            </ProductRow>
-          </Col>
+          <ProductListContainer span={16}>
+            <SortDropdown onSelect={handleSortChange} />
+            {loading && !error && (
+              <Spinner
+                indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
+              />
+            )}
+            {error && !loading && !noResults && (
+              <>Error fetching product list.</>
+            )}
+            {!error && !loading && noResults && (
+              <>No results for the selected filter.</>
+            )}
+            {!error && !loading && !noResults && (
+              <ProductRow>
+                {products?.map((p) => {
+                  return (
+                    <TileNoInput
+                      key={p.key}
+                      name={p.name}
+                      price={p.price}
+                      picture={p.picture}
+                      stock={p.stock}
+                      flag={flagText(p.stock)}
+                      url={p.url}
+                    />
+                  );
+                })}
+              </ProductRow>
+            )}
+          </ProductListContainer>
         </StyledRow>
       </ContentLocked>
     </Container>
   );
 };
+
+const CategoryListItem = styled.li`
+  cursor: pointer;
+  color: blue;
+  list-style: none;
+`;
+
+const CategoryListSubItem = styled(CategoryListItem)`
+  color: green;
+  margin-left: 20px;
+`;
+
+const CategoryListSubSubItem = styled(CategoryListItem)`
+  color: pink;
+  margin-left: 40px;
+`;
+
+const Spinner = styled(Spin)`
+  margin-left: 50%;
+  margin-top: 10%;
+`;
+
+const ProductListContainer = styled(Col)`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
+
+const SortSelect = styled(Select)`
+  min-width: 200px;
+`;
 
 const Container = styled.div`
   width: 100%;

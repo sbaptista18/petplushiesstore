@@ -1,7 +1,6 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Row, Col, Table, Checkbox, Form, Input, Select } from "antd";
-import { Link } from "react-router-dom";
 
 import { Button } from "components";
 
