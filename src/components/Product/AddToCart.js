@@ -4,10 +4,11 @@ import { Col, InputNumber } from "antd";
 
 import { Button } from "components";
 
-const AddToCart = ({ sku, price, sale_price, flag }) => {
+const AddToCart = ({ sku, price, sale_price, flag, onClick }) => {
   const onChange = (value) => {
     console.log("changed", value);
   };
+
   return (
     <Container>
       <Sku>REF: {sku}</Sku>
@@ -16,7 +17,12 @@ const AddToCart = ({ sku, price, sale_price, flag }) => {
         {flag == "sale" && <Sale>{sale_price}</Sale>}
       </PriceContainer>
       <InputNumber min={1} max={10} defaultValue={1} onChange={onChange} />
-      <StyledButton size="large" type="primary" text="add to cart" />
+      <StyledButton
+        size="large"
+        type="primary"
+        text="add to cart"
+        onClick={onClick}
+      />
     </Container>
   );
 };
@@ -26,6 +32,7 @@ AddToCart.propTypes = {
   price: PropTypes.string,
   sale_price: PropTypes.string,
   flag: PropTypes.string,
+  onClick: PropTypes.func,
 };
 
 const Container = styled(Col)`

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Row, Col } from "antd";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 import { useParams } from "react-router-dom";
@@ -26,53 +26,94 @@ const Product = () => {
   const [product, setProduct] = useState([]);
   const { productUrl } = useParams();
 
-  const isFetchingRef = useRef(false);
-
   useEffect(() => {
     const fetchProduct = async () => {
-      if (!isFetchingRef.current) {
-        isFetchingRef.current = true;
+      try {
+        const response = await axios.get(
+          `https://prestashop.petplushies.pt/api/products?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&filter[link_rewrite]=[${productUrl}]&output_format=JSON`
+        );
 
-        try {
-          const response = await axios.get(
-            `https://prestashop.petplushies.pt/api/products?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&filter[link_rewrite]=[${productUrl}]&output_format=JSON`
+        const mappedProduct = response.data.products[0];
+
+        const arrayImages = [];
+
+        mappedProduct.associations.images.map((image) => {
+          return arrayImages.push(
+            `https://prestashop.petplushies.pt/${image.id}-large_default/${mappedProduct.link_rewrite[0].value}.jpg`
           );
+        });
+        const stock = await fetchStock(
+          mappedProduct.associations.stock_availables.map((stock) => stock.id)
+        );
 
-          const mappedProduct = response.data.products[0];
+        const productData = {
+          key: mappedProduct.id,
+          name: mappedProduct.name[0].value,
+          price: _.toNumber(mappedProduct.price),
+          picture: `https://prestashop.petplushies.pt/${mappedProduct.associations.images[0].id}-large_default/${mappedProduct.link_rewrite[0].value}.jpg`,
+          slideshow: arrayImages,
+          stock: stock[0],
+          flag: flagText(mappedProduct.associations.stock_availables[0].id),
+          url: mappedProduct.link_rewrite[0].value,
+          main_img_id: mappedProduct.associations.images[0].id,
+          desc: mappedProduct.description[0].value,
+          desc_short: mappedProduct.description_short[0].value,
+          sku: mappedProduct.reference,
+        };
 
-          const arrayImages = [];
-          mappedProduct.associations.images.map((image) => {
-            return arrayImages.push(
-              `https://prestashop.petplushies.pt/${image.id}-large_default/${mappedProduct.link_rewrite[0].value}.jpg`
-            );
-          });
-
-          const productData = {
-            key: mappedProduct.id,
-            name: mappedProduct.name[0].value,
-            price: _.toNumber(mappedProduct.price),
-            picture: `https://prestashop.petplushies.pt/${mappedProduct.associations.images[0].id}-large_default/${mappedProduct.link_rewrite[0].value}.jpg`,
-            slideshow: arrayImages,
-            stock: mappedProduct.associations.stock_availables[0].id,
-            flag: flagText(mappedProduct.associations.stock_availables[0].id),
-            url: mappedProduct.link_rewrite[0].value,
-            main_img_id: mappedProduct.associations.images[0].id,
-            desc: mappedProduct.description[0].value,
-            desc_short: mappedProduct.description_short[0].value,
-            sku: mappedProduct.reference,
-          };
-
-          setProduct(productData);
-        } catch (error) {
-          console.log(error);
-        }
-
-        isFetchingRef.current = false;
+        setProduct(productData);
+      } catch (error) {
+        console.log(error);
       }
     };
 
-    !isFetchingRef.current && fetchProduct();
+    fetchProduct();
   }, [productUrl]);
+
+  const fetchStock = async (stockIds) => {
+    try {
+      const stockResponses = await Promise.all(
+        stockIds.map(async (stockId) => {
+          const response = await axios.get(
+            `https://prestashop.petplushies.pt/api/stock_availables/${stockId}?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&output_format=JSON`
+          );
+          return response.data.stock_available.quantity;
+        })
+      );
+
+      // Assuming stockIds is an array of stock IDs corresponding to each image
+      // If there is only one stock ID, you can directly return stockResponses[0]
+
+      return stockResponses;
+    } catch (error) {
+      console.error("Error fetching stock:", error);
+      // You might want to return a default value or handle the error differently
+      return 0; // Default value for stock
+    }
+  };
+
+  const addToCart = async (product) => {
+    try {
+      const response = await fetch(
+        `https://prestashop.petplushies.pt/api/carts?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_product: product.key,
+            quantity: 1,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      console.log("Product added to cart:", data);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  };
 
   return (
     <Container>
@@ -94,10 +135,16 @@ const Product = () => {
                     slidesToScroll: 1,
                   }}
                 />
-                <ProductDesc>{product.desc_short}</ProductDesc>
+                <ProductDesc
+                  dangerouslySetInnerHTML={{ __html: product.desc_short }}
+                />
               </Col>
               <Col span={11}>
-                <AddToCart sku={product.sku} price={product.price + "€"} />
+                <AddToCart
+                  onClick={() => addToCart(product)}
+                  sku={product.sku}
+                  price={product.price + "€"}
+                />
                 <Accordion desc={product.desc} />
                 <ShareSocials
                   item={{

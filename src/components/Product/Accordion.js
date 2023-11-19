@@ -14,35 +14,38 @@ const Accordion = ({ desc }) => {
     {
       key: "2",
       label: "RETURN & REFUND POLICY",
-      children: (
-        <p>
+      children: `<p>
           I’m a Return and Refund policy. I’m a great place to let your
           customers know what to do in case they are dissatisfied with their
           purchase. Having a straightforward refund or exchange policy is a
           great way to build trust and reassure your customers that they can buy
           with confidence.
-        </p>
-      ),
+        </p>`,
     },
     {
       key: "3",
       label: "SHIPPING INFO",
-      children: (
-        <p>
+      children: `<p>
           I'm a shipping policy. I'm a great place to add more information about
           your shipping methods, packaging and cost. Providing straightforward
           information about your shipping policy is a great way to build trust
           and reassure your customers that they can buy from you with
           confidence.
-        </p>
-      ),
+        </p>`,
+    },
+    {
+      key: "4",
+      label: "WE HELP ANIMAL SHELTERS",
+      children: `<p>
+          This should be a text related to the help we provide to animal shelters.
+        </p>`,
     },
   ];
   return (
     <Container defaultActiveKey={["1"]} accordion>
       {items.map((item) => (
         <Panel header={item.label} key={item.key}>
-          {item.children}
+          <div dangerouslySetInnerHTML={{ __html: item.children }} />
         </Panel>
       ))}
     </Container>
