@@ -1,6 +1,10 @@
 import styled from "styled-components";
 import { Layout, Menu, Col } from "antd";
+import { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
+import axios from "axios";
+import { useCart } from "../reducers/CartContext";
+
 import {
   MenuOutlined,
   ShoppingCartOutlined,
@@ -8,6 +12,8 @@ import {
 } from "@ant-design/icons";
 
 import Logo from "assets/images/logo.png";
+
+import CreateLocalStorageKey from "../reducers/CreateLocalStorageKey";
 
 const { Header } = Layout;
 
@@ -28,7 +34,76 @@ const buildMenuItemProps = (key) => {
 const pages = ["sobre-nos", "produtos", "contactos"];
 
 const PPS_Header = () => {
+  const [productsNr, setProductsNr] = useState(0);
+  const [sessionKey, setSessionKey] = useState(null);
   const history = useHistory();
+
+  const { setSessionKeyAndCartId } = useCart();
+
+  CreateLocalStorageKey();
+
+  useEffect(() => {
+    const storedSessionData = localStorage.getItem("sessionData");
+
+    if (storedSessionData) {
+      const { key } = JSON.parse(storedSessionData);
+      setSessionKey(key);
+      if (key !== sessionKey) {
+        // fetchCartId(key);
+        setSessionKeyAndCartId(key, null); // set null as cartId initially
+      }
+    } else {
+      // Handle the case where the session key is not found in local storage
+      // For example, generate a new session key and store it in local storage
+      // const newSessionKey = generateSessionKey();
+      // setSessionKey(newSessionKey);
+      // setSessionInLocalStorage(newSessionKey);
+    }
+  }, [setSessionKeyAndCartId]);
+
+  // const fetchCartId = async (sessionKey) => {
+  //   try {
+  //     const response = await axios.get(
+  //       `https://prestashop.petplushies.pt/api/carts?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&filter[secure_key]=${sessionKey}&output_format=JSON`
+  //     );
+
+  //     if (response.data.length !== 0) {
+  //       const cartIdAux = response.data.carts[0].id;
+
+  //       // Assuming fetchCartProducts returns an array of promises
+  //       const getCartProducts = await Promise.all([
+  //         fetchCartProducts(cartIdAux),
+  //       ]);
+  //       const getProductsNr =
+  //         getCartProducts[0].data.cart.associations.cart_rows.length;
+
+  //       setProductsNr(getProductsNr);
+
+  //       // Now set the actual cartId
+  //       setSessionKeyAndCartId(sessionKey, cartIdAux);
+
+  //       return getCartProducts;
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching cart:", error);
+  //     // You might want to return a default value or handle the error differently
+  //     return 0; // Default value for stock
+  //   }
+  // };
+
+  // const fetchCartProducts = async (cartId) => {
+  //   try {
+  //     const response = await axios.get(
+  //       `https://prestashop.petplushies.pt/api/carts/${cartId}?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&output_format=JSON`
+  //     );
+
+  //     return response;
+  //   } catch (error) {
+  //     console.error("Error fetching cart products:", error);
+  //     // You might want to return a default value or handle the error differently
+  //     return 0; // Default value for stock
+  //   }
+  // };
 
   return (
     <StyledHeader>
@@ -48,6 +123,11 @@ const PPS_Header = () => {
         />
         <IconLink to="/carrinho">
           <ShoppingCartOutlined />
+          {productsNr != 0 && (
+            <CartProductsNr>
+              <span>{productsNr}</span>
+            </CartProductsNr>
+          )}
         </IconLink>
         <IconLink to="/login">
           <UserOutlined />
@@ -56,6 +136,23 @@ const PPS_Header = () => {
     </StyledHeader>
   );
 };
+
+const CartProductsNr = styled.div`
+  border-radius: 50%;
+  background-color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  margin-left: -7px;
+  margin-top: -17px;
+
+  & span {
+    color: white;
+    font-size: 10px;
+  }
+`;
 
 const StyledHeader = styled(Header)`
   position: fixed;
@@ -101,6 +198,7 @@ const IconLink = styled(StyledLink)`
   align-items: center;
   justify-content: center;
   color: black;
+  position: relative;
 
   &:hover {
     color: #1890ff;

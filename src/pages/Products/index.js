@@ -63,160 +63,160 @@ const Products = () => {
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      setNoResults(false);
-      setError(false);
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     setLoading(true);
+  //     setNoResults(false);
+  //     setError(false);
 
-      if (catHasProducts) {
-        try {
-          const response = await axios.get(
-            `https://prestashop.petplushies.pt/api/products?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&output_format=JSON&filter[id_category_default]=${categoryFilter}&sort=${sortOption}`
-          );
+  //     if (catHasProducts) {
+  //       try {
+  //         const response = await axios.get(
+  //           `https://prestashop.petplushies.pt/api/products?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&output_format=JSON&filter[id_category_default]=${categoryFilter}&sort=${sortOption}`
+  //         );
 
-          if (response.data.length == 0) {
-            setNoResults(true);
-            setLoading(false);
-            setError(false);
-          } else {
-            const mappedProducts = await Promise.all(
-              response.data.products.map(async (item) => {
-                const stock = await fetchStock(
-                  item.associations.stock_availables[0].id
-                );
-                return {
-                  key: item.id,
-                  name: item.name[0].value,
-                  price: _.toNumber(item.price),
-                  stock: stock,
-                  picture: `https://prestashop.petplushies.pt/${item.associations.images[0].id}-large_default/${item.link_rewrite[0].value}.jpg`,
-                  url: item.link_rewrite[0].value,
-                };
-              })
-            );
+  //         if (response.data.length == 0) {
+  //           setNoResults(true);
+  //           setLoading(false);
+  //           setError(false);
+  //         } else {
+  //           const mappedProducts = await Promise.all(
+  //             response.data.products.map(async (item) => {
+  //               const stock = await fetchStock(
+  //                 item.associations.stock_availables[0].id
+  //               );
+  //               return {
+  //                 key: item.id,
+  //                 name: item.name[0].value,
+  //                 price: _.toNumber(item.price),
+  //                 stock: stock,
+  //                 picture: `https://prestashop.petplushies.pt/${item.associations.images[0].id}-large_default/${item.link_rewrite[0].value}.jpg`,
+  //                 url: item.link_rewrite[0].value,
+  //               };
+  //             })
+  //           );
 
-            setProducts(mappedProducts);
-            setLoading(false);
-          }
-        } catch (error) {
-          setError(true);
-        }
-      } else {
-        try {
-          const response = await axios.get(
-            `https://prestashop.petplushies.pt/api/products?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&output_format=JSON&sort=${sortOption}`
-          );
+  //           setProducts(mappedProducts);
+  //           setLoading(false);
+  //         }
+  //       } catch (error) {
+  //         setError(true);
+  //       }
+  //     } else {
+  //       try {
+  //         const response = await axios.get(
+  //           `https://prestashop.petplushies.pt/api/products?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&output_format=JSON&sort=${sortOption}`
+  //         );
 
-          const mappedProducts = await Promise.all(
-            response.data.products.map(async (item) => {
-              const stock = await fetchStock(
-                item.associations.stock_availables[0].id
-              );
-              return {
-                key: item.id,
-                name: item.name[0].value,
-                price: _.toNumber(item.price),
-                stock: stock,
-                picture: `https://prestashop.petplushies.pt/${item.associations.images[0].id}-large_default/${item.link_rewrite[0].value}.jpg`,
-                url: item.link_rewrite[0].value,
-              };
-            })
-          );
+  //         const mappedProducts = await Promise.all(
+  //           response.data.products.map(async (item) => {
+  //             const stock = await fetchStock(
+  //               item.associations.stock_availables[0].id
+  //             );
+  //             return {
+  //               key: item.id,
+  //               name: item.name[0].value,
+  //               price: _.toNumber(item.price),
+  //               stock: stock,
+  //               picture: `https://prestashop.petplushies.pt/${item.associations.images[0].id}-large_default/${item.link_rewrite[0].value}.jpg`,
+  //               url: item.link_rewrite[0].value,
+  //             };
+  //           })
+  //         );
 
-          setProducts(mappedProducts);
-          setLoading(false);
-        } catch (error) {
-          setError(true);
-        }
-      }
-    };
+  //         setProducts(mappedProducts);
+  //         setLoading(false);
+  //       } catch (error) {
+  //         setError(true);
+  //       }
+  //     }
+  //   };
 
-    fetchProducts(); // Call the function directly
-  }, [sortOption, categoryFilter, catHasProducts]);
+  //   fetchProducts(); // Call the function directly
+  // }, [sortOption, categoryFilter, catHasProducts]);
 
-  //FETCH CATEGORIES
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get(
-          `https://prestashop.petplushies.pt/api/categories?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&output_format=JSON`
-        );
+  // //FETCH CATEGORIES
+  // useEffect(() => {
+  //   const fetchCategories = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `https://prestashop.petplushies.pt/api/categories?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&output_format=JSON`
+  //       );
 
-        const categoriesWithProducts = [];
+  //       const categoriesWithProducts = [];
 
-        const processCategory = (category) => {
-          if (category.has_products && category.has_products.length > 0) {
-            categoriesWithProducts.push(category.id);
-          }
+  //       const processCategory = (category) => {
+  //         if (category.has_products && category.has_products.length > 0) {
+  //           categoriesWithProducts.push(category.id);
+  //         }
 
-          if (category.children && category.children.length > 0) {
-            category.children.forEach((subCategory) => {
-              processCategory(subCategory);
-            });
-          }
-        };
+  //         if (category.children && category.children.length > 0) {
+  //           category.children.forEach((subCategory) => {
+  //             processCategory(subCategory);
+  //           });
+  //         }
+  //       };
 
-        response.data.categories.forEach((category) => {
-          processCategory(category);
-        });
+  //       response.data.categories.forEach((category) => {
+  //         processCategory(category);
+  //       });
 
-        setCatHasProducts(categoriesWithProducts.length > 0);
+  //       setCatHasProducts(categoriesWithProducts.length > 0);
 
-        const mappedCategories = response.data.categories.map((item) => {
-          return {
-            id: item.id,
-            id_parent: item.id_parent,
-            level_depth: item.level_depth,
-            name: item.name[1].value,
-            has_products: item.associations.products,
-            children: item.children, // Assuming your API returns children in this structure
-          };
-        });
+  //       const mappedCategories = response.data.categories.map((item) => {
+  //         return {
+  //           id: item.id,
+  //           id_parent: item.id_parent,
+  //           level_depth: item.level_depth,
+  //           name: item.name[1].value,
+  //           has_products: item.associations.products,
+  //           children: item.children, // Assuming your API returns children in this structure
+  //         };
+  //       });
 
-        setCategories(mappedCategories);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  //       setCategories(mappedCategories);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
 
-    fetchCategories();
-  }, []);
+  //   fetchCategories();
+  // }, []);
 
-  //FETCH PRICE RANGE
-  useEffect(() => {
-    const fetchPriceRange = async () => {
-      try {
-        await axios
-          .get(
-            `https://prestashop.petplushies.pt/api/products?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&output_format=JSON`
-          )
-          .then((response) => {
-            // Initialize min and max prices
-            let minPrice = Number.MAX_VALUE;
-            let maxPrice = 0;
+  // //FETCH PRICE RANGE
+  // useEffect(() => {
+  //   const fetchPriceRange = async () => {
+  //     try {
+  //       await axios
+  //         .get(
+  //           `https://prestashop.petplushies.pt/api/products?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&output_format=JSON`
+  //         )
+  //         .then((response) => {
+  //           // Initialize min and max prices
+  //           let minPrice = Number.MAX_VALUE;
+  //           let maxPrice = 0;
 
-            // Iterate through products to find min and max prices
-            response.data.products.forEach((product) => {
-              let price = parseFloat(product.price);
-              minPrice = Math.min(minPrice, price);
-              maxPrice = Math.max(maxPrice, price);
-            });
+  //           // Iterate through products to find min and max prices
+  //           response.data.products.forEach((product) => {
+  //             let price = parseFloat(product.price);
+  //             minPrice = Math.min(minPrice, price);
+  //             maxPrice = Math.max(maxPrice, price);
+  //           });
 
-            // Output the min and max prices
-            setMinPrice(minPrice);
-            setMaxPrice(maxPrice);
-          })
-          .catch((error) =>
-            console.error("Error fetching product data:", error)
-          );
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  //           // Output the min and max prices
+  //           setMinPrice(minPrice);
+  //           setMaxPrice(maxPrice);
+  //         })
+  //         .catch((error) =>
+  //           console.error("Error fetching product data:", error)
+  //         );
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
 
-    fetchPriceRange();
-  }, []);
+  //   fetchPriceRange();
+  // }, []);
 
   const handleSortChange = (value) => {
     setSortOption(value);
@@ -227,20 +227,20 @@ const Products = () => {
     setCatHasProducts(true);
   };
 
-  const fetchStock = async (stockIds) => {
-    try {
-      const response = await axios.get(
-        `https://prestashop.petplushies.pt/api/stock_availables/${stockIds}?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&output_format=JSON`
-      );
+  // const fetchStock = async (stockIds) => {
+  //   try {
+  //     const response = await axios.get(
+  //       `https://prestashop.petplushies.pt/api/stock_availables/${stockIds}?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&output_format=JSON`
+  //     );
 
-      const quantities = response.data.stock_available.quantity;
-      return quantities;
-    } catch (error) {
-      console.error("Error fetching stock:", error);
-      // You might want to return a default value or handle the error differently
-      return 0; // Default value for stock
-    }
-  };
+  //     const quantities = response.data.stock_available.quantity;
+  //     return quantities;
+  //   } catch (error) {
+  //     console.error("Error fetching stock:", error);
+  //     // You might want to return a default value or handle the error differently
+  //     return 0; // Default value for stock
+  //   }
+  // };
 
   return (
     <Container>
