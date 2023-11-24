@@ -1,6 +1,7 @@
 let webpack = require("webpack");
 let path = require("path");
 
+const DotEnv = require("dotenv-webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -68,6 +69,9 @@ module.exports = {
     ],
   },
   plugins: [
+    new DotEnv({
+      path: ".env",
+    }),
     new webpack.ProvidePlugin({
       React: "react",
       _: "lodash",
