@@ -3,6 +3,7 @@ import Breadcrumbs from "./Breadcrumbs";
 import Slideshow from "./Slideshow";
 import Tile from "./Tiles/Tile";
 import TileNoInput from "./Tiles/TileNoInput";
+import ModalMessage from "./ModalMessage";
 
 //Product Page Components
 import Accordion from "./Product/Accordion";
@@ -16,6 +17,7 @@ export {
   Slideshow,
   Tile,
   TileNoInput,
+  ModalMessage,
   //Product Page components
   Accordion,
   AddToCart,

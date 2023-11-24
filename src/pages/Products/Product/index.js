@@ -1,16 +1,20 @@
 import styled from "styled-components";
-import { Row, Col } from "antd";
+import { Row, Col, Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
-import axios from "axios";
-
 import { useParams } from "react-router-dom";
+import { useCart } from "reducers";
+
 import {
   Accordion,
   AddToCart,
   Breadcrumbs,
   ImageCarousel,
   ShareSocials,
+  ModalMessage,
 } from "components";
+
+import { ConnectWC } from "fragments";
 
 const flagText = (stock) => {
   let text;
@@ -23,101 +27,188 @@ const flagText = (stock) => {
 };
 
 const Product = () => {
+  const [sessionKey, setSessionKey] = useState(null);
   const [product, setProduct] = useState([]);
   const { productUrl } = useParams();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { cartId } = useCart();
+
+  useEffect(() => {
+    if (cartId === null) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [cartId]);
 
   useEffect(() => {
     const fetchProduct = async () => {
-      try {
-        const response = await axios.get(
-          `https://prestashop.petplushies.pt/api/products?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&filter[link_rewrite]=[${productUrl}]&output_format=JSON`
-        );
-
-        const mappedProduct = response.data.products[0];
-
-        const arrayImages = [];
-
-        mappedProduct.associations.images.map((image) => {
-          return arrayImages.push(
-            `https://prestashop.petplushies.pt/${image.id}-large_default/${mappedProduct.link_rewrite[0].value}.jpg`
+      ConnectWC.get("products")
+        .then((data) => {
+          const productWithSlug = data.find(
+            (product) => product.slug === productUrl
           );
+
+          const arrayImages = [];
+
+          productWithSlug.images.map((image) => {
+            return arrayImages.push(image.src);
+          });
+
+          const productData = {
+            id: productWithSlug.id,
+            name: productWithSlug.name,
+            price: _.toNumber(productWithSlug.price),
+            picture: productWithSlug.images[0].src,
+            slideshow: arrayImages,
+            stock: productWithSlug.stock_quantity,
+            flag: flagText(productWithSlug.stock_quantity),
+            url: productWithSlug.slug,
+            desc: productWithSlug.description,
+            desc_short: productWithSlug.short_description,
+            sku: productWithSlug.sku,
+          };
+
+          setProduct(productData);
+          setLoading(false);
+        })
+        .catch((error) => {
+          setError(true);
         });
-        const stock = await fetchStock(
-          mappedProduct.associations.stock_availables.map((stock) => stock.id)
-        );
-
-        const productData = {
-          key: mappedProduct.id,
-          name: mappedProduct.name[0].value,
-          price: _.toNumber(mappedProduct.price),
-          picture: `https://prestashop.petplushies.pt/${mappedProduct.associations.images[0].id}-large_default/${mappedProduct.link_rewrite[0].value}.jpg`,
-          slideshow: arrayImages,
-          stock: stock[0],
-          flag: flagText(mappedProduct.associations.stock_availables[0].id),
-          url: mappedProduct.link_rewrite[0].value,
-          main_img_id: mappedProduct.associations.images[0].id,
-          desc: mappedProduct.description[0].value,
-          desc_short: mappedProduct.description_short[0].value,
-          sku: mappedProduct.reference,
-        };
-
-        setProduct(productData);
-      } catch (error) {
-        console.log(error);
-      }
     };
 
     fetchProduct();
   }, [productUrl]);
 
-  const fetchStock = async (stockIds) => {
-    try {
-      const stockResponses = await Promise.all(
-        stockIds.map(async (stockId) => {
-          const response = await axios.get(
-            `https://prestashop.petplushies.pt/api/stock_availables/${stockId}?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&output_format=JSON`
-          );
-          return response.data.stock_available.quantity;
-        })
-      );
-
-      // Assuming stockIds is an array of stock IDs corresponding to each image
-      // If there is only one stock ID, you can directly return stockResponses[0]
-
-      return stockResponses;
-    } catch (error) {
-      console.error("Error fetching stock:", error);
-      // You might want to return a default value or handle the error differently
-      return 0; // Default value for stock
-    }
-  };
-
   const addToCart = async (product) => {
-    try {
-      const response = await fetch(
-        `https://prestashop.petplushies.pt/api/carts?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id_product: product.key,
-            quantity: 1,
-          }),
-        }
-      );
+    if (cartId || cartId === 0) {
+      const dataProduct = {
+        temp_cart_id: cartId,
+        product_id: product.id,
+        date_created: new Date().toISOString().slice(0, 19).replace("T", " "),
+        product_qty: document.querySelector(".ant-input-number-input").value,
+        product_net_revenue: product.price,
+      };
 
-      const data = await response.json();
-      console.log("Product added to cart:", data);
-    } catch (error) {
-      console.error("Error adding to cart:", error);
+      ConnectWC.get("temp_cart_products/" + dataProduct.product_id)
+        .then((response) => {
+          ConnectWC.post("temp_cart_products", dataProduct)
+            .then((response) => {
+              setMessage("Product was added to cart!");
+              setStatus("success");
+              setIsModalOpen(true);
+            })
+            .catch((error) => {
+              setMessage(
+                "There was an error adding product to cart. (" + error + ".)"
+              );
+              setStatus("error");
+              setIsModalOpen(true);
+            });
+        })
+        .catch((error) => {
+          setMessage(
+            "There was an error fetching cart products. (" +
+              error.response +
+              ".)"
+          );
+          setStatus("error");
+          setIsModalOpen(true);
+        });
+    } else {
+      const dataCart = {
+        status: "active",
+        local_session_key: sessionKey,
+        date_created_gmt: new Date()
+          .toISOString()
+          .slice(0, 19)
+          .replace("T", " "),
+        date_updated_gmt: new Date()
+          .toISOString()
+          .slice(0, 19)
+          .replace("T", " "),
+        currency: "EUR",
+        ip_address: "",
+        user_agent: navigator.userAgent,
+      };
+
+      ConnectWC.post("temp_carts", dataCart)
+        .then((response) => {
+          const dataProduct = {
+            temp_cart_id: response.success.id,
+            product_id: product.id,
+            date_created: new Date()
+              .toISOString()
+              .slice(0, 19)
+              .replace("T", " "),
+            product_qty: document.querySelector(".ant-input-number-input")
+              .value,
+            product_net_revenue: product.price,
+          };
+
+          ConnectWC.post("temp_cart_products", dataProduct)
+            .then((response) => {
+              setMessage("Product was added to cart!");
+              setStatus("success");
+              setIsModalOpen(true);
+            })
+            .catch((error) => {
+              setMessage(
+                "There was an error adding product to cart. (" +
+                  error.response +
+                  ".)"
+              );
+              setStatus("error");
+              setIsModalOpen(true);
+            });
+        })
+        .catch((error) => {
+          setMessage(
+            "There was an error creating the cart. (" + error.response + ".)"
+          );
+          setStatus("error");
+          setIsModalOpen(true);
+        });
     }
   };
+
+  useEffect(() => {
+    // Retrieve the session key from local storage
+    const storedSessionData = localStorage.getItem("sessionDataCart");
+
+    if (storedSessionData) {
+      const { key } = JSON.parse(storedSessionData);
+      setSessionKey(key);
+    } else {
+      console.log("create session key, product");
+      // Handle the case where the session key is not found in local storage
+      // For example, generate a new session key and store it in local storage
+      const newSessionKey = generateSessionKey();
+      setSessionKey(newSessionKey);
+      setSessionInLocalStorage(newSessionKey);
+    }
+  }, []);
 
   return (
     <Container>
+      <ModalMessage
+        status={status}
+        message={message}
+        isVisible={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
       <ContentLocked>
+        {loading && !error && (
+          <Spinner
+            indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
+          />
+        )}
+        {error && !loading && <>Error fetching product.</>}
         {product != undefined && (
           <>
             <StyledH1>{product.name}</StyledH1>
@@ -164,6 +255,19 @@ const Product = () => {
     </Container>
   );
 };
+
+const Spinner = styled(Spin)`
+  position: absolute;
+  background-color: white;
+  width: 99vw;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 const Container = styled.div`
   width: 100%;

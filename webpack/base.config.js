@@ -1,6 +1,7 @@
 let webpack = require("webpack");
 let path = require("path");
 
+const DotEnv = require("dotenv-webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -27,6 +28,7 @@ module.exports = {
       layout: path.resolve(__dirname, `${srcDir}/layout`),
       pages: path.resolve(__dirname, `${srcDir}/pages`),
       services: path.resolve(__dirname, `${srcDir}/services`),
+      reducers: path.resolve(__dirname, `${srcDir}/reducers`),
     },
   },
   target: "web",
@@ -67,6 +69,9 @@ module.exports = {
     ],
   },
   plugins: [
+    new DotEnv({
+      path: ".env",
+    }),
     new webpack.ProvidePlugin({
       React: "react",
       _: "lodash",

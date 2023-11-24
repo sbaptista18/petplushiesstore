@@ -5,6 +5,7 @@ import ScrollToTop from "./ScrollToTop";
 import SEOTags from "./SEOTags";
 import ToKebabCase from "./ToKebabCase";
 import IsInViewport from "./IsInViewport";
+import ConnectWC from "./connectWC";
 
 export {
   IsInViewport,
@@ -14,4 +15,5 @@ export {
   ScrollToTop,
   SEOTags,
   ToKebabCase,
+  ConnectWC,
 };

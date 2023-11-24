@@ -1,43 +1,47 @@
-import { Col, InputNumber } from "antd";
+import { InputNumber } from "antd";
 import styled from "styled-components";
 import { CloseOutlined } from "@ant-design/icons";
 
-import Img from "assets/images/batcat-1.jpg";
-
-const onChange = (value) => {
+const onChange = (value, rowData) => {
   console.log("changed", value);
+  console.log("rowData", rowData);
+  // Add your logic to update the state based on the changes
 };
 
-const Product = (text) => {
-  return (
-    <ProductCol>
-      <Col span={16}>
-        <img src={Img} />
-      </Col>
-      <Col span={7}>{text}</Col>
-    </ProductCol>
-  );
+const Text = ({ text }) => {
+  return text;
+};
+
+const Image = ({ image }) => {
+  return <StyledImg src={image} alt="Product" />;
 };
 
 export default [
   {
-    title: "Produto",
+    title: "Imagem",
     dataIndex: "product",
-    key: "product",
-    render: (text) => Product(text),
+    key: "image",
+    render: (record) => <Image image={record.images[0].src} />,
+  },
+  {
+    title: "Nome",
+    dataIndex: "product",
+    key: "name",
+    render: (record) => <Text text={record.name} />,
   },
   {
     title: "Quantidade",
-    dataIndex: "qty",
+    dataIndex: "product_qty",
     key: "qty",
-    render: (text) => (
-      <InputNumber min={1} max={10} defaultValue={text} onChange={onChange} />
+    render: (record) => (
+      <InputNumber min={1} max={10} defaultValue={record} onChange={onChange} />
     ),
   },
   {
     title: "Preco",
-    dataIndex: "price",
+    dataIndex: "product_net_revenue",
     key: "price",
+    render: (record) => <Text text={record} />,
   },
   {
     key: "close",
@@ -45,6 +49,12 @@ export default [
     render: () => <DeleteBtn />,
   },
 ];
+
+const StyledImg = styled.img`
+  max-width: 200px;
+  width: 100%;
+  height: auto;
+`;
 
 const ProductCol = styled.div`
   display: flex;
