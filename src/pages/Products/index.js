@@ -1,11 +1,12 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Row, Col, Collapse, Slider, Select, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 
 import { Breadcrumbs, TileNoInput } from "components";
+
+import { ConnectWC } from "fragments";
 
 const { Panel } = Collapse;
 
@@ -19,7 +20,6 @@ const flagText = (stock) => {
 
   return text;
 };
-
 const SortDropdown = ({ onSelect }) => {
   const handleSortChange = (value) => {
     onSelect(value);
@@ -52,8 +52,7 @@ SortDropdown.propTypes = {
 
 const Products = () => {
   const [sortOption, setSortOption] = useState("id_DESC");
-  const [categoryFilter, setCategoryFilter] = useState(2);
-  const [catHasProducts, setCatHasProducts] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [noResults, setNoResults] = useState(false);
@@ -63,160 +62,140 @@ const Products = () => {
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
 
-  // useEffect(() => {
-  //   const fetchProducts = async () => {
-  //     setLoading(true);
-  //     setNoResults(false);
-  //     setError(false);
+  const filterByCategory = (array) => {
+    if (categoryFilter.toLowerCase() === "all") {
+      return array;
+    }
 
-  //     if (catHasProducts) {
-  //       try {
-  //         const response = await axios.get(
-  //           `https://prestashop.petplushies.pt/api/products?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&output_format=JSON&filter[id_category_default]=${categoryFilter}&sort=${sortOption}`
-  //         );
+    return array.filter((product) => {
+      return (
+        product.categories &&
+        Array.isArray(product.categories) &&
+        product.categories.some((category) => {
+          return category.name.toLowerCase() === categoryFilter.toLowerCase();
+        })
+      );
+    });
+  };
 
-  //         if (response.data.length == 0) {
-  //           setNoResults(true);
-  //           setLoading(false);
-  //           setError(false);
-  //         } else {
-  //           const mappedProducts = await Promise.all(
-  //             response.data.products.map(async (item) => {
-  //               const stock = await fetchStock(
-  //                 item.associations.stock_availables[0].id
-  //               );
-  //               return {
-  //                 key: item.id,
-  //                 name: item.name[0].value,
-  //                 price: _.toNumber(item.price),
-  //                 stock: stock,
-  //                 picture: `https://prestashop.petplushies.pt/${item.associations.images[0].id}-large_default/${item.link_rewrite[0].value}.jpg`,
-  //                 url: item.link_rewrite[0].value,
-  //               };
-  //             })
-  //           );
+  const sortProductsById = (a, b) => b.id - a.id;
 
-  //           setProducts(mappedProducts);
-  //           setLoading(false);
-  //         }
-  //       } catch (error) {
-  //         setError(true);
-  //       }
-  //     } else {
-  //       try {
-  //         const response = await axios.get(
-  //           `https://prestashop.petplushies.pt/api/products?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&output_format=JSON&sort=${sortOption}`
-  //         );
+  const sortByPriceLowToHigh = (a, b) => {
+    return parseFloat(a.price) - parseFloat(b.price);
+  };
 
-  //         const mappedProducts = await Promise.all(
-  //           response.data.products.map(async (item) => {
-  //             const stock = await fetchStock(
-  //               item.associations.stock_availables[0].id
-  //             );
-  //             return {
-  //               key: item.id,
-  //               name: item.name[0].value,
-  //               price: _.toNumber(item.price),
-  //               stock: stock,
-  //               picture: `https://prestashop.petplushies.pt/${item.associations.images[0].id}-large_default/${item.link_rewrite[0].value}.jpg`,
-  //               url: item.link_rewrite[0].value,
-  //             };
-  //           })
-  //         );
+  const sortByPriceHighToLow = (a, b) => {
+    return parseFloat(b.price) - parseFloat(a.price);
+  };
 
-  //         setProducts(mappedProducts);
-  //         setLoading(false);
-  //       } catch (error) {
-  //         setError(true);
-  //       }
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchProducts = () => {
+      setLoading(true);
+      setNoResults(false);
+      setError(false);
 
-  //   fetchProducts(); // Call the function directly
-  // }, [sortOption, categoryFilter, catHasProducts]);
+      ConnectWC.get("products")
+        .then((data) => {
+          let originalData = [...data];
+          let result;
+          if (sortOption == "id_DESC") {
+            result = filterByCategory(originalData).sort(sortProductsById);
+          } else if (sortOption == "price_ASC")
+            result = filterByCategory(originalData).sort(sortByPriceLowToHigh);
+          else
+            result = filterByCategory(originalData).sort(sortByPriceHighToLow);
+
+          if (result.length == 0) {
+            if (data.length == 0) {
+              setNoResults(true);
+              setLoading(false);
+              setError(false);
+            } else {
+              const mappedProducts = data.map((item) => {
+                return {
+                  key: item.id,
+                  name: item.name,
+                  price: _.toNumber(item.price),
+                  stock: item.stock_quantity,
+                  picture: item.images[0].src,
+                  url: item.slug,
+                };
+              });
+
+              setProducts(mappedProducts);
+              setLoading(false);
+            }
+          } else {
+            const mappedProducts = result.map((item) => {
+              return {
+                key: item.id,
+                name: item.name,
+                price: _.toNumber(item.price),
+                stock: item.stock_quantity,
+                picture: item.images[0].src,
+                url: item.slug,
+              };
+            });
+
+            setProducts(mappedProducts);
+            setLoading(false);
+          }
+        })
+        .catch((error) => {
+          setError(true);
+        });
+    };
+    fetchProducts();
+  }, [categoryFilter, sortOption]);
 
   // //FETCH CATEGORIES
-  // useEffect(() => {
-  //   const fetchCategories = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `https://prestashop.petplushies.pt/api/categories?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&output_format=JSON`
-  //       );
+  useEffect(() => {
+    const fetchCategories = async () => {
+      ConnectWC.get("products/categories")
+        .then((data) => {
+          const mappedCategories = data.map((item) => {
+            return {
+              key: item.id,
+              name: item.name,
+              slug: item.slug,
+              count: item.count,
+            };
+          });
 
-  //       const categoriesWithProducts = [];
+          setCategories(mappedCategories);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
 
-  //       const processCategory = (category) => {
-  //         if (category.has_products && category.has_products.length > 0) {
-  //           categoriesWithProducts.push(category.id);
-  //         }
+    fetchCategories();
+  }, []);
 
-  //         if (category.children && category.children.length > 0) {
-  //           category.children.forEach((subCategory) => {
-  //             processCategory(subCategory);
-  //           });
-  //         }
-  //       };
+  //FETCH PRICE RANGE
+  useEffect(() => {
+    const fetchPriceRange = async () => {
+      ConnectWC.get("products")
+        .then((data) => {
+          let minPrice = Number.MAX_VALUE;
+          let maxPrice = 0;
 
-  //       response.data.categories.forEach((category) => {
-  //         processCategory(category);
-  //       });
+          data.forEach((product) => {
+            let price = parseFloat(product.price);
+            minPrice = Math.min(minPrice, price);
+            maxPrice = Math.max(maxPrice, price);
+          });
 
-  //       setCatHasProducts(categoriesWithProducts.length > 0);
+          setMinPrice(minPrice);
+          setMaxPrice(maxPrice);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
 
-  //       const mappedCategories = response.data.categories.map((item) => {
-  //         return {
-  //           id: item.id,
-  //           id_parent: item.id_parent,
-  //           level_depth: item.level_depth,
-  //           name: item.name[1].value,
-  //           has_products: item.associations.products,
-  //           children: item.children, // Assuming your API returns children in this structure
-  //         };
-  //       });
-
-  //       setCategories(mappedCategories);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-
-  //   fetchCategories();
-  // }, []);
-
-  // //FETCH PRICE RANGE
-  // useEffect(() => {
-  //   const fetchPriceRange = async () => {
-  //     try {
-  //       await axios
-  //         .get(
-  //           `https://prestashop.petplushies.pt/api/products?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&display=full&output_format=JSON`
-  //         )
-  //         .then((response) => {
-  //           // Initialize min and max prices
-  //           let minPrice = Number.MAX_VALUE;
-  //           let maxPrice = 0;
-
-  //           // Iterate through products to find min and max prices
-  //           response.data.products.forEach((product) => {
-  //             let price = parseFloat(product.price);
-  //             minPrice = Math.min(minPrice, price);
-  //             maxPrice = Math.max(maxPrice, price);
-  //           });
-
-  //           // Output the min and max prices
-  //           setMinPrice(minPrice);
-  //           setMaxPrice(maxPrice);
-  //         })
-  //         .catch((error) =>
-  //           console.error("Error fetching product data:", error)
-  //         );
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-
-  //   fetchPriceRange();
-  // }, []);
+    fetchPriceRange();
+  }, []);
 
   const handleSortChange = (value) => {
     setSortOption(value);
@@ -226,21 +205,6 @@ const Products = () => {
     setCategoryFilter(value1);
     setCatHasProducts(true);
   };
-
-  // const fetchStock = async (stockIds) => {
-  //   try {
-  //     const response = await axios.get(
-  //       `https://prestashop.petplushies.pt/api/stock_availables/${stockIds}?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&output_format=JSON`
-  //     );
-
-  //     const quantities = response.data.stock_available.quantity;
-  //     return quantities;
-  //   } catch (error) {
-  //     console.error("Error fetching stock:", error);
-  //     // You might want to return a default value or handle the error differently
-  //     return 0; // Default value for stock
-  //   }
-  // };
 
   return (
     <Container>
@@ -253,29 +217,19 @@ const Products = () => {
             <Collapse defaultActiveKey={["1"]} accordion>
               <Panel header="Categoria" key="1">
                 <ul>
+                  <CategoryListItem onClick={() => handleCategoryChange("all")}>
+                    Todas as categorias
+                  </CategoryListItem>
                   {categories?.map((c) => {
-                    if (c.has_products != undefined) {
-                      if (c.id_parent == 1) {
-                        return false;
-                      } else if (c.id_parent == 2) {
-                        return (
-                          <CategoryListItem
-                            key={c.id}
-                            onClick={() => handleCategoryChange(c.id)}
-                          >
-                            {c.name}
-                          </CategoryListItem>
-                        );
-                      } else {
-                        return (
-                          <CategoryListSubItem
-                            key={c.id}
-                            onClick={() => handleCategoryChange(c.id)}
-                          >
-                            {c.name}
-                          </CategoryListSubItem>
-                        );
-                      }
+                    if (c.count != 0) {
+                      return (
+                        <CategoryListSubItem
+                          key={c.key}
+                          onClick={() => handleCategoryChange(c.slug)}
+                        >
+                          {c.name}
+                        </CategoryListSubItem>
+                      );
                     }
                   })}
                 </ul>

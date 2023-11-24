@@ -43,14 +43,14 @@ const Tile = ({
 };
 
 Tile.propTypes = {
-  picture: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  price: PropTypes.number.isRequired,
+  picture: PropTypes.string,
+  name: PropTypes.string,
+  price: PropTypes.number,
   sale_price: PropTypes.number,
   category: PropTypes.string,
   flag: PropTypes.string,
   size: PropTypes.string,
-  stock: PropTypes.number.isRequired,
+  stock: PropTypes.number,
   url: PropTypes.string,
 };
 

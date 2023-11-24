@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { Layout, Menu, Col } from "antd";
 import { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
-import axios from "axios";
 import { useCart } from "../reducers/CartContext";
 
 import {
@@ -14,6 +13,8 @@ import {
 import Logo from "assets/images/logo.png";
 
 import CreateLocalStorageKey from "../reducers/CreateLocalStorageKey";
+
+import { ConnectWC } from "fragments";
 
 const { Header } = Layout;
 
@@ -43,67 +44,56 @@ const PPS_Header = () => {
   CreateLocalStorageKey();
 
   useEffect(() => {
-    const storedSessionData = localStorage.getItem("sessionData");
+    const storedSessionData = localStorage.getItem("sessionDataCart");
 
     if (storedSessionData) {
       const { key } = JSON.parse(storedSessionData);
       setSessionKey(key);
       if (key !== sessionKey) {
-        // fetchCartId(key);
+        fetchCartId(key);
         setSessionKeyAndCartId(key, null); // set null as cartId initially
       }
     } else {
+      console.log("create session key, header");
       // Handle the case where the session key is not found in local storage
       // For example, generate a new session key and store it in local storage
-      // const newSessionKey = generateSessionKey();
-      // setSessionKey(newSessionKey);
-      // setSessionInLocalStorage(newSessionKey);
+      const newSessionKey = generateSessionKey();
+      setSessionKey(newSessionKey);
+      setSessionInLocalStorage(newSessionKey);
     }
   }, [setSessionKeyAndCartId]);
 
-  // const fetchCartId = async (sessionKey) => {
-  //   try {
-  //     const response = await axios.get(
-  //       `https://prestashop.petplushies.pt/api/carts?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&filter[secure_key]=${sessionKey}&output_format=JSON`
-  //     );
+  const fetchCartId = async (sessionKey) => {
+    ConnectWC.get("temp_carts")
+      .then((data) => {
+        const cartLocalSession = data.success.find(
+          (cart) => cart.local_session_key === sessionKey
+        );
+        setSessionKeyAndCartId(sessionKey, cartLocalSession.id);
+        fetchCartProducts(cartLocalSession.id);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
-  //     if (response.data.length !== 0) {
-  //       const cartIdAux = response.data.carts[0].id;
+  const fetchCartProducts = async (cartId) => {
+    ConnectWC.get("temp_cart_products", { temp_cart_id: cartId })
+      .then((data) => {
+        if (data.success.length > 0) {
+          const totalQuantity = data.success.reduce((accumulator, prods) => {
+            return accumulator + parseInt(prods.product_qty, 10);
+          }, 0);
 
-  //       // Assuming fetchCartProducts returns an array of promises
-  //       const getCartProducts = await Promise.all([
-  //         fetchCartProducts(cartIdAux),
-  //       ]);
-  //       const getProductsNr =
-  //         getCartProducts[0].data.cart.associations.cart_rows.length;
-
-  //       setProductsNr(getProductsNr);
-
-  //       // Now set the actual cartId
-  //       setSessionKeyAndCartId(sessionKey, cartIdAux);
-
-  //       return getCartProducts;
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching cart:", error);
-  //     // You might want to return a default value or handle the error differently
-  //     return 0; // Default value for stock
-  //   }
-  // };
-
-  // const fetchCartProducts = async (cartId) => {
-  //   try {
-  //     const response = await axios.get(
-  //       `https://prestashop.petplushies.pt/api/carts/${cartId}?ws_key=VM5DI26GFZN3EZIE4UVUNIVE2UMUGMEA&output_format=JSON`
-  //     );
-
-  //     return response;
-  //   } catch (error) {
-  //     console.error("Error fetching cart products:", error);
-  //     // You might want to return a default value or handle the error differently
-  //     return 0; // Default value for stock
-  //   }
-  // };
+          setProductsNr(totalQuantity);
+        } else {
+          setProductsNr(0);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <StyledHeader>
