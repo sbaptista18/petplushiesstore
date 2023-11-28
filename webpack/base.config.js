@@ -29,6 +29,7 @@ module.exports = {
       pages: path.resolve(__dirname, `${srcDir}/pages`),
       services: path.resolve(__dirname, `${srcDir}/services`),
       reducers: path.resolve(__dirname, `${srcDir}/reducers`),
+      utils: path.resolve(__dirname, `${srcDir}/utils`),
     },
   },
   target: "web",

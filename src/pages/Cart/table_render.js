@@ -1,47 +1,59 @@
 import { InputNumber } from "antd";
 import styled from "styled-components";
 import { CloseOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 
-const onChange = (value, rowData) => {
-  console.log("changed", value);
-  console.log("rowData", rowData);
-  // Add your logic to update the state based on the changes
+const Text = ({ text, slug }) => {
+  return <Link to={`/produtos/${slug}`}>{text}</Link>;
 };
 
-const Text = ({ text }) => {
+const Price = ({ text }) => {
   return text;
 };
 
 const Image = ({ image }) => {
-  return <StyledImg src={image} alt="Product" />;
+  return <StyledImg src={image} alt={image} />;
 };
 
-export default [
+const tableColumns = (onQuantityChange) => [
   {
     title: "Imagem",
     dataIndex: "product",
     key: "image",
-    render: (record) => <Image image={record.images[0].src} />,
+    render: (record, _, recordIndex) => (
+      <Image image={record.images[0].src} recordIndex={recordIndex} />
+    ),
   },
   {
     title: "Nome",
     dataIndex: "product",
     key: "name",
-    render: (record) => <Text text={record.name} />,
+    render: (record, _, recordIndex) => (
+      <Text text={record.name} slug={record.slug} recordIndex={recordIndex} />
+    ),
   },
   {
     title: "Quantidade",
     dataIndex: "product_qty",
     key: "qty",
-    render: (record) => (
-      <InputNumber min={1} max={10} defaultValue={record} onChange={onChange} />
-    ),
+    render: (record, _, recordIndex) => {
+      return (
+        <InputNumber
+          min={1}
+          max={10}
+          defaultValue={record}
+          onChange={(value) =>
+            onQuantityChange(value, recordIndex, _.product_id, _.product.price)
+          }
+        />
+      );
+    },
   },
   {
     title: "Preco",
     dataIndex: "product_net_revenue",
     key: "price",
-    render: (record) => <Text text={record} />,
+    render: (record) => <Price text={record} />,
   },
   {
     key: "close",
@@ -78,3 +90,5 @@ const ProductCol = styled.div`
 const DeleteBtn = styled(CloseOutlined)`
   cursor: pointer;
 `;
+
+export default tableColumns;

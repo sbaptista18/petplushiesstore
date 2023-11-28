@@ -87,12 +87,13 @@ const Product = () => {
 
   const addToCart = async (product) => {
     if (cartId || cartId === 0) {
+      const qty = document.querySelector(".ant-input-number-input").value;
       const dataProduct = {
         temp_cart_id: cartId,
         product_id: product.id,
         date_created: new Date().toISOString().slice(0, 19).replace("T", " "),
-        product_qty: document.querySelector(".ant-input-number-input").value,
-        product_net_revenue: product.price,
+        product_qty: qty,
+        product_net_revenue: product.price * qty,
       };
 
       ConnectWC.get("temp_cart_products/" + dataProduct.product_id)

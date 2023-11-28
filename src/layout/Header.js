@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Layout, Menu, Col } from "antd";
 import { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { useCart } from "../reducers/CartContext";
+import { useCart } from "reducers";
 
 import {
   MenuOutlined,
@@ -54,9 +54,6 @@ const PPS_Header = () => {
         setSessionKeyAndCartId(key, null); // set null as cartId initially
       }
     } else {
-      console.log("create session key, header");
-      // Handle the case where the session key is not found in local storage
-      // For example, generate a new session key and store it in local storage
       const newSessionKey = generateSessionKey();
       setSessionKey(newSessionKey);
       setSessionInLocalStorage(newSessionKey);
@@ -64,13 +61,15 @@ const PPS_Header = () => {
   }, [setSessionKeyAndCartId]);
 
   const fetchCartId = async (sessionKey) => {
-    ConnectWC.get("temp_carts")
+    ConnectWC.get("temp_carts/" + sessionKey)
       .then((data) => {
-        const cartLocalSession = data.success.find(
+        const cartLocalSession = data.results.find(
           (cart) => cart.local_session_key === sessionKey
         );
-        setSessionKeyAndCartId(sessionKey, cartLocalSession.id);
-        fetchCartProducts(cartLocalSession.id);
+        if (cartLocalSession != undefined) {
+          setSessionKeyAndCartId(sessionKey, cartLocalSession.id);
+          fetchCartProducts(cartLocalSession.id);
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -78,14 +77,18 @@ const PPS_Header = () => {
   };
 
   const fetchCartProducts = async (cartId) => {
-    ConnectWC.get("temp_cart_products", { temp_cart_id: cartId })
+    ConnectWC.get("temp_cart_products_id/" + cartId)
       .then((data) => {
-        if (data.success.length > 0) {
-          const totalQuantity = data.success.reduce((accumulator, prods) => {
-            return accumulator + parseInt(prods.product_qty, 10);
-          }, 0);
+        if (data.results.length > 0) {
+          if (data.results.length == 1)
+            setProductsNr(data.results[0].product_qty);
+          else {
+            const totalQuantity = data.results.reduce((accumulator, prods) => {
+              return accumulator + parseInt(prods.product_qty, 10);
+            }, 0);
 
-          setProductsNr(totalQuantity);
+            setProductsNr(totalQuantity);
+          }
         } else {
           setProductsNr(0);
         }
