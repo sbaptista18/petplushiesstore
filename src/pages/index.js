@@ -11,6 +11,7 @@ import Product from "./Products/Product";
 import SignIn from "./SignIn";
 import LogIn from "./LogIn";
 import Checkout from "./Checkout";
+import MyAccount from "./MyAccount";
 
 export default [
   AboutUs,
@@ -26,4 +27,5 @@ export default [
   SignIn,
   LogIn,
   Checkout,
+  MyAccount,
 ];

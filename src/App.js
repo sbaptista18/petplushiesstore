@@ -2,7 +2,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import styled from "styled-components";
 import { HelmetProvider } from "react-helmet-async";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { CartProvider } from "./reducers/CartContext";
+import { CartProvider } from "reducers";
 
 import Content from "layout/Content";
 import Header from "layout/Header";

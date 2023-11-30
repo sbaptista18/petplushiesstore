@@ -31,7 +31,7 @@ const Tile = ({
         </PriceContainer>
         <Link to={"/produtos/" + url}>
           <StyledButton
-            disabled={stock == 0 ? "disabled" : ""}
+            disabled={stock == 0 ? true : false}
             size="large"
             type="primary"
             text="Ver produto"

@@ -13,11 +13,15 @@ const CreateLocalStorageKey = () => {
       key,
       timestamp: currentTime,
     };
-    localStorage.setItem("sessionDataCart", JSON.stringify(sessionData));
+    localStorage.setItem("tempCart", JSON.stringify(sessionData));
   };
 
   useEffect(() => {
-    const storedSessionData = localStorage.getItem("sessionDataCart");
+    const storedSessionData = localStorage.getItem("tempCart");
+
+    const storedUserString = localStorage.getItem("user");
+
+    if (storedUserString) return;
 
     if (storedSessionData) {
       const { key, timestamp } = JSON.parse(storedSessionData);
@@ -29,7 +33,7 @@ const CreateLocalStorageKey = () => {
         setSessionData(key);
       } else {
         // Session key has expired, clear localStorage
-        localStorage.removeItem("sessionDataCart");
+        localStorage.removeItem("tempCart");
         const newSessionKey = generateSessionKey();
         setSessionData(newSessionKey);
         setSessionInLocalStorage(newSessionKey);

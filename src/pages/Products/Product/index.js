@@ -179,16 +179,17 @@ const Product = () => {
   };
 
   useEffect(() => {
-    // Retrieve the session key from local storage
-    const storedSessionData = localStorage.getItem("sessionDataCart");
+    const storedTempCartData = localStorage.getItem("tempCart");
+    const storedUserString = localStorage.getItem("user");
 
-    if (storedSessionData) {
-      const { key } = JSON.parse(storedSessionData);
+    if (storedUserString) {
+      return;
+    }
+
+    if (storedTempCartData) {
+      const { key } = JSON.parse(storedTempCartData);
       setSessionKey(key);
     } else {
-      console.log("create session key, product");
-      // Handle the case where the session key is not found in local storage
-      // For example, generate a new session key and store it in local storage
       const newSessionKey = generateSessionKey();
       setSessionKey(newSessionKey);
       setSessionInLocalStorage(newSessionKey);

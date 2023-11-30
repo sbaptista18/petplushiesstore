@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Layout, Menu, Col } from "antd";
 import { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { useCart } from "reducers";
+import { useCart, CreateLocalStorageKey } from "reducers";
 
 import {
   MenuOutlined,
@@ -11,8 +11,6 @@ import {
 } from "@ant-design/icons";
 
 import Logo from "assets/images/logo.png";
-
-import CreateLocalStorageKey from "../reducers/CreateLocalStorageKey";
 
 import { ConnectWC } from "fragments";
 
@@ -44,7 +42,11 @@ const PPS_Header = () => {
   CreateLocalStorageKey();
 
   useEffect(() => {
-    const storedSessionData = localStorage.getItem("sessionDataCart");
+    const storedSessionData = localStorage.getItem("tempCart");
+
+    const storedUserString = localStorage.getItem("user");
+
+    if (storedUserString) return;
 
     if (storedSessionData) {
       const { key } = JSON.parse(storedSessionData);
@@ -122,7 +124,9 @@ const PPS_Header = () => {
             </CartProductsNr>
           )}
         </IconLink>
-        <IconLink to="/login">
+        <IconLink
+          to={localStorage.getItem("token") != null ? "/minha-conta" : "/login"}
+        >
           <UserOutlined />
         </IconLink>
       </MenuContainer>

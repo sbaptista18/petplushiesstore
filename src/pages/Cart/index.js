@@ -17,12 +17,13 @@ const CustomNoData = () => (
 const Cart = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const { cartId } = useCart();
   const [productsCart, setProductsCart] = useState([]);
   const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState();
   const [message, setMessage] = useState("");
+
+  const { cartId } = useCart();
 
   useEffect(() => {
     fetchCartId(cartId);
