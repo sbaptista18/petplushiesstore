@@ -22,7 +22,7 @@ const formItemLayout = {
       span: 24,
     },
     sm: {
-      span: 8,
+      span: 24,
     },
   },
   wrapperCol: {
@@ -183,10 +183,6 @@ const Checkout = () => {
     return sum + parseInt(item.product_net_revenue, 10);
   }, 0);
 
-  const onFinish = (values) => {
-    console.log("Received values of form: ", values);
-  };
-
   const handleCheckCreateAccount = () => {
     setCreateAccount((prevState) => !prevState);
   };
@@ -212,6 +208,7 @@ const Checkout = () => {
             billing: {
               first_name: formValues.first_name,
               last_name: formValues.surname,
+              company: formValues.company !== "" ? formValues.company : "",
               address_1: formValues.address,
               address_2: "",
               city: formValues.local,
@@ -224,6 +221,7 @@ const Checkout = () => {
             shipping: {
               first_name: formValues.first_name_other,
               last_name: formValues.surname_other,
+              company: formValues.company !== "" ? formValues.company : "",
               address_1: formValues.address_other,
               address_2: "",
               city: formValues.local_other,
@@ -252,6 +250,7 @@ const Checkout = () => {
             billing: {
               first_name: formValues.first_name,
               last_name: formValues.surname,
+              company: formValues.company !== "" ? formValues.company : "",
               address_1: formValues.address,
               address_2: "",
               city: formValues.local,
@@ -264,6 +263,7 @@ const Checkout = () => {
             shipping: {
               first_name: formValues.first_name,
               last_name: formValues.surname,
+              company: formValues.company !== "" ? formValues.company : "",
               address_1: formValues.address,
               address_2: "",
               city: formValues.local,
@@ -287,18 +287,78 @@ const Checkout = () => {
 
         ConnectWC.post("orders", data)
           .then((response) => {
-            // console.log(response.data);
             ConnectWC.delete("temp_cart_delete_on_order/" + cartId)
               .then((response) => {
-                setMessage(
-                  "Order placed! You should receive details on your email in order to proceed to the payment."
-                );
-                setStatus("success");
-                setIsModalOpen(true);
+                if (createAccount) {
+                  //create account logic
+                  const data = {
+                    email: formValues.email,
+                    first_name: formValues.first_name,
+                    last_name: formValues.surname,
+                    username:
+                      formValues.first_name.toLowerCase() +
+                      "." +
+                      formValues.surname.toLowerCase(),
+                    billing: {
+                      first_name: formValues.first_name,
+                      last_name: formValues.surname,
+                      company:
+                        formValues.company !== "" ? formValues.company : "",
+                      address_1: formValues.address,
+                      address_2: "",
+                      city: formValues.local,
+                      state: formValues.district,
+                      postcode: formValues.postcode,
+                      country: formValues.country == 2 ? "PT" : "",
+                      email: formValues.email,
+                      phone: formValues.phone,
+                    },
+                    shipping: {
+                      first_name: formValues.first_name,
+                      last_name: formValues.surname,
+                      company:
+                        formValues.company !== "" ? formValues.company : "",
+                      address_1: formValues.address,
+                      address_2: "",
+                      city: formValues.local,
+                      state: formValues.district,
+                      postcode: formValues.postcode,
+                      country: formValues.country == 2 ? "PT" : "",
+                    },
+                  };
+
+                  ConnectWC.post("customers", data)
+                    .then((response) => {
+                      setMessage(
+                        "A sua conta foi criada com sucesso! Pode efectuar o login com o seu nome de utilizador gerado (" +
+                          formValues.first_name.toLowerCase() +
+                          "." +
+                          formValues.surname.toLowerCase() +
+                          ") e a password que forneceu."
+                      );
+                      setStatus("success");
+                      setIsModalOpen(true);
+                    })
+                    .catch((error) => {
+                      setMessage(
+                        "Houve um erro na criacao da conta. Por favor envie e-mail para geral@petplushies.pt para notificar do sucedido. (" +
+                          error.response.data +
+                          ".)"
+                      );
+                      setStatus("error");
+                      setIsModalOpen(true);
+                    });
+                } else {
+                  setMessage(
+                    "Encomenda efectuada com sucesso! Vai receber um e-mail com os detalhes da encomenda e do seu pagamento."
+                  );
+                  setStatus("success");
+                  setIsModalOpen(true);
+                }
               })
               .catch((error) => {
                 setMessage(
-                  "There was an error placing the order. (" + error + ".)"
+                  "Houve um erro ao efectuar a encomenda. (" + error + ".)"
                 );
                 setStatus("error");
                 setIsModalOpen(true);
@@ -310,9 +370,7 @@ const Checkout = () => {
       })
       .catch((errorInfo) => {
         // Display error messages for validation failures
-        setMessage(
-          "Tem de preencher todos os campos obrigatorios. (" + errorInfo + ".)"
-        );
+        setMessage("Tem de preencher todos os campos obrigatorios.");
         setStatus("error");
         setIsModalOpen(true);
       });
@@ -409,8 +467,7 @@ const Checkout = () => {
                 layout="vertical"
                 {...formItemLayout}
                 form={form}
-                name="register"
-                onFinish={onFinish}
+                name="checkout"
                 style={{
                   maxWidth: 600,
                 }}

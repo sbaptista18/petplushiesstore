@@ -11,7 +11,7 @@ const Btn = ({ size, type, color, text, disabled, ...rest }) => {
       className={color}
       {...rest}
     >
-      <span>{disabled ? "out of stock" : text}</span>
+      <span>{text}</span>
     </StyledButton>
   );
 };
@@ -21,7 +21,7 @@ Btn.propTypes = {
   type: PropTypes.string.isRequired,
   color: PropTypes.string,
   text: PropTypes.string.isRequired,
-  disabled: PropTypes.string,
+  disabled: PropTypes.bool,
 };
 
 const StyledButton = styled(Button)`

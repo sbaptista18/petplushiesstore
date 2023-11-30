@@ -15,7 +15,7 @@ const ModalMessage = ({ status, message, isVisible, onClose }) => {
         setConfirmLoading(false);
       }, 2000);
     }
-  }, [status]);
+  }, [status, onClose]);
 
   // Handle OK button click
   const handleOk = () => {
