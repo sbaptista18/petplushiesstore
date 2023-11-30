@@ -5,10 +5,8 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 import { Button, ModalMessage } from "components";
-import { ConnectWC } from "fragments";
+import { ConnectWC, tableColumns } from "fragments";
 import { useCart } from "reducers";
-
-import tableColumns from "./table_render";
 
 const CustomNoData = () => (
   <div style={{ textAlign: "center", padding: "20px" }}>
@@ -113,6 +111,34 @@ const Cart = () => {
       });
   };
 
+  const deleteCartProducts = (cartId, product_id) => {
+    const dataProduct = {
+      temp_cart_id: cartId,
+      product_id: product_id,
+    };
+
+    ConnectWC.delete(
+      "temp_cart_products_delete/" +
+        dataProduct.temp_cart_id +
+        "/" +
+        dataProduct.product_id
+    )
+      .then((response) => {
+        setMessage("Product deleted from cart!");
+        setStatus("success");
+        setIsModalOpen(true);
+      })
+      .catch((error) => {
+        setMessage(
+          "There was an error deleting the product from the cart. (" +
+            error +
+            ".)"
+        );
+        setStatus("error");
+        setIsModalOpen(true);
+      });
+  };
+
   const totalProductNetRevenue = productsCart.reduce((sum, item) => {
     return sum + parseInt(item.product_net_revenue, 10);
   }, 0);
@@ -130,6 +156,18 @@ const Cart = () => {
 
     setProducts(updatedProducts);
     updateCartProducts(cartId, product_id, value, product_price);
+  };
+
+  const handleDelete = (recordIndex, product_id) => {
+    // Create a copy of the products array
+    const updatedProducts = [...products];
+
+    // Remove the item at the specified index
+    updatedProducts.splice(recordIndex, 1);
+
+    // Update the state or whatever mechanism you are using to manage the products
+    setProducts(updatedProducts);
+    deleteCartProducts(cartId, product_id);
   };
 
   return (
@@ -154,7 +192,7 @@ const Cart = () => {
               )}
               {!loading && !error && (
                 <StyledTable
-                  columns={tableColumns(handleQuantityChange)}
+                  columns={tableColumns(handleQuantityChange, handleDelete)}
                   dataSource={products}
                   pagination={false}
                   rowKey="product_id"

@@ -2,6 +2,7 @@ import { InputNumber } from "antd";
 import styled from "styled-components";
 import { CloseOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const Text = ({ text, slug }) => {
   return <Link to={`/produtos/${slug}`}>{text}</Link>;
@@ -15,7 +16,7 @@ const Image = ({ image }) => {
   return <StyledImg src={image} alt={image} />;
 };
 
-const tableColumns = (onQuantityChange) => [
+const tableColumns = (onQuantityChange, onDelete) => [
   {
     title: "Imagem",
     dataIndex: "product",
@@ -58,33 +59,29 @@ const tableColumns = (onQuantityChange) => [
   {
     key: "close",
     dataIndex: "close",
-    render: () => <DeleteBtn />,
+    render: (_, record, recordIndex) => (
+      <DeleteBtn onClick={() => onDelete(recordIndex, record.product_id)} />
+    ),
   },
 ];
+
+Text.propTypes = {
+  text: PropTypes.string,
+  slug: PropTypes.string,
+};
+
+Price.propTypes = {
+  text: PropTypes.string,
+};
+
+Image.propTypes = {
+  image: PropTypes.string,
+};
 
 const StyledImg = styled.img`
   max-width: 200px;
   width: 100%;
   height: auto;
-`;
-
-const ProductCol = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 300px;
-  width: 100%;
-  height: 200px;
-
-  & img {
-    height: 200px;
-    width: auto;
-  }
-
-  & div:nth-child(2) {
-    height: auto;
-    text-align: center;
-  }
 `;
 
 const DeleteBtn = styled(CloseOutlined)`

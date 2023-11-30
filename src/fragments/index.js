@@ -6,6 +6,8 @@ import SEOTags from "./SEOTags";
 import ToKebabCase from "./ToKebabCase";
 import IsInViewport from "./IsInViewport";
 import ConnectWC from "./connectWC";
+import tableColumns from "./TableRender";
+import tableColumnsCheckout from "./TableRenderCheckout";
 
 export {
   IsInViewport,
@@ -16,4 +18,6 @@ export {
   SEOTags,
   ToKebabCase,
   ConnectWC,
+  tableColumns,
+  tableColumnsCheckout,
 };
