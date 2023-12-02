@@ -1,42 +1,22 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import {
-  Row,
-  Col,
-  Table,
-  Checkbox,
-  Form,
-  Input,
-  Select,
-  Spin,
-  Radio,
-} from "antd";
+import { Row, Col, Table, Form, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { PayPalButton } from "react-paypal-button-v2";
 
 import { Button, ModalMessage } from "components";
 import { ConnectWC, tableColumnsCheckout } from "fragments";
 import { useCart } from "reducers";
 
-const { TextArea } = Input;
+import CheckoutForm from "./form";
+import { PortugalDistricts } from "./data";
 
 const CustomNoData = () => (
   <div style={{ textAlign: "center", padding: "20px" }}>
     O carrinho esta vazio.
   </div>
 );
-
-const paymentMethods = [
-  {
-    label: "Transferencia Bancaria",
-    value: "bacs",
-  },
-  {
-    label: "PayPal",
-    value: "ppcp-gateway",
-  },
-];
 
 const Checkout = () => {
   const [createAccount, setCreateAccount] = useState(false);
@@ -54,7 +34,6 @@ const Checkout = () => {
   const [status, setStatus] = useState();
   const [message, setMessage] = useState("");
   const [paymentMethod, setPaymentMethod] = useState({});
-
   const [form] = Form.useForm();
 
   const history = useHistory();
@@ -183,11 +162,18 @@ const Checkout = () => {
     setShipToAddress((prevState) => !prevState);
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = (orderId) => {
     form
       .validateFields()
       .then(() => {
         const formValues = form.getFieldsValue();
+
+        const userLocalStorageData = localStorage.getItem("user");
+        let userId;
+
+        if (userLocalStorageData)
+          userId = parseInt(JSON.parse(localStorage.getItem("user")).ID);
+        else userId = 0;
 
         let data;
 
@@ -195,8 +181,10 @@ const Checkout = () => {
           data = {
             payment_method: paymentMethod.value,
             payment_method_title: paymentMethod.label,
-            set_paid: false,
-            status: "on-hold",
+            set_paid: paymentMethod.label == "PayPal" ? true : false,
+            status: paymentMethod.label == "PayPal" ? "processing" : "on-hold",
+            customer_id: userId,
+            transaction_id: orderId != undefined ? orderId : "",
             billing: {
               first_name: formValues.first_name,
               last_name: formValues.surname,
@@ -237,8 +225,10 @@ const Checkout = () => {
           data = {
             payment_method: paymentMethod.value,
             payment_method_title: paymentMethod.label,
-            set_paid: false,
-            status: "on-hold",
+            set_paid: paymentMethod.label == "PayPal" ? true : false,
+            status: paymentMethod.label == "PayPal" ? "processing" : "on-hold",
+            customer_id: userId,
+            transaction_id: orderId != undefined ? orderId : "",
             billing: {
               first_name: formValues.first_name,
               last_name: formValues.surname,
@@ -361,7 +351,6 @@ const Checkout = () => {
           });
       })
       .catch((errorInfo) => {
-        // Display error messages for validation failures
         setMessage("Tem de preencher todos os campos obrigatorios.");
         setStatus("error");
         setIsModalOpen(true);
@@ -380,32 +369,11 @@ const Checkout = () => {
     fetchShippingZonesDetails(value);
     setCountry(value);
 
-    // Set options for the second Select based on the selected country
     if (value === "2") {
-      // If Portugal is selected, set specific options
-      setSecondSelectOptions([
-        "Aveiro",
-        "Beja",
-        "Braga",
-        "Bragança",
-        "Castelo Branco",
-        "Coimbra",
-        "Évora",
-        "Faro",
-        "Guarda",
-        "Leiria",
-        "Lisboa",
-        "Portalegre",
-        "Porto",
-        "Santarém",
-        "Setúbal",
-        "Viana do Castelo",
-        "Vila Real",
-        "Viseu",
-      ]);
+      setSecondSelectOptions(PortugalDistricts);
     } else {
       // Handle other countries or set a default set of options
-      setSecondSelectOptions(["demo"]);
+      setSecondSelectOptions([]);
     }
   };
 
@@ -416,44 +384,25 @@ const Checkout = () => {
     // Set options for the second Select based on the selected country
     if (value === "2") {
       // If Portugal is selected, set specific options
-      setSecondSelectOptions([
-        "Aveiro",
-        "Beja",
-        "Braga",
-        "Bragança",
-        "Castelo Branco",
-        "Coimbra",
-        "Évora",
-        "Faro",
-        "Guarda",
-        "Leiria",
-        "Lisboa",
-        "Portalegre",
-        "Porto",
-        "Santarém",
-        "Setúbal",
-        "Viana do Castelo",
-        "Vila Real",
-        "Viseu",
-      ]);
+      setSecondSelectOptions(PortugalDistricts);
     } else {
       // Handle other countries or set a default set of options
-      setSecondSelectOptions(["demo"]);
+      setSecondSelectOptions([]);
     }
   };
 
-  const handlePaymentMethod = (e) => {
-    const selectedValue = e.target.value;
-    const selectedLabel = paymentMethods.find(
-      (option) => option.value === selectedValue
-    )?.label;
+  const handlePaymentMethod = (paymentMethod) => {
+    const selectedValue = paymentMethod.value;
+    const selectedLabel = paymentMethod.label;
 
     setPaymentMethod({ label: selectedLabel, value: selectedValue });
   };
 
   const handleOnPayPalSuccess = (details, data) => {
+    console.log("details:", details);
+    console.log("data:", data);
     console.log("Transaction completed by " + details.payer.name.given_name);
-    handlePlaceOrder();
+    handlePlaceOrder(data.orderID);
   };
 
   const handleOnPayPalError = (err) => {
@@ -483,424 +432,19 @@ const Checkout = () => {
         <StyledRow>
           <Col span={12}>
             <div>
-              <Form
-                layout="vertical"
+              <CheckoutForm
                 form={form}
-                name="checkout"
-                style={{
-                  maxWidth: 600,
-                }}
-                scrollToFirstError
-              >
-                <FormRow>
-                  <Col span={11}>
-                    <Form.Item
-                      wrapperCol={24}
-                      name="first_name"
-                      label="Nome"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Por favor insira o seu nome.",
-                        },
-                      ]}
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                  <Col span={11}>
-                    <Form.Item
-                      wrapperCol={24}
-                      name="surname"
-                      label="Apelido"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Por favor insira o seu apelido.",
-                        },
-                      ]}
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                </FormRow>
-                <FormRow>
-                  <Col span={24}>
-                    <Form.Item
-                      wrapperCol={24}
-                      name="company"
-                      label="Empresa (opcional)"
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                </FormRow>
-                <FormRow>
-                  <Col span={24}>
-                    <Form.Item
-                      rules={[
-                        {
-                          required: true,
-                          message: "Por favor seleccione o seu pais/regiao.",
-                        },
-                      ]}
-                      label="Pais/Regiao"
-                      wrapperCol={24}
-                      name="country"
-                    >
-                      <Select value={country} onChange={handleCountry}>
-                        <Select.Option value="2">Portugal</Select.Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </FormRow>
-                <FormRow>
-                  <Col span={24}>
-                    <Form.Item
-                      name="address"
-                      label="Morada"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Por favor insira a sua morada.",
-                        },
-                      ]}
-                      wrapperCol={24}
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                </FormRow>
-                <FormRow>
-                  <Col span={11}>
-                    <Form.Item
-                      wrapperCol={24}
-                      name="local"
-                      label="Localidade"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Por favor insira a localidade.",
-                        },
-                      ]}
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                  <Col span={11}>
-                    <Form.Item
-                      rules={[
-                        {
-                          required: true,
-                          message: "Por favor seleccione o distrito.",
-                        },
-                      ]}
-                      label="Distrito"
-                      wrapperCol={24}
-                      name="district"
-                    >
-                      <Select>
-                        {secondSelectOptions.map((option) => (
-                          <Select.Option key={option} value={option}>
-                            {option}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </FormRow>
-                <FormRow>
-                  <Col span={24}>
-                    <Form.Item
-                      wrapperCol={24}
-                      name="postcode"
-                      label="Codigo-postal"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Por favor insira o seu codigo-postal.",
-                        },
-                      ]}
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                </FormRow>
-                <FormRow>
-                  <Col span={11}>
-                    <Form.Item wrapperCol={24} name="phone" label="Telefone">
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                  <Col span={11}>
-                    <Form.Item
-                      name="email"
-                      label="E-mail"
-                      rules={[
-                        {
-                          type: "email",
-                          message: "O e-mail inserido nao e valido.",
-                        },
-                        {
-                          required: true,
-                          message: "Por favor insira o seu e-mail.",
-                        },
-                      ]}
-                      wrapperCol={24}
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                </FormRow>
-                <FormRow>
-                  <Col span={24}>
-                    <Form.Item
-                      name="create_account"
-                      valuePropName="checked"
-                      onChange={() => {
-                        handleCheckCreateAccount();
-                      }}
-                      wrapperCol={24}
-                    >
-                      <Checkbox>Criar conta?</Checkbox>
-                    </Form.Item>
-                  </Col>
-                </FormRow>
-
-                {createAccount && (
-                  <FormRow>
-                    <Col span={24}>
-                      <Form.Item
-                        name="password"
-                        label="Password"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Por favor escolha a sua password.",
-                          },
-                        ]}
-                        hasFeedback
-                        wrapperCol={24}
-                      >
-                        <Input.Password />
-                      </Form.Item>
-                    </Col>
-                  </FormRow>
-                )}
-
-                <FormRow>
-                  <Col span={24}>
-                    <Form.Item
-                      name="ship_to_address"
-                      valuePropName="checked"
-                      onChange={() => {
-                        handleCheckShipAddress();
-                      }}
-                      wrapperCol={24}
-                    >
-                      <Checkbox>Enviar para uma morada diferente?</Checkbox>
-                    </Form.Item>
-                  </Col>
-                </FormRow>
-
-                {shipToAddress && (
-                  <>
-                    <FormRow>
-                      <Col span={11}>
-                        <Form.Item
-                          wrapperCol={24}
-                          name="first_name_other"
-                          label="Nome"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Por favor insira o seu nome.",
-                            },
-                          ]}
-                        >
-                          <Input />
-                        </Form.Item>
-                      </Col>
-                      <Col span={11}>
-                        <Form.Item
-                          wrapperCol={24}
-                          name="surname_other"
-                          label="Apelido"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Por favor insira o seu apelido.",
-                            },
-                          ]}
-                        >
-                          <Input />
-                        </Form.Item>
-                      </Col>
-                    </FormRow>
-                    <FormRow>
-                      <Col span={24}>
-                        <Form.Item
-                          wrapperCol={24}
-                          name="company_other"
-                          label="Empresa (opcional)"
-                        >
-                          <Input />
-                        </Form.Item>
-                      </Col>
-                    </FormRow>
-                    <FormRow>
-                      <Col span={24}>
-                        <Form.Item
-                          rules={[
-                            {
-                              required: true,
-                              message:
-                                "Por favor seleccione o seu pais/regiao.",
-                            },
-                          ]}
-                          label="Pais/Regiao"
-                          wrapperCol={24}
-                          name="country_other"
-                        >
-                          <Select
-                            value={country}
-                            onChange={handleCountryShipping}
-                          >
-                            <Select.Option value="2">Portugal</Select.Option>
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                    </FormRow>
-                    <FormRow>
-                      <Col span={24}>
-                        <Form.Item
-                          name="address_other"
-                          label="Morada"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Por favor insira a sua morada.",
-                            },
-                          ]}
-                          wrapperCol={24}
-                        >
-                          <Input />
-                        </Form.Item>
-                      </Col>
-                    </FormRow>
-                    <FormRow>
-                      <Col span={11}>
-                        <Form.Item
-                          wrapperCol={24}
-                          name="local_other"
-                          label="Localidade"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Por favor insira a localidade.",
-                            },
-                          ]}
-                        >
-                          <Input />
-                        </Form.Item>
-                      </Col>
-                      <Col span={11}>
-                        <Form.Item
-                          rules={[
-                            {
-                              required: true,
-                              message: "Por favor seleccione o distrito.",
-                            },
-                          ]}
-                          label="Distrito"
-                          wrapperCol={24}
-                          name="district_other"
-                        >
-                          <Select>
-                            {secondSelectOptions.map((option) => (
-                              <Select.Option key={option} value={option}>
-                                {option}
-                              </Select.Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                    </FormRow>
-                    <FormRow>
-                      <Col span={24}>
-                        <Form.Item
-                          wrapperCol={24}
-                          name="postcode_other"
-                          label="Codigo-postal"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Por favor insira o seu codigo-postal.",
-                            },
-                          ]}
-                        >
-                          <Input />
-                        </Form.Item>
-                      </Col>
-                    </FormRow>
-                  </>
-                )}
-                <FormRow>
-                  <Col span={24}>
-                    <Form.Item name="order_notes" wrapperCol={24}>
-                      <>
-                        <span>Notas para a encomenda</span>
-                        <TextArea
-                          rows={4}
-                          placeholder="Aqui pode deixar instrucoes especiais como, por exemplo, 'A campainha nao toca.'"
-                        />
-                      </>
-                    </Form.Item>
-                  </Col>
-                </FormRow>
-
-                <FormRow>
-                  <Form.Item
-                    wrapperCol={24}
-                    name="payment_method"
-                    label="Metodo de pagamento"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Tem de seleccionar um metodo de pagamento.",
-                      },
-                    ]}
-                  >
-                    <Radio.Group
-                      options={paymentMethods}
-                      onChange={handlePaymentMethod}
-                      value={paymentMethod?.value}
-                      optionType="button"
-                      buttonStyle="solid"
-                    />
-                  </Form.Item>
-                </FormRow>
-
-                <Form.Item
-                  name="accept_terms"
-                  valuePropName="checked"
-                  wrapperCol={24}
-                  rules={[
-                    {
-                      required: true,
-                      message:
-                        "Tem de confirmar a leitura dos Termos & Condicoes.",
-                    },
-                  ]}
-                >
-                  <Checkbox>
-                    Declaro que li e aceito os{" "}
-                    <Link to="/termos-e-condicoes" target="_blank">
-                      Termos & Condicoes
-                    </Link>
-                  </Checkbox>
-                </Form.Item>
-              </Form>
+                handleCountry={handleCountry}
+                handleCheckCreateAccount={handleCheckCreateAccount}
+                createAccount={createAccount}
+                handleCheckShipAddress={handleCheckShipAddress}
+                shipToAddress={shipToAddress}
+                handleCountryShipping={handleCountryShipping}
+                country={country}
+                secondSelectOptions={secondSelectOptions}
+                handlePaymentMethod={handlePaymentMethod}
+                paymentMethod={paymentMethod}
+              />
             </div>
           </Col>
           <Col span={11}>
@@ -946,7 +490,7 @@ const Checkout = () => {
                 onCancel={handleOnPayPalCancel}
                 options={{
                   clientId:
-                    "AS_49gaJ4KOHzPP5mOgS3Ih58UojUfWU08_gj6GuMEZRMShDfNjY_JDbjVogZZcTrLqzAjWde_OxTxKk",
+                    "AS_49gaJ4KOHzPP5mOgS3Ih58UojUfWU08_gj6GuMEZRMShDfNjY_JDbjVogZZcTrLqzAjWde_OxTxKk", //change this to the Production Code when deploying to online site
                   currency: "EUR", // Set your currency
                 }}
               />
@@ -976,10 +520,6 @@ const Spinner = styled(Spin)`
   display: flex;
   align-items: center;
   justify-content: center;
-`;
-
-const FormRow = styled(Row)`
-  justify-content: space-between;
 `;
 
 const Container = styled.div`

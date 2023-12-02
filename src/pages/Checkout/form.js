@@ -1,0 +1,444 @@
+import { Col, Row, Checkbox, Form, Input, Select, Radio } from "antd";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
+
+import { paymentMethods } from "./data";
+
+const { TextArea } = Input;
+
+const CheckoutForm = ({
+  handleCountry,
+  handleCheckCreateAccount,
+  createAccount,
+  handleCheckShipAddress,
+  shipToAddress,
+  handleCountryShipping,
+  country,
+  secondSelectOptions,
+  handlePaymentMethod,
+  form,
+}) => {
+  return (
+    <Form
+      layout="vertical"
+      form={form}
+      name="checkout"
+      style={{
+        maxWidth: 600,
+      }}
+      scrollToFirstError
+    >
+      <FormRow>
+        <Col span={11}>
+          <Form.Item
+            wrapperCol={24}
+            name="first_name"
+            label="Nome"
+            rules={[
+              {
+                required: true,
+                message: "Por favor insira o seu nome.",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={11}>
+          <Form.Item
+            wrapperCol={24}
+            name="surname"
+            label="Apelido"
+            rules={[
+              {
+                required: true,
+                message: "Por favor insira o seu apelido.",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+      </FormRow>
+      <FormRow>
+        <Col span={24}>
+          <Form.Item wrapperCol={24} name="company" label="Empresa (opcional)">
+            <Input />
+          </Form.Item>
+        </Col>
+      </FormRow>
+      <FormRow>
+        <Col span={24}>
+          <Form.Item
+            rules={[
+              {
+                required: true,
+                message: "Por favor seleccione o seu pais/regiao.",
+              },
+            ]}
+            label="Pais/Regiao"
+            wrapperCol={24}
+            name="country"
+          >
+            <Select value={country} onChange={handleCountry}>
+              <Select.Option value="2">Portugal</Select.Option>
+            </Select>
+          </Form.Item>
+        </Col>
+      </FormRow>
+      <FormRow>
+        <Col span={24}>
+          <Form.Item
+            name="address"
+            label="Morada"
+            rules={[
+              {
+                required: true,
+                message: "Por favor insira a sua morada.",
+              },
+            ]}
+            wrapperCol={24}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+      </FormRow>
+      <FormRow>
+        <Col span={11}>
+          <Form.Item
+            wrapperCol={24}
+            name="local"
+            label="Localidade"
+            rules={[
+              {
+                required: true,
+                message: "Por favor insira a localidade.",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={11}>
+          <Form.Item
+            rules={[
+              {
+                required: true,
+                message: "Por favor seleccione o distrito.",
+              },
+            ]}
+            label="Distrito"
+            wrapperCol={24}
+            name="district"
+          >
+            <Select>
+              {secondSelectOptions.map((option) => (
+                <Select.Option key={option} value={option}>
+                  {option}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+      </FormRow>
+      <FormRow>
+        <Col span={24}>
+          <Form.Item
+            wrapperCol={24}
+            name="postcode"
+            label="Codigo-postal"
+            rules={[
+              {
+                required: true,
+                message: "Por favor insira o seu codigo-postal.",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+      </FormRow>
+      <FormRow>
+        <Col span={11}>
+          <Form.Item wrapperCol={24} name="phone" label="Telefone">
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={11}>
+          <Form.Item
+            name="email"
+            label="E-mail"
+            rules={[
+              {
+                type: "email",
+                message: "O e-mail inserido nao e valido.",
+              },
+              {
+                required: true,
+                message: "Por favor insira o seu e-mail.",
+              },
+            ]}
+            wrapperCol={24}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+      </FormRow>
+      <FormRow>
+        <Col span={24}>
+          <Form.Item
+            name="create_account"
+            valuePropName="checked"
+            onChange={() => {
+              handleCheckCreateAccount();
+            }}
+            wrapperCol={24}
+          >
+            <Checkbox>Criar conta?</Checkbox>
+          </Form.Item>
+        </Col>
+      </FormRow>
+
+      {createAccount && (
+        <FormRow>
+          <Col span={24}>
+            <Form.Item
+              name="password"
+              label="Password"
+              rules={[
+                {
+                  required: true,
+                  message: "Por favor escolha a sua password.",
+                },
+              ]}
+              hasFeedback
+              wrapperCol={24}
+            >
+              <Input.Password />
+            </Form.Item>
+          </Col>
+        </FormRow>
+      )}
+
+      <FormRow>
+        <Col span={24}>
+          <Form.Item
+            name="ship_to_address"
+            valuePropName="checked"
+            onChange={() => {
+              handleCheckShipAddress();
+            }}
+            wrapperCol={24}
+          >
+            <Checkbox>Enviar para uma morada diferente?</Checkbox>
+          </Form.Item>
+        </Col>
+      </FormRow>
+
+      {shipToAddress && (
+        <>
+          <FormRow>
+            <Col span={11}>
+              <Form.Item
+                wrapperCol={24}
+                name="first_name_other"
+                label="Nome"
+                rules={[
+                  {
+                    required: true,
+                    message: "Por favor insira o seu nome.",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={11}>
+              <Form.Item
+                wrapperCol={24}
+                name="surname_other"
+                label="Apelido"
+                rules={[
+                  {
+                    required: true,
+                    message: "Por favor insira o seu apelido.",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </FormRow>
+          <FormRow>
+            <Col span={24}>
+              <Form.Item
+                wrapperCol={24}
+                name="company_other"
+                label="Empresa (opcional)"
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </FormRow>
+          <FormRow>
+            <Col span={24}>
+              <Form.Item
+                rules={[
+                  {
+                    required: true,
+                    message: "Por favor seleccione o seu pais/regiao.",
+                  },
+                ]}
+                label="Pais/Regiao"
+                wrapperCol={24}
+                name="country_other"
+              >
+                <Select value={country} onChange={handleCountryShipping}>
+                  <Select.Option value="2">Portugal</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+          </FormRow>
+          <FormRow>
+            <Col span={24}>
+              <Form.Item
+                name="address_other"
+                label="Morada"
+                rules={[
+                  {
+                    required: true,
+                    message: "Por favor insira a sua morada.",
+                  },
+                ]}
+                wrapperCol={24}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </FormRow>
+          <FormRow>
+            <Col span={11}>
+              <Form.Item
+                wrapperCol={24}
+                name="local_other"
+                label="Localidade"
+                rules={[
+                  {
+                    required: true,
+                    message: "Por favor insira a localidade.",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={11}>
+              <Form.Item
+                rules={[
+                  {
+                    required: true,
+                    message: "Por favor seleccione o distrito.",
+                  },
+                ]}
+                label="Distrito"
+                wrapperCol={24}
+                name="district_other"
+              >
+                <Select>
+                  {secondSelectOptions.map((option) => (
+                    <Select.Option key={option} value={option}>
+                      {option}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </FormRow>
+          <FormRow>
+            <Col span={24}>
+              <Form.Item
+                wrapperCol={24}
+                name="postcode_other"
+                label="Codigo-postal"
+                rules={[
+                  {
+                    required: true,
+                    message: "Por favor insira o seu codigo-postal.",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </FormRow>
+        </>
+      )}
+      <FormRow>
+        <Col span={24}>
+          <Form.Item name="order_notes" wrapperCol={24}>
+            <>
+              <span>Notas para a encomenda</span>
+              <TextArea
+                rows={4}
+                placeholder="Aqui pode deixar instrucoes especiais como, por exemplo, 'A campainha nao toca.'"
+              />
+            </>
+          </Form.Item>
+        </Col>
+      </FormRow>
+
+      <FormRow>
+        <Form.Item
+          wrapperCol={24}
+          name="payment_method"
+          label="Metodo de pagamento"
+          rules={[
+            {
+              required: true,
+              message: "Tem de seleccionar um metodo de pagamento.",
+            },
+          ]}
+        >
+          <Radio.Group optionType="button" buttonStyle="solid">
+            {paymentMethods.map((p) => {
+              return (
+                <Radio.Button
+                  onClick={() => handlePaymentMethod(p)}
+                  key={p.value}
+                  value={p.value}
+                >
+                  {p.name}
+                </Radio.Button>
+              );
+            })}
+          </Radio.Group>
+        </Form.Item>
+      </FormRow>
+
+      <Form.Item
+        name="accept_terms"
+        valuePropName="checked"
+        wrapperCol={24}
+        rules={[
+          {
+            required: true,
+            message: "Tem de confirmar a leitura dos Termos & Condicoes.",
+          },
+        ]}
+      >
+        <Checkbox>
+          Declaro que li e aceito os{" "}
+          <Link to="/termos-e-condicoes" target="_blank">
+            Termos & Condicoes
+          </Link>
+        </Checkbox>
+      </Form.Item>
+    </Form>
+  );
+};
+
+const FormRow = styled(Row)`
+  justify-content: space-between;
+`;
+
+export default CheckoutForm;
