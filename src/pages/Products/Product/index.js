@@ -4,6 +4,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useCart } from "reducers";
+import { getSessionDataFromLocalStorage } from "helpers";
 
 import {
   Accordion,
@@ -122,6 +123,8 @@ const Product = () => {
           setIsModalOpen(true);
         });
     } else {
+      const storedUserData = localStorage.getItem("user");
+
       const dataCart = {
         status: "active",
         local_session_key: sessionKey,
@@ -136,6 +139,7 @@ const Product = () => {
         currency: "EUR",
         ip_address: "",
         user_agent: navigator.userAgent,
+        is_user_cart: storedUserData ? 1 : 0,
       };
 
       ConnectWC.post("temp_carts", dataCart)
@@ -179,21 +183,8 @@ const Product = () => {
   };
 
   useEffect(() => {
-    const storedTempCartData = localStorage.getItem("tempCart");
-    const storedUserString = localStorage.getItem("user");
-
-    if (storedUserString) {
-      return;
-    }
-
-    if (storedTempCartData) {
-      const { key } = JSON.parse(storedTempCartData);
-      setSessionKey(key);
-    } else {
-      const newSessionKey = generateSessionKey();
-      setSessionKey(newSessionKey);
-      setSessionInLocalStorage(newSessionKey);
-    }
+    const storedSessionData = getSessionDataFromLocalStorage();
+    setSessionKey(storedSessionData.key);
   }, []);
 
   return (

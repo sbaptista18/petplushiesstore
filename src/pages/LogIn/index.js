@@ -1,9 +1,8 @@
 import styled from "styled-components";
 import { Row, Checkbox, Form, Input } from "antd";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
-import { SimpleJwtLogin } from "simple-jwt-login";
 
 import { Button } from "components";
 
@@ -24,7 +23,7 @@ const LogIn = () => {
           )}&password=${btoa(formValues.password)}`
         );
 
-        if (responseAuth.data.success == true) {
+        if (responseAuth.data.success) {
           localStorage.setItem("token", responseAuth.data.data.jwt);
           handleValidation(responseAuth.data.data.jwt);
         }
@@ -44,7 +43,7 @@ const LogIn = () => {
         `https://backoffice.petplushies.pt/?rest_route=/simple-jwt-login/v1/auth/validate&JWT=${jwtToken}`
       );
 
-      if (response.data.success == true) handleLogin(response.data.data);
+      if (response.data.success) handleLogin(response.data.data);
     } catch (error) {
       setError(error.response.data.data.message);
     }
@@ -58,8 +57,15 @@ const LogIn = () => {
         `https://backoffice.petplushies.pt/?rest_route=/simple-jwt-login/v1/autologin&JWT=${jwtToken}`
       );
 
-      if (response.data.success == true) {
+      if (response.data.success) {
         localStorage.setItem("user", JSON.stringify(user));
+
+        const cartData = {
+          key: user.user_login,
+        };
+
+        localStorage.setItem("userCart", JSON.stringify(cartData));
+        localStorage.removeItem("tempCart");
         history.replace("/minha-conta", { data: jwtToken });
       }
     } catch (error) {

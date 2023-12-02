@@ -2,7 +2,12 @@ import styled from "styled-components";
 import { Layout, Menu, Col } from "antd";
 import { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { useCart, CreateLocalStorageKey } from "reducers";
+import { useCart, CreateCartKey } from "reducers";
+import {
+  generateSessionKey,
+  setSessionInLocalStorage,
+  getSessionDataFromLocalStorage,
+} from "helpers";
 
 import {
   MenuOutlined,
@@ -39,21 +44,17 @@ const PPS_Header = () => {
 
   const { setSessionKeyAndCartId } = useCart();
 
-  CreateLocalStorageKey();
+  CreateCartKey();
 
   useEffect(() => {
-    const storedSessionData = localStorage.getItem("tempCart");
-
-    const storedUserString = localStorage.getItem("user");
-
-    if (storedUserString) return;
+    const storedSessionData = getSessionDataFromLocalStorage();
 
     if (storedSessionData) {
-      const { key } = JSON.parse(storedSessionData);
+      const { key } = storedSessionData;
       setSessionKey(key);
       if (key !== sessionKey) {
         fetchCartId(key);
-        setSessionKeyAndCartId(key, null); // set null as cartId initially
+        setSessionKeyAndCartId(key, null);
       }
     } else {
       const newSessionKey = generateSessionKey();

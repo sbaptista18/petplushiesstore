@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Row, Checkbox, Form, Input } from "antd";
+import { Row } from "antd";
 import { useState } from "react";
 import axios from "axios";
 import { useLocation, useHistory } from "react-router-dom";
@@ -11,15 +11,15 @@ const MyAccount = () => {
 
   const location = useLocation();
   const history = useHistory();
-  const data = location.state?.data;
 
-  if (localStorage.getItem("token") == null) {
-    history.replace("/login");
-    return;
-  }
+  const data = location.state?.data;
 
   const storedUserString = localStorage.getItem("user");
   const user = JSON.parse(storedUserString);
+
+  if (localStorage.getItem("token") == null) {
+    history.replace("/login");
+  }
 
   const handleLogOut = async () => {
     try {
@@ -27,15 +27,17 @@ const MyAccount = () => {
         `https://backoffice.petplushies.pt/?rest_route=/simple-jwt-login/v1/auth/revoke&JWT=${data}`
       );
 
-      if (response.data.success == true) {
+      if (response.data.success) {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+        localStorage.removeItem("userCart");
         history.replace("/login");
       }
     } catch (error) {
       setError(error.response.data.message);
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+      localStorage.removeItem("userCart");
       history.replace("/login");
     }
   };

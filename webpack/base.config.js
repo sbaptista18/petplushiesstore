@@ -30,6 +30,7 @@ module.exports = {
       services: path.resolve(__dirname, `${srcDir}/services`),
       reducers: path.resolve(__dirname, `${srcDir}/reducers`),
       utils: path.resolve(__dirname, `${srcDir}/utils`),
+      helpers: path.resolve(__dirname, `${srcDir}/helpers`),
     },
   },
   target: "web",

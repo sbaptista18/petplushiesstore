@@ -1,8 +1,7 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import styled from "styled-components";
 import { HelmetProvider } from "react-helmet-async";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { CartProvider } from "reducers";
+import { CartProvider, AuthProvider } from "reducers";
 
 import Content from "layout/Content";
 import Header from "layout/Header";
@@ -12,22 +11,12 @@ import "./App.scss";
 
 const helmetContext = {};
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-});
-
 const AppWrapper = () => (
-  <QueryClientProvider client={queryClient}>
-    <CartProvider>
-      <PageContainer>
-        <App />
-      </PageContainer>
-    </CartProvider>
-  </QueryClientProvider>
+  <CartProvider>
+    <PageContainer>
+      <App />
+    </PageContainer>
+  </CartProvider>
 );
 
 const App = () => {

@@ -1,42 +1,33 @@
 import { useState, useEffect } from "react";
+import {
+  generateSessionKey,
+  setSessionInLocalStorage,
+  getSessionDataFromLocalStorage,
+} from "helpers";
 
-const CreateLocalStorageKey = () => {
+const CreateCartKey = () => {
   const [sessionData, setSessionData] = useState(null);
 
-  const generateSessionKey = () => {
-    return Math.random().toString(36).substring(2, 17);
-  };
-
-  const setSessionInLocalStorage = (key) => {
-    const currentTime = new Date().getTime();
-    const sessionData = {
-      key,
-      timestamp: currentTime,
-    };
-    localStorage.setItem("tempCart", JSON.stringify(sessionData));
-  };
-
   useEffect(() => {
-    const storedSessionData = localStorage.getItem("tempCart");
-
-    const storedUserString = localStorage.getItem("user");
-
-    if (storedUserString) return;
+    const storedSessionData = getSessionDataFromLocalStorage();
 
     if (storedSessionData) {
-      const { key, timestamp } = JSON.parse(storedSessionData);
-      const currentTime = new Date().getTime();
-      const elapsedTime = currentTime - timestamp;
+      if (storedSessionData.timestamp) {
+        const { key, timestamp } = storedSessionData;
+        const currentTime = new Date().getTime();
+        const elapsedTime = currentTime - timestamp;
 
-      if (elapsedTime < 60 * 60 * 1000) {
-        // Session key is still valid
-        setSessionData(key);
+        if (elapsedTime < 60 * 60 * 1000) {
+          setSessionData(key);
+        } else {
+          localStorage.removeItem("tempCart");
+          const newSessionKey = generateSessionKey();
+          setSessionData(newSessionKey);
+          setSessionInLocalStorage(newSessionKey);
+        }
       } else {
-        // Session key has expired, clear localStorage
-        localStorage.removeItem("tempCart");
-        const newSessionKey = generateSessionKey();
-        setSessionData(newSessionKey);
-        setSessionInLocalStorage(newSessionKey);
+        const { key } = storedSessionData;
+        setSessionData(key);
       }
     } else {
       const newSessionKey = generateSessionKey();
@@ -48,4 +39,4 @@ const CreateLocalStorageKey = () => {
   return sessionData;
 };
 
-export default CreateLocalStorageKey;
+export default CreateCartKey;
