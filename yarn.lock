@@ -2465,6 +2465,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@paypal/paypal-js@npm:^7.0.0":
+  version: 7.1.1
+  resolution: "@paypal/paypal-js@npm:7.1.1"
+  dependencies:
+    promise-polyfill: ^8.3.0
+  checksum: 4877df658383b825f2ac1ce1b39054be46feda701f26902add9034be8f2623adb217a1b8423d06e2d6cbbe677cc692cdc4057b8f67a1ca7150431513f02b8573
+  languageName: node
+  linkType: hard
+
+"@paypal/react-paypal-js@npm:^8.1.3":
+  version: 8.1.3
+  resolution: "@paypal/react-paypal-js@npm:8.1.3"
+  dependencies:
+    "@paypal/paypal-js": ^7.0.0
+    "@paypal/sdk-constants": ^1.0.122
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: e573f73cb1308d9d1c10a4ae5da646f31ae2857e9d1e1b7a32e6c51f7cf95a97e88cacd63db9227feb1a78e8f80a06360a006f99749be9b12ef3b1fb56ca67b1
+  languageName: node
+  linkType: hard
+
+"@paypal/sdk-constants@npm:^1.0.122":
+  version: 1.0.133
+  resolution: "@paypal/sdk-constants@npm:1.0.133"
+  dependencies:
+    hi-base32: ^0.5.0
+  checksum: 0293a7da6265a795109ec3524061510207e70faa82554e3ab481d35995ff0e052179f1646f5431804c5e6569dc3ec8e8fa9ad88636c408dec4ca37fdcd396d77
+  languageName: node
+  linkType: hard
+
 "@pkgjs/parseargs@npm:^0.11.0":
   version: 0.11.0
   resolution: "@pkgjs/parseargs@npm:0.11.0"
@@ -8507,6 +8538,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hi-base32@npm:^0.5.0":
+  version: 0.5.1
+  resolution: "hi-base32@npm:0.5.1"
+  checksum: 6655682b5796d75ed3068071e61d05a490e2086c4908af3b94a730059147b8a4a5e8870e656b828d0550dcc9988d8748bda54a53e428cbce28e0d7a785b2ffde
+  languageName: node
+  linkType: hard
+
 "history@npm:^4.9.0":
   version: 4.10.1
   resolution: "history@npm:4.10.1"
@@ -12702,6 +12740,7 @@ __metadata:
     "@babel/preset-env": ^7.14.8
     "@babel/preset-react": ^7.14.5
     "@babel/runtime": ^7.12.5
+    "@paypal/react-paypal-js": ^8.1.3
     "@svgr/webpack": ^8.0.1
     "@woocommerce/woocommerce-rest-api": ^1.0.1
     antd: ^4.20.6
@@ -12734,6 +12773,7 @@ __metadata:
     react-lazyload: ^3.2.0
     react-markdown: ^8.0.7
     react-native-woocommerce-api: ^1.8.8
+    react-paypal-button-v2: ^2.6.3
     react-query: ^3.39.3
     react-responsive: ^9.0.0-beta.6
     react-router-dom: ^5.2.0
@@ -13773,6 +13813,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"promise-polyfill@npm:^8.3.0":
+  version: 8.3.0
+  resolution: "promise-polyfill@npm:8.3.0"
+  checksum: 206373802076c77def0805758d0a8ece64120dfa6603f092404a1004211f8f2f67f33cadbc35953fc2a8ed0b0d38c774e88bdf01e20ce7a920723a60df84b7a5
+  languageName: node
+  linkType: hard
+
 "promise-retry@npm:^2.0.1":
   version: 2.0.1
   resolution: "promise-retry@npm:2.0.1"
@@ -14721,6 +14768,19 @@ __metadata:
     node-fetch: ^2.6.0
     oauth-1.0a: ^2.2.6
   checksum: 504738608155c5705fb89c9c6251622421d39b855a5a4d82db1a597752128412f8c657eaa63b7f8c3adbe7397d8fe51deb5f7fb2d34c13cc56449f4c7a7791cc
+  languageName: node
+  linkType: hard
+
+"react-paypal-button-v2@npm:^2.6.3":
+  version: 2.6.3
+  resolution: "react-paypal-button-v2@npm:2.6.3"
+  dependencies:
+    prop-types: ^15.7.2
+    rimraf: ^3.0.0
+  peerDependencies:
+    react: ^0.14.6 || 15.x.x || 16.x.x || 17.x.x
+    react-dom: ^0.14.6 || 15.x.x || 16.x.x || 17.x.x
+  checksum: 3aaf834a872db09f97fd714e6c29bb5566cf2d46845ff4a46aaaeb84472289e742b7181570b481ce3ed490f753495bfb1eb2d9de91c445bd480d3c230b8021f2
   languageName: node
   linkType: hard
 

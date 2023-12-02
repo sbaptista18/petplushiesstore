@@ -1,8 +1,19 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import { Row, Col, Table, Checkbox, Form, Input, Select, Spin } from "antd";
+import {
+  Row,
+  Col,
+  Table,
+  Checkbox,
+  Form,
+  Input,
+  Select,
+  Spin,
+  Radio,
+} from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Link, useHistory } from "react-router-dom";
+import { PayPalButton } from "react-paypal-button-v2";
 
 import { Button, ModalMessage } from "components";
 import { ConnectWC, tableColumnsCheckout } from "fragments";
@@ -16,24 +27,16 @@ const CustomNoData = () => (
   </div>
 );
 
-const formItemLayout = {
-  labelCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 24,
-    },
+const paymentMethods = [
+  {
+    label: "Transferencia Bancaria",
+    value: "bacs",
   },
-  wrapperCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 16,
-    },
+  {
+    label: "PayPal",
+    value: "ppcp-gateway",
   },
-};
+];
 
 const Checkout = () => {
   const [createAccount, setCreateAccount] = useState(false);
@@ -45,11 +48,12 @@ const Checkout = () => {
   const [products, setProducts] = useState([]);
   const [shippingCost, setShippingCost] = useState(0);
   const [shippingTitle, setShippingTitle] = useState("");
-  const [country, setCountry] = useState(""); // Initial value for the country select
+  const [country, setCountry] = useState("");
   const [secondSelectOptions, setSecondSelectOptions] = useState([""]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState();
   const [message, setMessage] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState({});
 
   const [form] = Form.useForm();
 
@@ -85,7 +89,7 @@ const Checkout = () => {
           fetchProducts(data.results);
         } else {
           setProductsCart([]);
-          setProducts([]); // Make sure to set products state to an empty array if there are no cart products
+          setProducts([]);
         }
       })
       .catch((error) => {
@@ -96,23 +100,20 @@ const Checkout = () => {
   const fetchProducts = (data) => {
     const promises = data.map((cartItem) => {
       return ConnectWC.get("products/" + cartItem.product_id)
-        .then((product) => ({ cartItem, product })) // Combine cart item and product data
+        .then((product) => ({ cartItem, product }))
         .catch((error) => {
-          // Assuming you want to handle errors and continue
           return { error: error.response.data };
         });
     });
 
     Promise.all(promises)
       .then((responses) => {
-        // Extract cartItem and product data from the responses
         const combinedProducts = responses.map(({ cartItem, product }) => ({
           ...cartItem,
           product,
         }));
-        setProductsCart(data); // Set productsCart separately
-        setProducts(combinedProducts); // Set combinedProducts to products state
-        // Do something with the array of responses
+        setProductsCart(data);
+        setProducts(combinedProducts);
         setLoading(false);
       })
       .catch((error) => {
@@ -122,14 +123,11 @@ const Checkout = () => {
   };
 
   const calculateShippingCost = (data, weight, subtotal) => {
-    // Check if subtotal is more than 50 and set shipping cost to 0
     if (subtotal > 50) {
       return 0;
     }
 
-    // Find the appropriate shipping method based on weight
     const method = data.find((shippingMethod) => {
-      // Extract weight range from the title
       const title = shippingMethod.title.toLowerCase();
       const match = title.match(/(\d+)\s*g\s*a\s*(\d+)?/);
 
@@ -139,7 +137,6 @@ const Checkout = () => {
         const minWeight = parseInt(match[1]);
         const maxWeight = match[2] ? parseInt(match[2]) : undefined;
 
-        // Check if the weight falls within the range
         return (
           weight >= minWeight &&
           (maxWeight === undefined || weight <= maxWeight)
@@ -150,14 +147,9 @@ const Checkout = () => {
     });
 
     if (method) {
-      // Extract cost value from settings
       const cost = parseFloat(method.settings.cost.value);
-
-      // Calculate the cost based on your formula (if needed)
-      // For now, just returning the cost directly
       return cost;
     } else {
-      // No matching method found
       return null;
     }
   };
@@ -201,8 +193,8 @@ const Checkout = () => {
 
         if (formValues.first_name_other) {
           data = {
-            payment_method: "bacs",
-            payment_method_title: "Direct Bank Transfer",
+            payment_method: paymentMethod.value,
+            payment_method_title: paymentMethod.label,
             set_paid: false,
             status: "on-hold",
             billing: {
@@ -243,8 +235,8 @@ const Checkout = () => {
           };
         } else {
           data = {
-            payment_method: "bacs",
-            payment_method_title: "Direct Bank Transfer",
+            payment_method: paymentMethod.value,
+            payment_method_title: paymentMethod.label,
             set_paid: false,
             status: "on-hold",
             billing: {
@@ -450,6 +442,34 @@ const Checkout = () => {
     }
   };
 
+  const handlePaymentMethod = (e) => {
+    const selectedValue = e.target.value;
+    const selectedLabel = paymentMethods.find(
+      (option) => option.value === selectedValue
+    )?.label;
+
+    setPaymentMethod({ label: selectedLabel, value: selectedValue });
+  };
+
+  const handleOnPayPalSuccess = (details, data) => {
+    console.log("Transaction completed by " + details.payer.name.given_name);
+    handlePlaceOrder();
+  };
+
+  const handleOnPayPalError = (err) => {
+    console.error("Transaction failed:", err);
+    setMessage("Erro na transaccao. (" + err + ")");
+    setStatus("error");
+    setIsModalOpen(true);
+  };
+
+  const handleOnPayPalCancel = (data) => {
+    console.log("Transaction canceled:", data);
+    setMessage("Transaccao cancelada. (" + data + ")");
+    setStatus("error");
+    setIsModalOpen(true);
+  };
+
   return (
     <Container>
       <ModalMessage
@@ -465,7 +485,6 @@ const Checkout = () => {
             <div>
               <Form
                 layout="vertical"
-                {...formItemLayout}
                 form={form}
                 name="checkout"
                 style={{
@@ -840,6 +859,28 @@ const Checkout = () => {
                   </Col>
                 </FormRow>
 
+                <FormRow>
+                  <Form.Item
+                    wrapperCol={24}
+                    name="payment_method"
+                    label="Metodo de pagamento"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Tem de seleccionar um metodo de pagamento.",
+                      },
+                    ]}
+                  >
+                    <Radio.Group
+                      options={paymentMethods}
+                      onChange={handlePaymentMethod}
+                      value={paymentMethod?.value}
+                      optionType="button"
+                      buttonStyle="solid"
+                    />
+                  </Form.Item>
+                </FormRow>
+
                 <Form.Item
                   name="accept_terms"
                   valuePropName="checked"
@@ -897,12 +938,26 @@ const Checkout = () => {
               <div>Subtotal</div>
               <div>{totalProductNetRevenue + shippingCost}&euro;</div>
             </Total>
-            <StyledButton
-              size="large"
-              type="primary"
-              text="Finalizar encomenda"
-              onClick={() => handlePlaceOrder()}
-            />
+            {paymentMethod.label == "PayPal" ? (
+              <PayPalButton
+                amount={totalProductNetRevenue + shippingCost} // Set your transaction amount
+                onSuccess={handleOnPayPalSuccess}
+                onError={handleOnPayPalError}
+                onCancel={handleOnPayPalCancel}
+                options={{
+                  clientId:
+                    "AS_49gaJ4KOHzPP5mOgS3Ih58UojUfWU08_gj6GuMEZRMShDfNjY_JDbjVogZZcTrLqzAjWde_OxTxKk",
+                  currency: "EUR", // Set your currency
+                }}
+              />
+            ) : (
+              <StyledButton
+                size="large"
+                type="primary"
+                text="Finalizar encomenda"
+                onClick={() => handlePlaceOrder()}
+              />
+            )}
           </Col>
         </StyledRow>
       </ContentLocked>
