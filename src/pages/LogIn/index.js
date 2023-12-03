@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Row, Checkbox, Form, Input } from "antd";
 import { useState } from "react";
 import axios from "axios";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 
 import { Button } from "components";
 
@@ -150,6 +150,15 @@ const LogIn = () => {
                 type="primary"
                 htmlType="submit"
               />
+            </Form.Item>
+
+            <Form.Item
+              wrapperCol={{
+                offset: 8,
+                span: 16,
+              }}
+            >
+              <Link to="/recuperar-password">Recuperar password</Link>
             </Form.Item>
 
             <Form.Item

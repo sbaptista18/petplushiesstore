@@ -12,6 +12,8 @@ import SignIn from "./SignIn";
 import LogIn from "./LogIn";
 import Checkout from "./Checkout";
 import MyAccount from "./MyAccount";
+import ResetPassword from "./ResetPassword";
+import RedefinePassword from "./RedefinePassword";
 
 export default [
   AboutUs,
@@ -28,4 +30,6 @@ export default [
   LogIn,
   Checkout,
   MyAccount,
+  ResetPassword,
+  RedefinePassword,
 ];
