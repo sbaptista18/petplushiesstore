@@ -35,13 +35,32 @@ const Checkout = () => {
   const [message, setMessage] = useState("");
   const [paymentMethod, setPaymentMethod] = useState({});
   const [form] = Form.useForm();
+  const [userPersonalData, setUserPersonalData] = useState({});
 
   const history = useHistory();
 
   useEffect(() => {
-    if (cartId == null) history.replace("/carrinho");
-    else fetchCartId(cartId);
+    // if (cartId == null) history.replace("/carrinho");
+    // else
+    fetchCartId(cartId);
   }, [cartId]);
+
+  useEffect(() => {
+    const storedUserString = localStorage.getItem("user");
+    const user = JSON.parse(storedUserString);
+
+    const fetchCustomerData = async (userId) => {
+      ConnectWC.get("customers/" + userId)
+        .then((response) => {
+          setUserPersonalData(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+
+    fetchCustomerData(user.ID);
+  }, []);
 
   const fetchCartId = async (cartId) => {
     ConnectWC.get("temp_carts")
@@ -133,8 +152,9 @@ const Checkout = () => {
     }
   };
 
-  const fetchShippingZonesDetails = async (area) => {
-    ConnectWC.get("shipping/zones/" + area + "/methods")
+  const fetchShippingZonesDetails = async () => {
+    const countryArea = form.getFieldValue("country");
+    ConnectWC.get("shipping/zones/" + countryArea + "/methods")
       .then((data) => {
         const weightGrs = totalWeight * 1000;
         const shippingCost = calculateShippingCost(
@@ -444,6 +464,7 @@ const Checkout = () => {
                 secondSelectOptions={secondSelectOptions}
                 handlePaymentMethod={handlePaymentMethod}
                 paymentMethod={paymentMethod}
+                data={userPersonalData}
               />
             </div>
           </Col>
@@ -475,7 +496,16 @@ const Checkout = () => {
             </Subtotal>
             <Shipping>
               <div>Estimativa de portes</div>
-              <div>{shippingCost}&euro;</div>
+              {shippingCost == 0 ? (
+                <StyledButton
+                  size="large"
+                  type="primary"
+                  text="Calcular portes"
+                  onClick={() => fetchShippingZonesDetails()}
+                />
+              ) : (
+                <div>{shippingCost}&euro;</div>
+              )}
             </Shipping>
             <Border />
             <Total>

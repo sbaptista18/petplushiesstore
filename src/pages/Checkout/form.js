@@ -1,6 +1,7 @@
 import { Col, Row, Checkbox, Form, Input, Select, Radio } from "antd";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 import { paymentMethods } from "./data";
 
@@ -17,7 +18,33 @@ const CheckoutForm = ({
   secondSelectOptions,
   handlePaymentMethod,
   form,
+  data,
 }) => {
+  useEffect(() => {
+    if (Object.keys(data).length > 0) {
+      form.setFieldsValue({
+        first_name: data?.billing.first_name,
+        surname: data?.billing.last_name,
+        company: data?.billing.company,
+        country: data?.billing.country == "PT" ? "2" : "",
+        address: data?.billing.address_1,
+        local: data?.billing.city,
+        district: data?.billing.state,
+        postcode: data?.billing.postcode,
+        phone: data?.billing.phone,
+        email: data?.billing.email,
+        first_name_other: data?.shipping.first_name,
+        surname_other: data?.shipping.last_name,
+        company_other: data?.shipping.company,
+        country_other: data?.billing.country == "PT" ? "2" : "",
+        address_other: data?.shipping.address_1,
+        local_other: data?.shipping.city,
+        district_other: data?.shipping.state,
+        postcode_other: data?.shipping.postcode,
+      });
+    }
+  }, [data, form]);
+
   return (
     <Form
       layout="vertical"

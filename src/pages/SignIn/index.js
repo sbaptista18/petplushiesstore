@@ -8,7 +8,7 @@ import { Button, ModalMessage } from "components";
 import { ConnectWC } from "fragments";
 
 const SignIn = () => {
-  const [isVerified, setVerified] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState();
   const [message, setMessage] = useState("");
@@ -53,7 +53,7 @@ const SignIn = () => {
   };
 
   const handleVerification = (value) => {
-    setVerified(value);
+    setIsVerified(value);
   };
 
   return (

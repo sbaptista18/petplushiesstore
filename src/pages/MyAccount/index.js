@@ -1,16 +1,33 @@
 import styled from "styled-components";
-import { Row } from "antd";
-import { useState } from "react";
+import { Row, Form, Tabs, Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useLocation, useHistory } from "react-router-dom";
 
-import { Button } from "components";
+import { Button, ModalMessage } from "components";
+import { ConnectWC } from "fragments";
+
+import { PortugalDistricts } from "../Checkout/data";
+import PersonalDataForm from "./Forms/PersonalDataForm";
+import AccountDataForm from "./Forms/AccountDataForm";
 
 const MyAccount = () => {
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [disabled, setDisabled] = useState(false);
+  const [userPersonalData, setUserPersonalData] = useState({});
+  const [country, setCountry] = useState("");
+  const [secondSelectOptions, setSecondSelectOptions] = useState([""]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [status, setStatus] = useState();
+  const [message, setMessage] = useState("");
 
   const location = useLocation();
   const history = useHistory();
+
+  const [form] = Form.useForm();
+  const [form1] = Form.useForm();
 
   const data = location.state?.data;
 
@@ -20,6 +37,22 @@ const MyAccount = () => {
   if (localStorage.getItem("token") == null) {
     history.replace("/login");
   }
+
+  useEffect(() => {
+    const fetchCustomerData = async (userId) => {
+      ConnectWC.get("customers/" + userId)
+        .then((response) => {
+          setUserPersonalData(response);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoading(true);
+        });
+    };
+
+    fetchCustomerData(user.ID);
+  }, []);
 
   const handleLogOut = async () => {
     try {
@@ -42,33 +75,238 @@ const MyAccount = () => {
     }
   };
 
+  const handleSubmitAccountData = () => {
+    form.validateFields().then(() => {
+      const formValues = form.getFieldsValue();
+      const data = {
+        ID: user.ID,
+        user_email: formValues.email,
+      };
+
+      // Retrieve the current user object from localStorage
+      const storedUserString = localStorage.getItem("user");
+
+      // Parse the JSON string into an object
+      const currentUser = JSON.parse(storedUserString);
+
+      // Update the properties of the user object
+      currentUser.user_email = data.user_email;
+
+      // Convert the updated object back to a JSON string
+      const updatedUserString = JSON.stringify(currentUser);
+
+      // Update the localStorage variable with the new JSON string
+      localStorage.setItem("user", updatedUserString);
+
+      ConnectWC.put("users/" + data.ID, data)
+        .then((response) => {
+          if (response.error) {
+            setMessage(
+              "Houve um erro na actualizacao do seu e-mail. (" +
+                response.error +
+                ".)"
+            );
+            setStatus("error");
+            setIsModalOpen(true);
+          } else {
+            setMessage("O seu e-mail foi actualizado com sucesso.");
+            setStatus("success");
+            setIsModalOpen(true);
+          }
+        })
+        .catch((error) => {
+          setMessage(
+            "Houve um erro na actualizacao do seu e-mail. (" +
+              error.error +
+              ".)"
+          );
+          setStatus("error");
+          setIsModalOpen(true);
+        });
+    });
+  };
+
+  const handleSubmitPersonalData = () => {
+    form1.validateFields().then(() => {
+      const formValues = form1.getFieldsValue();
+      const data = {
+        id: user.ID,
+        billing: {
+          first_name: formValues.first_name,
+          last_name: formValues.surname,
+          company: formValues.company !== "" ? formValues.company : "",
+          address_1: formValues.address,
+          address_2: "",
+          city: formValues.local,
+          state: formValues.district,
+          postcode: formValues.postcode,
+          country: formValues.country == "PT" ? "PT" : "",
+          email: formValues.email,
+          phone: formValues.phone,
+        },
+        shipping: {
+          first_name: formValues.first_name_other,
+          last_name: formValues.surname_other,
+          company:
+            formValues.company_other !== "" ? formValues.company_other : "",
+          address_1: formValues.address_other,
+          address_2: "",
+          city: formValues.local_other,
+          state: formValues.district_other,
+          postcode: formValues.postcode_other,
+          country: formValues.country_other == "PT" ? "PT" : "",
+        },
+      };
+
+      ConnectWC.put("customers/" + user.ID, data)
+        .then((response) => {
+          if (response.error) {
+            setMessage(
+              "Houve um erro na actualizacao dos seus dados. (" +
+                response.error +
+                ".)"
+            );
+            setStatus("error");
+            setIsModalOpen(true);
+          } else {
+            setMessage("Os seus dados foram actualizados com sucesso.");
+            setStatus("success");
+            setIsModalOpen(true);
+          }
+        })
+        .catch((error) => {
+          setMessage(
+            "Houve um erro na actualizacao do seus dados. (" +
+              error.error +
+              ".)"
+          );
+          setStatus("error");
+          setIsModalOpen(true);
+        });
+    });
+  };
+
+  const handleCountry = (value) => {
+    setCountry(value);
+
+    if (value === "PT") {
+      setSecondSelectOptions(PortugalDistricts);
+    } else {
+      // Handle other countries or set a default set of options
+      setSecondSelectOptions([]);
+    }
+  };
+
+  const handleCountryShipping = (value) => {
+    setCountry(value);
+
+    // Set options for the second Select based on the selected country
+    if (value === "PT") {
+      // If Portugal is selected, set specific options
+      setSecondSelectOptions(PortugalDistricts);
+    } else {
+      // Handle other countries or set a default set of options
+      setSecondSelectOptions([]);
+    }
+  };
+  const tabs = [
+    {
+      label: `Dados da Conta`,
+      key: "account_data",
+      children: (
+        <AccountDataForm
+          form={form}
+          data={user.user_email}
+          handleSubmitAccountData={handleSubmitAccountData}
+          disabled={disabled}
+          setDisabled={setDisabled}
+        />
+      ),
+    },
+    {
+      label: `Dados Pessoais`,
+      key: "personal_data",
+      children: (
+        <PersonalDataForm
+          form={form1}
+          data={userPersonalData}
+          handleCountry={handleCountry}
+          handleCountryShipping={handleCountryShipping}
+          country={country}
+          secondSelectOptions={secondSelectOptions}
+          handleSubmitPersonalData={handleSubmitPersonalData}
+          disabled={disabled}
+          setDisabled={setDisabled}
+        />
+      ),
+    },
+    {
+      label: `Encomendas`,
+      key: "orders",
+      children: `Aqui serao apresentadas todas as encomendas efectuadas`,
+    },
+  ];
+
   return (
     <Container>
+      <ModalMessage
+        status={status}
+        message={message}
+        isVisible={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
       <ContentLocked>
-        <span>Username: </span> {user.display_name}
-        <br />
-        <span>E-mail: </span> {user.user_email}
-        <br />
-        <span>Nickname: </span> {user.user_nicename}
-        <br />
-        <StyledButton
-          size="large"
-          color="green"
-          text="Sair da conta"
-          type="primary"
-          htmlType="submit"
-          onClick={() => handleLogOut()}
-        />
-        {error && (
-          <div
-            style={{ color: "red" }}
-            dangerouslySetInnerHTML={{ __html: error }}
-          ></div>
-        )}
+        <StyledH1>A minha conta</StyledH1>
+        <div style={{ position: "relative" }}>
+          {loading && !error && (
+            <Spinner
+              indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
+            />
+          )}
+
+          {!loading && !error && (
+            <div>
+              <Tabs tabPosition={"left"} items={tabs} />
+              {/* <StyledButton
+                size="large"
+                color="green"
+                text="Sair da conta"
+                type="primary"
+                htmlType="submit"
+                onClick={() => handleLogOut()}
+              /> */}
+            </div>
+          )}
+
+          {error && (
+            <div
+              style={{ color: "red" }}
+              dangerouslySetInnerHTML={{ __html: error }}
+            ></div>
+          )}
+        </div>
       </ContentLocked>
     </Container>
   );
 };
+
+const Spinner = styled(Spin)`
+  position: absolute;
+  background-color: white;
+  width: 100%;
+  height: 500px;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const StyledH1 = styled.h1`
+  margin-top: 30px;
+  font-size: 52px;
+`;
 
 const Container = styled.div`
   width: 100%;
