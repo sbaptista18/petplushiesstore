@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import { Row, Form, Tabs, Spin } from "antd";
+import { Row, Form, Tabs, Spin, Table } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useLocation, useHistory } from "react-router-dom";
+import { useLocation, useHistory, Link } from "react-router-dom";
 
 import { Button, ModalMessage } from "components";
 import { ConnectWC } from "fragments";
@@ -11,6 +11,42 @@ import { ConnectWC } from "fragments";
 import { PortugalDistricts } from "../Checkout/data";
 import PersonalDataForm from "./Forms/PersonalDataForm";
 import AccountDataForm from "./Forms/AccountDataForm";
+
+const CustomNoData = () => (
+  <div style={{ textAlign: "center", padding: "20px" }}>
+    Ainda nao efectuou nenhuma encomenda.
+  </div>
+);
+
+const tableColumns = () => [
+  {
+    title: "No.",
+    dataIndex: "id",
+    key: "number",
+    render: (record) => <div>{record}</div>,
+  },
+  {
+    title: "Total",
+    dataIndex: "total",
+    key: "total",
+    render: (record) => <div>{record}</div>,
+  },
+  {
+    title: "Detalhes",
+    dataIndex: "id",
+    key: "order_id",
+    render: (record) => (
+      <Link to={`/encomendas/${record}`}>
+        <StyledButton
+          size="large"
+          color="green"
+          text="Ver detalhes"
+          type="primary"
+        />
+      </Link>
+    ),
+  },
+];
 
 const MyAccount = () => {
   const [error, setError] = useState("");
@@ -22,6 +58,7 @@ const MyAccount = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState();
   const [message, setMessage] = useState("");
+  const [orders, setOrders] = useState([]);
 
   const location = useLocation();
   const history = useHistory();
@@ -52,7 +89,21 @@ const MyAccount = () => {
     };
 
     fetchCustomerData(user.ID);
+    fetchOrders(user.ID);
   }, []);
+
+  const fetchOrders = (userId) => {
+    ConnectWC.get("orders")
+      .then((response) => {
+        const clientOrders = response.filter(
+          (order) => order.customer_id === parseInt(userId)
+        );
+        setOrders(clientOrders);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleLogOut = async () => {
     try {
@@ -209,6 +260,7 @@ const MyAccount = () => {
       setSecondSelectOptions([]);
     }
   };
+
   const tabs = [
     {
       label: `Dados da Conta`,
@@ -243,7 +295,15 @@ const MyAccount = () => {
     {
       label: `Encomendas`,
       key: "orders",
-      children: `Aqui serao apresentadas todas as encomendas efectuadas`,
+      children: (
+        <StyledTable
+          columns={tableColumns()}
+          dataSource={orders}
+          pagination={false}
+          rowKey="id"
+          locale={{ emptyText: <CustomNoData /> }}
+        />
+      ),
     },
   ];
 
@@ -267,14 +327,14 @@ const MyAccount = () => {
           {!loading && !error && (
             <div>
               <Tabs tabPosition={"left"} items={tabs} />
-              {/* <StyledButton
+              <StyledButton
                 size="large"
                 color="green"
                 text="Sair da conta"
                 type="primary"
                 htmlType="submit"
                 onClick={() => handleLogOut()}
-              /> */}
+              />
             </div>
           )}
 
@@ -289,6 +349,30 @@ const MyAccount = () => {
     </Container>
   );
 };
+
+const StyledTable = styled(Table)`
+  && {
+    & .ant-table-empty {
+      text-align: center;
+    }
+    & .ant-table-thead > tr > th {
+      background-color: transparent;
+      border-color: black;
+
+      &:before {
+        display: none;
+      }
+    }
+
+    & .ant-table-row {
+      height: 80px;
+    }
+
+    & .ant-table-cell {
+      border-color: black;
+    }
+  }
+`;
 
 const Spinner = styled(Spin)`
   position: absolute;

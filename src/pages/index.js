@@ -14,6 +14,7 @@ import Checkout from "./Checkout";
 import MyAccount from "./MyAccount";
 import ResetPassword from "./ResetPassword";
 import RedefinePassword from "./RedefinePassword";
+import Orders from "./MyAccount/Orders";
 
 export default [
   AboutUs,
@@ -32,4 +33,5 @@ export default [
   MyAccount,
   ResetPassword,
   RedefinePassword,
+  Orders,
 ];

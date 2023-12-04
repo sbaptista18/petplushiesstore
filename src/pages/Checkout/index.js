@@ -53,6 +53,9 @@ const Checkout = () => {
       ConnectWC.get("customers/" + userId)
         .then((response) => {
           setUserPersonalData(response);
+          setTimeout(() => {
+            handleCountry();
+          }, 1000);
         })
         .catch((error) => {
           console.log(error);
@@ -386,10 +389,14 @@ const Checkout = () => {
   }, 0);
 
   const handleCountry = (value) => {
-    fetchShippingZonesDetails(value);
-    setCountry(value);
+    let countryArea;
+    if (value == "") countryArea = form.getFieldValue("country");
+    else countryArea = value;
 
-    if (value === "2") {
+    fetchShippingZonesDetails(countryArea);
+    setCountry(countryArea);
+
+    if (form.getFieldValue("country") === "2") {
       setSecondSelectOptions(PortugalDistricts);
     } else {
       // Handle other countries or set a default set of options
@@ -398,11 +405,15 @@ const Checkout = () => {
   };
 
   const handleCountryShipping = (value) => {
-    fetchShippingZonesDetails(value);
-    setCountry(value);
+    let countryArea;
+    if (value == "") countryArea = form.getFieldValue("country_other");
+    else countryArea = value;
+
+    fetchShippingZonesDetails(countryArea);
+    setCountry(countryArea);
 
     // Set options for the second Select based on the selected country
-    if (value === "2") {
+    if (form.getFieldValue("country") === "2") {
       // If Portugal is selected, set specific options
       setSecondSelectOptions(PortugalDistricts);
     } else {
