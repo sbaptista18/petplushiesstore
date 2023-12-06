@@ -4,9 +4,10 @@ import { Row, Col, Table, Form, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import { PayPalButton } from "react-paypal-button-v2";
+import axios from "axios";
 
 import { Button, ModalMessage } from "components";
-import { ConnectWC, tableColumnsCheckout } from "fragments";
+import { tableColumnsCheckout } from "fragments";
 import { useCart } from "reducers";
 
 import CheckoutForm from "./form";
@@ -50,12 +51,18 @@ const Checkout = () => {
     const user = JSON.parse(storedUserString);
 
     const fetchCustomerData = async (userId) => {
-      ConnectWC.get("customers/" + userId)
-        .then((response) => {
-          setUserPersonalData(response);
+      const options = {
+        method: "GET",
+        url: `http://localhost:8000/customers?userId=${userId}`,
+      };
+
+      axios
+        .request(options)
+        .then(function (response) {
+          setUserPersonalData(response.data);
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(function (error) {
+          console.error(error);
         });
     };
 
@@ -63,9 +70,15 @@ const Checkout = () => {
   }, []);
 
   const fetchCartId = async (cartId) => {
-    ConnectWC.get("temp_carts")
-      .then((data) => {
-        const cartLocalSession = data.success.find(
+    const options = {
+      method: "GET",
+      url: "http://localhost:8000/temp_carts",
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        const cartLocalSession = response.data.success.find(
           (cart) => cart.id === cartId
         );
         if (cartLocalSession !== undefined) {
@@ -74,32 +87,47 @@ const Checkout = () => {
           setLoading(false);
         }
       })
-      .catch((error) => {
-        setError(true);
+      .catch(function (error) {
+        console.error(error);
       });
   };
 
   const fetchCartProducts = async (cartId) => {
-    ConnectWC.get("temp_cart_products_id/" + cartId)
-      .then((data) => {
-        if (data.results.length > 0) {
-          setProductsCart(data.results);
-          fetchProducts(data.results);
+    const options = {
+      method: "GET",
+      url: `http://localhost:8000/temp_cart_products_id?cartId=${cartId}`,
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        if (response.data.results.length > 0) {
+          setProductsCart(response.data.results);
+          fetchProducts(response.data.results);
         } else {
           setProductsCart([]);
           setProducts([]);
         }
       })
-      .catch((error) => {
-        setError(true);
+      .catch(function (error) {
+        console.error(error);
       });
   };
 
   const fetchProducts = (data) => {
     const promises = data.map((cartItem) => {
-      return ConnectWC.get("products/" + cartItem.product_id)
-        .then((product) => ({ cartItem, product }))
-        .catch((error) => {
+      const options = {
+        method: "GET",
+        url: `http://localhost:8000/products/id?id=${cartItem.product_id}`,
+      };
+
+      return axios
+        .request(options)
+        .then((response) => {
+          let product = response.data;
+          return { cartItem, product };
+        })
+        .catch(function (error) {
           return { error: error.response.data };
         });
     });
@@ -110,6 +138,7 @@ const Checkout = () => {
           ...cartItem,
           product,
         }));
+
         setProductsCart(data);
         setProducts(combinedProducts);
         setLoading(false);
@@ -153,18 +182,24 @@ const Checkout = () => {
   };
 
   const fetchShippingZonesDetails = async (area) => {
-    ConnectWC.get("shipping/zones/" + area + "/methods")
-      .then((data) => {
+    const options = {
+      method: "GET",
+      url: `http://localhost:8000/shipping?area=${area}`,
+    };
+
+    return axios
+      .request(options)
+      .then((response) => {
         const weightGrs = totalWeight * 1000;
         const shippingCost = calculateShippingCost(
-          data,
+          response.data,
           weightGrs,
           totalProductNetRevenue
         );
 
         setShippingCost(shippingCost);
       })
-      .catch((error) => {
+      .catch(function (error) {
         setError(true);
       });
   };
@@ -194,10 +229,10 @@ const Checkout = () => {
           userId = parseInt(JSON.parse(localStorage.getItem("user")).ID);
         else userId = 0;
 
-        let data;
+        let dataOrder;
 
         if (formValues.first_name_other) {
-          data = {
+          dataOrder = {
             payment_method: paymentMethod.value,
             payment_method_title: paymentMethod.label,
             set_paid: paymentMethod.label == "PayPal" ? true : false,
@@ -241,7 +276,7 @@ const Checkout = () => {
             ],
           };
         } else {
-          data = {
+          dataOrder = {
             payment_method: paymentMethod.value,
             payment_method_title: paymentMethod.label,
             set_paid: paymentMethod.label == "PayPal" ? true : false,
@@ -286,13 +321,28 @@ const Checkout = () => {
           };
         }
 
-        ConnectWC.post("orders", data)
-          .then((response) => {
-            ConnectWC.delete("temp_cart_delete_on_order/" + cartId)
-              .then((response) => {
+        const options = {
+          method: "POST",
+          url: `http://localhost:8000/orders`,
+          data: JSON.stringify({ dataOrder }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+
+        axios
+          .request(options)
+          .then(function (response) {
+            const options = {
+              method: "DELETE",
+              url: `http://localhost:8000/temp_cart_delete_on_order?cartId=${cartId}`,
+            };
+
+            axios
+              .request(options)
+              .then(function (response) {
                 if (createAccount) {
-                  //create account logic
-                  const data = {
+                  const dataCustomer = {
                     email: formValues.email,
                     first_name: formValues.first_name,
                     last_name: formValues.surname,
@@ -328,8 +378,18 @@ const Checkout = () => {
                     },
                   };
 
-                  ConnectWC.post("customers", data)
-                    .then((response) => {
+                  const options = {
+                    method: "POST",
+                    url: `http://localhost:8000/customers`,
+                    data: JSON.stringify({ dataCustomer }),
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  };
+
+                  axios
+                    .request(options)
+                    .then(function (response) {
                       setMessage(
                         "A sua conta foi criada com sucesso! Pode efectuar o login com o seu nome de utilizador gerado (" +
                           formValues.first_name.toLowerCase() +
@@ -340,7 +400,7 @@ const Checkout = () => {
                       setStatus("success");
                       setIsModalOpen(true);
                     })
-                    .catch((error) => {
+                    .catch(function (error) {
                       setMessage(
                         "Houve um erro na criacao da conta. Por favor envie e-mail para geral@petplushies.pt para notificar do sucedido. (" +
                           error.response.data +
@@ -357,7 +417,7 @@ const Checkout = () => {
                   setIsModalOpen(true);
                 }
               })
-              .catch((error) => {
+              .catch(function (error) {
                 setMessage(
                   "Houve um erro ao efectuar a encomenda. (" + error + ".)"
                 );
@@ -365,7 +425,7 @@ const Checkout = () => {
                 setIsModalOpen(true);
               });
           })
-          .catch((error) => {
+          .catch(function (error) {
             setError(true);
           });
       })
@@ -391,7 +451,6 @@ const Checkout = () => {
     if (value === "2") {
       setSecondSelectOptions(PortugalDistricts);
     } else {
-      // Handle other countries or set a default set of options
       setSecondSelectOptions([]);
     }
   };
@@ -400,12 +459,9 @@ const Checkout = () => {
     fetchShippingZonesDetails(value);
     setCountry(value);
 
-    // Set options for the second Select based on the selected country
     if (value === "2") {
-      // If Portugal is selected, set specific options
       setSecondSelectOptions(PortugalDistricts);
     } else {
-      // Handle other countries or set a default set of options
       setSecondSelectOptions([]);
     }
   };

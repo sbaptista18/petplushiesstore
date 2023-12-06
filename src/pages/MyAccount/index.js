@@ -6,7 +6,6 @@ import axios from "axios";
 import { useLocation, useHistory, Link } from "react-router-dom";
 
 import { Button, ModalMessage } from "components";
-import { ConnectWC } from "fragments";
 
 import { PortugalDistricts } from "../Checkout/data";
 import PersonalDataForm from "./Forms/PersonalDataForm";
@@ -77,12 +76,18 @@ const MyAccount = () => {
 
   useEffect(() => {
     const fetchCustomerData = async (userId) => {
-      ConnectWC.get("customers/" + userId)
-        .then((response) => {
-          setUserPersonalData(response);
+      const options = {
+        method: "GET",
+        url: `http://localhost:8000/customers?userId=${userId}`,
+      };
+
+      axios
+        .request(options)
+        .then(function (response) {
+          setUserPersonalData(response.data);
           setLoading(false);
         })
-        .catch((error) => {
+        .catch(function (error) {
           console.log(error);
           setLoading(true);
         });
@@ -93,15 +98,21 @@ const MyAccount = () => {
   }, []);
 
   const fetchOrders = (userId) => {
-    ConnectWC.get("orders")
-      .then((response) => {
-        const clientOrders = response.filter(
+    const options = {
+      method: "GET",
+      url: `http://localhost:8000/orders/userid`,
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        const clientOrders = response.data.filter(
           (order) => order.customer_id === parseInt(userId)
         );
         setOrders(clientOrders);
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(function (error) {
+        console.error(error);
       });
   };
 
@@ -134,23 +145,28 @@ const MyAccount = () => {
         user_email: formValues.email,
       };
 
-      // Retrieve the current user object from localStorage
       const storedUserString = localStorage.getItem("user");
 
-      // Parse the JSON string into an object
       const currentUser = JSON.parse(storedUserString);
 
-      // Update the properties of the user object
       currentUser.user_email = data.user_email;
 
-      // Convert the updated object back to a JSON string
       const updatedUserString = JSON.stringify(currentUser);
 
-      // Update the localStorage variable with the new JSON string
       localStorage.setItem("user", updatedUserString);
 
-      ConnectWC.put("users/" + data.ID, data)
-        .then((response) => {
+      const options = {
+        method: "PUT",
+        url: `http://localhost:8000/users/id?userId=${user.ID}`,
+        data: JSON.stringify({ data }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      axios
+        .request(options)
+        .then(function (response) {
           if (response.error) {
             setMessage(
               "Houve um erro na actualizacao do seu e-mail. (" +
@@ -165,7 +181,7 @@ const MyAccount = () => {
             setIsModalOpen(true);
           }
         })
-        .catch((error) => {
+        .catch(function (error) {
           setMessage(
             "Houve um erro na actualizacao do seu e-mail. (" +
               error.error +
@@ -180,7 +196,7 @@ const MyAccount = () => {
   const handleSubmitPersonalData = () => {
     form1.validateFields().then(() => {
       const formValues = form1.getFieldsValue();
-      const data = {
+      const dataUser = {
         id: user.ID,
         billing: {
           first_name: formValues.first_name,
@@ -209,8 +225,18 @@ const MyAccount = () => {
         },
       };
 
-      ConnectWC.put("customers/" + user.ID, data)
-        .then((response) => {
+      const options = {
+        method: "PUT",
+        url: `http://localhost:8000/customers/id?userId=${user.ID}`,
+        data: JSON.stringify({ dataUser }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      axios
+        .request(options)
+        .then(function (response) {
           if (response.error) {
             setMessage(
               "Houve um erro na actualizacao dos seus dados. (" +
@@ -225,9 +251,9 @@ const MyAccount = () => {
             setIsModalOpen(true);
           }
         })
-        .catch((error) => {
+        .catch(function (error) {
           setMessage(
-            "Houve um erro na actualizacao do seus dados. (" +
+            "Houve um erro na actualizacao dos seus dados. (" +
               error.error +
               ".)"
           );
@@ -243,7 +269,6 @@ const MyAccount = () => {
     if (value === "PT") {
       setSecondSelectOptions(PortugalDistricts);
     } else {
-      // Handle other countries or set a default set of options
       setSecondSelectOptions([]);
     }
   };
@@ -251,12 +276,9 @@ const MyAccount = () => {
   const handleCountryShipping = (value) => {
     setCountry(value);
 
-    // Set options for the second Select based on the selected country
     if (value === "PT") {
-      // If Portugal is selected, set specific options
       setSecondSelectOptions(PortugalDistricts);
     } else {
-      // Handle other countries or set a default set of options
       setSecondSelectOptions([]);
     }
   };

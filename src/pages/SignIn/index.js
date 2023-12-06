@@ -5,7 +5,6 @@ import { useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 
 import { Button, ModalMessage } from "components";
-import { ConnectWC } from "fragments";
 
 const SignIn = () => {
   const [isVerified, setIsVerified] = useState(false);
@@ -18,7 +17,7 @@ const SignIn = () => {
   const handleSubmit = () => {
     form.validateFields().then(() => {
       const formValues = form.getFieldsValue();
-      const data = {
+      const dataCustomer = {
         email: formValues.email,
         first_name: formValues.first_name,
         last_name: formValues.surname,
@@ -28,8 +27,18 @@ const SignIn = () => {
           formValues.surname.toLowerCase(),
       };
 
-      ConnectWC.post("customers", data)
-        .then((response) => {
+      const options = {
+        method: "POST",
+        url: `http://localhost:8000/customers`,
+        data: JSON.stringify({ dataCustomer }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      axios
+        .request(options)
+        .then(function (response) {
           setMessage(
             "A sua conta foi criada com sucesso! Pode efectuar o login com o seu nome de utilizador gerado (" +
               formValues.first_name.toLowerCase() +
@@ -40,7 +49,7 @@ const SignIn = () => {
           setStatus("success");
           setIsModalOpen(true);
         })
-        .catch((error) => {
+        .catch(function (error) {
           setMessage(
             "Houve um erro na criacao da conta. Por favor envie e-mail para geral@petplushies.pt para notificar do sucedido. (" +
               error.response.data +

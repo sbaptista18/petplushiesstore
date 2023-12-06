@@ -3,6 +3,8 @@ import { Row, Col, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
+
 import { useCart } from "reducers";
 import { getSessionDataFromLocalStorage } from "helpers";
 
@@ -14,8 +16,6 @@ import {
   ShareSocials,
   ModalMessage,
 } from "components";
-
-import { ConnectWC } from "fragments";
 
 const flagText = (stock) => {
   let text;
@@ -49,9 +49,15 @@ const Product = () => {
 
   useEffect(() => {
     const fetchProduct = async () => {
-      ConnectWC.get("products")
-        .then((data) => {
-          const productWithSlug = data.find(
+      const options = {
+        method: "GET",
+        url: `http://localhost:8000/products`,
+      };
+
+      axios
+        .request(options)
+        .then((response) => {
+          const productWithSlug = response.data.find(
             (product) => product.slug === productUrl
           );
 
@@ -97,15 +103,31 @@ const Product = () => {
         product_net_revenue: product.price * qty,
       };
 
-      ConnectWC.get("temp_cart_products/" + dataProduct.product_id)
+      const options = {
+        method: "GET",
+        url: `http://localhost:8000/products`,
+      };
+
+      axios
+        .request(options)
         .then((response) => {
-          ConnectWC.post("temp_cart_products", dataProduct)
-            .then((response) => {
+          const options1 = {
+            method: "POST",
+            url: `http://localhost:8000/temp_cart_products`,
+            data: JSON.stringify({ dataProduct }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          };
+
+          axios
+            .request(options1)
+            .then(function (response) {
               setMessage("Product was added to cart!");
               setStatus("success");
               setIsModalOpen(true);
             })
-            .catch((error) => {
+            .catch(function (error) {
               setMessage(
                 "There was an error adding product to cart. (" + error + ".)"
               );
@@ -142,8 +164,18 @@ const Product = () => {
         is_user_cart: storedUserData ? 1 : 0,
       };
 
-      ConnectWC.post("temp_carts", dataCart)
-        .then((response) => {
+      const options1 = {
+        method: "POST",
+        url: `http://localhost:8000/temp_carts`,
+        data: JSON.stringify({ dataCart }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      axios
+        .request(options1)
+        .then(function (response) {
           const dataProduct = {
             temp_cart_id: response.success.id,
             product_id: product.id,
@@ -156,13 +188,23 @@ const Product = () => {
             product_net_revenue: product.price,
           };
 
-          ConnectWC.post("temp_cart_products", dataProduct)
-            .then((response) => {
+          const options1 = {
+            method: "POST",
+            url: `http://localhost:8000/temp_cart_products`,
+            data: JSON.stringify({ dataProduct }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          };
+
+          axios
+            .request(options1)
+            .then(function (response) {
               setMessage("Product was added to cart!");
               setStatus("success");
               setIsModalOpen(true);
             })
-            .catch((error) => {
+            .catch(function (error) {
               setMessage(
                 "There was an error adding product to cart. (" +
                   error.response +
@@ -172,7 +214,7 @@ const Product = () => {
               setIsModalOpen(true);
             });
         })
-        .catch((error) => {
+        .catch(function (error) {
           setMessage(
             "There was an error creating the cart. (" + error.response + ".)"
           );

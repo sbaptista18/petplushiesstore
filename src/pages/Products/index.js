@@ -95,7 +95,7 @@ const Products = () => {
     };
     axios
       .request(options)
-      .then(function (response) {
+      .then((response) => {
         let originalData = response.data;
         let result;
         if (sortOption == "id_DESC") {
@@ -140,7 +140,7 @@ const Products = () => {
           setLoading(false);
         }
       })
-      .catch(function (error) {
+      .catch((error) => {
         setError(true);
       });
   }, [categoryFilter, sortOption]);
@@ -155,7 +155,7 @@ const Products = () => {
 
       axios
         .request(options)
-        .then(function (response) {
+        .then((response) => {
           const mappedCategories = response.data.map((item) => {
             return {
               key: item.id,
@@ -167,7 +167,7 @@ const Products = () => {
 
           setCategories(mappedCategories);
         })
-        .catch(function (error) {
+        .catch((error) => {
           setError(true);
         });
     };
@@ -185,7 +185,7 @@ const Products = () => {
 
       axios
         .request(options)
-        .then(function (response) {
+        .then((response) => {
           let minPrice = Number.MAX_VALUE;
           let maxPrice = 0;
 
@@ -198,7 +198,7 @@ const Products = () => {
           setMinPrice(minPrice);
           setMaxPrice(maxPrice);
         })
-        .catch(function (error) {
+        .catch((error) => {
           setError(true);
         });
     };

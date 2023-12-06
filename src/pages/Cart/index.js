@@ -3,9 +3,10 @@ import { Row, Col, Table, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 import { Button, ModalMessage } from "components";
-import { ConnectWC, tableColumns } from "fragments";
+import { tableColumns } from "fragments";
 import { useCart } from "reducers";
 
 const CustomNoData = () => (
@@ -30,9 +31,15 @@ const Cart = () => {
   }, [cartId]);
 
   const fetchCartId = async (cartId) => {
-    ConnectWC.get("temp_carts")
-      .then((data) => {
-        const cartLocalSession = data.success.find(
+    const options = {
+      method: "GET",
+      url: "http://localhost:8000/temp_carts",
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        const cartLocalSession = response.data.success.find(
           (cart) => cart.id === cartId
         );
         if (cartLocalSession !== undefined) {
@@ -41,47 +48,60 @@ const Cart = () => {
           setLoading(false);
         }
       })
-      .catch((error) => {
-        setError(true);
+      .catch(function (error) {
+        console.error(error);
       });
   };
 
   const fetchCartProducts = async (cartId) => {
-    ConnectWC.get("temp_cart_products_id/" + cartId)
-      .then((data) => {
-        if (data.results.length > 0) {
-          setProductsCart(data.results);
-          fetchProducts(data.results);
+    const options = {
+      method: "GET",
+      url: `http://localhost:8000/temp_cart_products_id?cartId=${cartId}`,
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        if (response.data.results.length > 0) {
+          setProductsCart(response.data.results);
+          fetchProducts(response.data.results);
         } else {
           setProductsCart([]);
-          setProducts([]); // Make sure to set products state to an empty array if there are no cart products
+          setProducts([]);
         }
       })
-      .catch((error) => {
-        setError(true);
+      .catch(function (error) {
+        console.error(error);
       });
   };
 
   const fetchProducts = (data) => {
     const promises = data.map((cartItem) => {
-      return ConnectWC.get("products/" + cartItem.product_id)
-        .then((product) => ({ cartItem, product })) // Combine cart item and product data
-        .catch((error) => {
-          // Assuming you want to handle errors and continue
+      const options = {
+        method: "GET",
+        url: `http://localhost:8000/products/id?id=${cartItem.product_id}`,
+      };
+
+      return axios
+        .request(options)
+        .then((response) => {
+          let product = response.data;
+          return { cartItem, product };
+        })
+        .catch(function (error) {
           return { error: error.response.data };
         });
     });
 
     Promise.all(promises)
       .then((responses) => {
-        // Extract cartItem and product data from the responses
         const combinedProducts = responses.map(({ cartItem, product }) => ({
           ...cartItem,
           product,
         }));
-        setProductsCart(data); // Set productsCart separately
-        setProducts(combinedProducts); // Set combinedProducts to products state
-        // Do something with the array of responses
+
+        setProductsCart(data);
+        setProducts(combinedProducts);
         setLoading(false);
       })
       .catch((error) => {
@@ -99,13 +119,23 @@ const Cart = () => {
       product_net_revenue: product_price * qty,
     };
 
-    ConnectWC.post("temp_cart_products_checkout", dataProduct)
-      .then((response) => {
+    const options = {
+      method: "POST",
+      url: `http://localhost:8000/temp_cart_products_id`,
+      data: JSON.stringify({ dataProduct }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
         setMessage("Product updated!");
         setStatus("success");
         setIsModalOpen(true);
       })
-      .catch((error) => {
+      .catch(function (error) {
         setMessage("There was an error updating the product. (" + error + ".)");
         setStatus("error");
         setIsModalOpen(true);
@@ -113,23 +143,19 @@ const Cart = () => {
   };
 
   const deleteCartProducts = (cartId, product_id) => {
-    const dataProduct = {
-      temp_cart_id: cartId,
-      product_id: product_id,
+    const options = {
+      method: "DELETE",
+      url: `http://localhost:8000/temp_cart_products_delete?cartId=${cartId}&prodId=${product_id}`,
     };
 
-    ConnectWC.delete(
-      "temp_cart_products_delete/" +
-        dataProduct.temp_cart_id +
-        "/" +
-        dataProduct.product_id
-    )
-      .then((response) => {
+    axios
+      .request(options)
+      .then(function (response) {
         setMessage("Product deleted from cart!");
         setStatus("success");
         setIsModalOpen(true);
       })
-      .catch((error) => {
+      .catch(function (error) {
         setMessage(
           "There was an error deleting the product from the cart. (" +
             error +

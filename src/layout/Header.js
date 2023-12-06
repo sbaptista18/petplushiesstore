@@ -19,8 +19,6 @@ import {
 
 import Logo from "assets/images/logo.png";
 
-import { ConnectWC } from "fragments";
-
 const { Header } = Layout;
 
 const onClickSectionRegistry = {

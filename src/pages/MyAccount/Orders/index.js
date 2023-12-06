@@ -4,8 +4,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import moment from "moment";
-
-import { ConnectWC } from "fragments";
+import axios from "axios";
 
 const tableColumns = () => [
   {
@@ -87,43 +86,51 @@ const Order = () => {
 
   useEffect(() => {
     const fetchOrder = (orderId) => {
-      ConnectWC.get("orders/" + orderId)
-        .then((orderResponse) => {
-          // Fetch product data for each line item
-          const productPromises = orderResponse.line_items.map((item) => {
+      const options = {
+        method: "GET",
+        url: `http://localhost:8000/orders?id=${orderId}`,
+      };
+
+      return axios
+        .request(options)
+        .then((response) => {
+          const productPromises = response.data.line_items.map((item) => {
             const prodId = item.product_id;
-            return ConnectWC.get("products/" + prodId)
-              .then((productResponse) => productResponse.slug)
+
+            const options = {
+              method: "GET",
+              url: `http://localhost:8000/products/id?id=${prodId}`,
+            };
+
+            return axios
+              .request(options)
+              .then((productResponse) => productResponse.data.slug)
               .catch((error) => {
-                console.log(error);
-                return null; // or handle the error in a different way
+                return null;
               });
           });
 
-          // Wait for all product requests to complete
           Promise.all(productPromises)
             .then((productSlugs) => {
-              // Combine order and product data
               const updatedOrder = {
-                ...orderResponse,
+                ...response.data,
                 slugs: productSlugs,
-                line_items: orderResponse.line_items.map((item, index) => {
+                line_items: response.data.line_items.map((item, index) => {
                   return {
                     ...item,
                     slug: productSlugs[index],
                   };
                 }),
               };
+              console.log(updatedOrder);
               setOrder([updatedOrder]);
               setLoading(false);
             })
             .catch((error) => {
-              console.log(error);
               setLoading(false);
             });
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(function (error) {
           setError(true);
           setLoading(false);
         });
@@ -131,6 +138,8 @@ const Order = () => {
 
     fetchOrder(orderId);
   }, [orderId]);
+
+  console.log(order);
 
   return (
     <Container>
