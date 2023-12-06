@@ -53,9 +53,6 @@ const Checkout = () => {
       ConnectWC.get("customers/" + userId)
         .then((response) => {
           setUserPersonalData(response);
-          setTimeout(() => {
-            handleCountry();
-          }, 1000);
         })
         .catch((error) => {
           console.log(error);
@@ -155,9 +152,8 @@ const Checkout = () => {
     }
   };
 
-  const fetchShippingZonesDetails = async () => {
-    const countryArea = form.getFieldValue("country");
-    ConnectWC.get("shipping/zones/" + countryArea + "/methods")
+  const fetchShippingZonesDetails = async (area) => {
+    ConnectWC.get("shipping/zones/" + area + "/methods")
       .then((data) => {
         const weightGrs = totalWeight * 1000;
         const shippingCost = calculateShippingCost(
@@ -389,14 +385,10 @@ const Checkout = () => {
   }, 0);
 
   const handleCountry = (value) => {
-    let countryArea;
-    if (value == "") countryArea = form.getFieldValue("country");
-    else countryArea = value;
+    fetchShippingZonesDetails(value);
+    setCountry(value);
 
-    fetchShippingZonesDetails(countryArea);
-    setCountry(countryArea);
-
-    if (form.getFieldValue("country") === "2") {
+    if (value === "2") {
       setSecondSelectOptions(PortugalDistricts);
     } else {
       // Handle other countries or set a default set of options
@@ -405,15 +397,11 @@ const Checkout = () => {
   };
 
   const handleCountryShipping = (value) => {
-    let countryArea;
-    if (value == "") countryArea = form.getFieldValue("country_other");
-    else countryArea = value;
-
-    fetchShippingZonesDetails(countryArea);
-    setCountry(countryArea);
+    fetchShippingZonesDetails(value);
+    setCountry(value);
 
     // Set options for the second Select based on the selected country
-    if (form.getFieldValue("country") === "2") {
+    if (value === "2") {
       // If Portugal is selected, set specific options
       setSecondSelectOptions(PortugalDistricts);
     } else {
@@ -507,16 +495,7 @@ const Checkout = () => {
             </Subtotal>
             <Shipping>
               <div>Estimativa de portes</div>
-              {shippingCost == 0 ? (
-                <StyledButton
-                  size="large"
-                  type="primary"
-                  text="Calcular portes"
-                  onClick={() => fetchShippingZonesDetails()}
-                />
-              ) : (
-                <div>{shippingCost}&euro;</div>
-              )}
+              <div>{shippingCost}&euro;</div>
             </Shipping>
             <Border />
             <Total>

@@ -29,7 +29,19 @@ const tableColumns = () => [
     dataIndex: "status",
     key: "status",
     render: (record) => {
-      return <div>{record}</div>;
+      let status;
+      switch (record) {
+        case "on-hold":
+          status = "Aguarda confirmacao de pagamento";
+          break;
+        case "processing":
+          status = "Em processamento";
+          break;
+        default:
+          status = "default";
+          break;
+      }
+      return <div>{status}</div>;
     },
   },
   {

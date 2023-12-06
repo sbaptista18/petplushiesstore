@@ -3,10 +3,9 @@ import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import { Row, Col, Collapse, Slider, Select, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
+import axios from "axios";
 
 import { Breadcrumbs, TileNoInput } from "components";
-
-import { ConnectWC } from "fragments";
 
 const { Panel } = Collapse;
 
@@ -88,45 +87,30 @@ const Products = () => {
     return parseFloat(b.price) - parseFloat(a.price);
   };
 
+  // FETCH PRODUCTS
   useEffect(() => {
-    const fetchProducts = () => {
-      setLoading(true);
-      setNoResults(false);
-      setError(false);
+    const options = {
+      method: "GET",
+      url: "http://localhost:8000/products",
+    };
+    axios
+      .request(options)
+      .then(function (response) {
+        let originalData = response.data;
+        let result;
+        if (sortOption == "id_DESC") {
+          result = filterByCategory(originalData).sort(sortProductsById);
+        } else if (sortOption == "price_ASC")
+          result = filterByCategory(originalData).sort(sortByPriceLowToHigh);
+        else result = filterByCategory(originalData).sort(sortByPriceHighToLow);
 
-      ConnectWC.get("products")
-        .then((data) => {
-          let originalData = [...data];
-          let result;
-          if (sortOption == "id_DESC") {
-            result = filterByCategory(originalData).sort(sortProductsById);
-          } else if (sortOption == "price_ASC")
-            result = filterByCategory(originalData).sort(sortByPriceLowToHigh);
-          else
-            result = filterByCategory(originalData).sort(sortByPriceHighToLow);
-
-          if (result.length == 0) {
-            if (data.length == 0) {
-              setNoResults(true);
-              setLoading(false);
-              setError(false);
-            } else {
-              const mappedProducts = data.map((item) => {
-                return {
-                  key: item.id,
-                  name: item.name,
-                  price: _.toNumber(item.price),
-                  stock: item.stock_quantity,
-                  picture: item.images[0].src,
-                  url: item.slug,
-                };
-              });
-
-              setProducts(mappedProducts);
-              setLoading(false);
-            }
+        if (result.length == 0) {
+          if (data.length == 0) {
+            setNoResults(true);
+            setLoading(false);
+            setError(false);
           } else {
-            const mappedProducts = result.map((item) => {
+            const mappedProducts = data.map((item) => {
               return {
                 key: item.id,
                 name: item.name,
@@ -140,20 +124,39 @@ const Products = () => {
             setProducts(mappedProducts);
             setLoading(false);
           }
-        })
-        .catch((error) => {
-          setError(true);
-        });
-    };
-    fetchProducts();
+        } else {
+          const mappedProducts = result.map((item) => {
+            return {
+              key: item.id,
+              name: item.name,
+              price: _.toNumber(item.price),
+              stock: item.stock_quantity,
+              picture: item.images[0].src,
+              url: item.slug,
+            };
+          });
+
+          setProducts(mappedProducts);
+          setLoading(false);
+        }
+      })
+      .catch(function (error) {
+        setError(true);
+      });
   }, [categoryFilter, sortOption]);
 
-  // //FETCH CATEGORIES
+  // FETCH CATEGORIES
   useEffect(() => {
     const fetchCategories = async () => {
-      ConnectWC.get("products/categories")
-        .then((data) => {
-          const mappedCategories = data.map((item) => {
+      const options = {
+        method: "GET",
+        url: "http://localhost:8000/products/categories",
+      };
+
+      axios
+        .request(options)
+        .then(function (response) {
+          const mappedCategories = response.data.map((item) => {
             return {
               key: item.id,
               name: item.name,
@@ -164,23 +167,29 @@ const Products = () => {
 
           setCategories(mappedCategories);
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(function (error) {
+          setError(true);
         });
     };
 
     fetchCategories();
   }, []);
 
-  //FETCH PRICE RANGE
+  // FETCH PRICE RANGE
   useEffect(() => {
     const fetchPriceRange = async () => {
-      ConnectWC.get("products")
-        .then((data) => {
+      const options = {
+        method: "GET",
+        url: "http://localhost:8000/products",
+      };
+
+      axios
+        .request(options)
+        .then(function (response) {
           let minPrice = Number.MAX_VALUE;
           let maxPrice = 0;
 
-          data.forEach((product) => {
+          response.data.forEach((product) => {
             let price = parseFloat(product.price);
             minPrice = Math.min(minPrice, price);
             maxPrice = Math.max(maxPrice, price);
@@ -189,8 +198,8 @@ const Products = () => {
           setMinPrice(minPrice);
           setMaxPrice(maxPrice);
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(function (error) {
+          setError(true);
         });
     };
 

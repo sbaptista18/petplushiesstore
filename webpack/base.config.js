@@ -32,6 +32,10 @@ module.exports = {
       utils: path.resolve(__dirname, `${srcDir}/utils`),
       helpers: path.resolve(__dirname, `${srcDir}/helpers`),
     },
+    fallback: {
+      buffer: require.resolve("buffer/"),
+      crypto: require.resolve("crypto-browserify"),
+    },
   },
   target: "web",
   module: {
@@ -71,6 +75,9 @@ module.exports = {
     ],
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      Buffer: ["buffer", "Buffer"],
+    }),
     new DotEnv({
       path: ".env",
     }),

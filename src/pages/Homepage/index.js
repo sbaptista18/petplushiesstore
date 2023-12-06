@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Row } from "antd";
+
 import { Button, Slideshow } from "components";
 
 import Image from "assets/images/batcat-1.jpg";

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack serve --progress --config webpack/dev.config.js",
-    "build": "webpack --mode production --config webpack/prod.config.js"
+    "build": "webpack --mode production --config webpack/prod.config.js",
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git"
@@ -17,14 +18,20 @@
     "@paypal/react-paypal-js": "^8.1.3",
     "@woocommerce/woocommerce-rest-api": "^1.0.1",
     "antd": "^4.20.6",
-    "axios": "^1.4.0",
+    "axios": "^1.6.2",
+    "axios-oauth-1.0a": "^0.3.6",
     "buffer": "^6.0.3",
     "cipher-base": "latest",
+    "cors": "^2.8.5",
+    "crypto-browserify": "^3.12.0",
     "dotenv-webpack": "^8.0.1",
+    "express": "^4.18.2",
     "html-react-parser": "^4.0.0",
     "lodash": "^4.17.21",
     "markdown-to-jsx": "^7.2.1",
     "moment": "^2.29.4",
+    "nodemon": "^3.0.2",
+    "oauth": "^0.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-google-recaptcha": "^3.1.0",
@@ -78,5 +85,8 @@
     "webpack-cli": "^4.8.0",
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.8.0"
+  },
+  "browser": {
+    "crypto": false
   }
 }

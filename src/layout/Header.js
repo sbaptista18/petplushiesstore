@@ -2,6 +2,8 @@ import styled from "styled-components";
 import { Layout, Menu, Col } from "antd";
 import { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
+import axios from "axios";
+
 import { useCart, CreateCartKey } from "reducers";
 import {
   generateSessionKey,
@@ -64,9 +66,15 @@ const PPS_Header = () => {
   }, [setSessionKeyAndCartId]);
 
   const fetchCartId = async (sessionKey) => {
-    ConnectWC.get("temp_carts/" + sessionKey)
-      .then((data) => {
-        const cartLocalSession = data.results.find(
+    const options = {
+      method: "GET",
+      url: "http://localhost:8000/temp_carts",
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        const cartLocalSession = response.data.success.find(
           (cart) => cart.local_session_key === sessionKey
         );
         if (cartLocalSession != undefined) {
@@ -74,21 +82,30 @@ const PPS_Header = () => {
           fetchCartProducts(cartLocalSession.id);
         }
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(function (error) {
+        console.error(error);
       });
   };
 
   const fetchCartProducts = async (cartId) => {
-    ConnectWC.get("temp_cart_products_id/" + cartId)
-      .then((data) => {
-        if (data.results.length > 0) {
-          if (data.results.length == 1)
-            setProductsNr(data.results[0].product_qty);
+    const options = {
+      method: "GET",
+      url: `http://localhost:8000/temp_cart_products_id?cartId=${cartId}`,
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        if (response.data.results.length > 0) {
+          if (response.data.results.length == 1)
+            setProductsNr(response.data.results[0].product_qty);
           else {
-            const totalQuantity = data.results.reduce((accumulator, prods) => {
-              return accumulator + parseInt(prods.product_qty, 10);
-            }, 0);
+            const totalQuantity = response.data.results.reduce(
+              (accumulator, prods) => {
+                return accumulator + parseInt(prods.product_qty, 10);
+              },
+              0
+            );
 
             setProductsNr(totalQuantity);
           }
@@ -96,8 +113,8 @@ const PPS_Header = () => {
           setProductsNr(0);
         }
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(function (error) {
+        console.error(error);
       });
   };
 
