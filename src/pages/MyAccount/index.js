@@ -11,6 +11,8 @@ import { PortugalDistricts } from "../Checkout/data";
 import PersonalDataForm from "./Forms/PersonalDataForm";
 import AccountDataForm from "./Forms/AccountDataForm";
 
+import { useCart } from "reducers";
+
 const CustomNoData = () => (
   <div style={{ textAlign: "center", padding: "20px" }}>
     Ainda nao efectuou nenhuma encomenda.
@@ -64,6 +66,8 @@ const MyAccount = () => {
 
   const [form] = Form.useForm();
   const [form1] = Form.useForm();
+
+  const { clearCartState } = useCart();
 
   const data = location.state?.data;
 
@@ -123,6 +127,7 @@ const MyAccount = () => {
       );
 
       if (response.data.success) {
+        clearCartState();
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         localStorage.removeItem("userCart");
@@ -130,10 +135,11 @@ const MyAccount = () => {
       }
     } catch (error) {
       setError(error.response.data.message);
+      history.replace("/login");
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       localStorage.removeItem("userCart");
-      history.replace("/login");
+      clearCartState();
     }
   };
 

@@ -17,6 +17,15 @@ export const CartProvider = ({ children }) => {
     setProductsNr(newProductsNr);
   };
 
+  const clearCartState = () => {
+    setSessionKey(null);
+    setCartId(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("userCart");
+    setProductsNr(0);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -25,6 +34,7 @@ export const CartProvider = ({ children }) => {
         setSessionKeyAndCartId,
         productsNr,
         updateProductsNr,
+        clearCartState,
       }}
     >
       {children}
