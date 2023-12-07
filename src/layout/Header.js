@@ -45,6 +45,8 @@ const PPS_Header = () => {
   const { updateProductsNr } = useCart();
   const { productsNr } = useCart();
 
+  const [updateHeader, setUpdateHeader] = useState(false);
+
   CreateCartKey();
 
   useEffect(() => {
@@ -102,6 +104,9 @@ const PPS_Header = () => {
                 0
               );
               updateProductsNr(totalQuantity);
+
+              console.log("Updating header...");
+              setUpdateHeader((prev) => !prev);
             }
           } else {
             updateProductsNr(0);
@@ -111,10 +116,10 @@ const PPS_Header = () => {
           console.error(error);
         });
     };
-  }, [setSessionKeyAndCartId, updateProductsNr, productsNr]);
+  }, [setSessionKeyAndCartId, updateProductsNr, productsNr, updateHeader]);
 
   return (
-    <StyledHeader>
+    <StyledHeader key={updateHeader ? "update" : "no-update"}>
       <Col span={6}>
         <StyledLink to="/">
           <img src={Logo} />

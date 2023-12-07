@@ -6,11 +6,14 @@ import { useHistory, Link } from "react-router-dom";
 
 import { Button } from "components";
 
+import { useCart } from "reducers";
+
 const LogIn = () => {
   const [error, setError] = useState("");
   const history = useHistory();
 
   const [form] = Form.useForm();
+  const { setLoggedIn } = useCart();
 
   const handleAuth = async () => {
     form.validateFields().then(async () => {
@@ -66,6 +69,7 @@ const LogIn = () => {
 
         localStorage.setItem("userCart", JSON.stringify(cartData));
         localStorage.removeItem("tempCart");
+        setLoggedIn(true);
         history.replace("/minha-conta", { data: jwtToken });
       }
     } catch (error) {

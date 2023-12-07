@@ -5,8 +5,8 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [sessionKey, setSessionKey] = useState(null);
   const [cartId, setCartId] = useState(null);
-
   const [productsNr, setProductsNr] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // New state
 
   const setSessionKeyAndCartId = (sessionKey, cartId) => {
     setSessionKey(sessionKey);
@@ -26,6 +26,10 @@ export const CartProvider = ({ children }) => {
     setProductsNr(0);
   };
 
+  const setLoggedIn = (loggedIn) => {
+    setIsLoggedIn(loggedIn);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -35,6 +39,8 @@ export const CartProvider = ({ children }) => {
         productsNr,
         updateProductsNr,
         clearCartState,
+        isLoggedIn, // Provide isLoggedIn in the context
+        setLoggedIn, // Provide setLoggedIn function in the context
       }}
     >
       {children}
