@@ -23,32 +23,35 @@ const Cart = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState();
   const [message, setMessage] = useState("");
+  const [totalProductNetRevenue, setTotalProductNetRevenue] = useState(0);
 
   const { cartId } = useCart();
+  const { updateProductsNr } = useCart();
 
   useEffect(() => {
-    fetchCartId(cartId);
+    if (cartId != null) {
+      setLoading(true);
+      fetchCartProducts(cartId);
+    } else {
+      setProductsCart([]);
+      setProducts([]);
+      setTotalProductNetRevenue(0);
+      setLoading(false);
+    }
   }, [cartId]);
 
-  const fetchCartId = async (cartId) => {
-    const options = {
-      method: "GET",
-      url: `http://localhost:8000/temp_carts/id?id=${cartId}`,
-    };
+  // Add this new useEffect
+  useEffect(() => {
+    if (productsCart.length > 0) {
+      const updatedTotal = productsCart.reduce((sum, item) => {
+        return sum + parseInt(item.product_net_revenue, 10);
+      }, 0);
 
-    axios
-      .request(options)
-      .then(function (response) {
-        if (response.data.results != undefined) {
-          fetchCartProducts(response.data.results[0].id);
-        } else {
-          setLoading(true);
-        }
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
-  };
+      updateProductsNr(productsCart[0].product_qty);
+      setTotalProductNetRevenue(updatedTotal);
+      setLoading(false); // Set loading to false after calculating the total
+    }
+  }, [productsCart]);
 
   const fetchCartProducts = async (cartId) => {
     const options = {
@@ -56,23 +59,31 @@ const Cart = () => {
       url: `http://localhost:8000/temp_cart_products_id?cartId=${cartId}`,
     };
 
-    axios
-      .request(options)
-      .then(function (response) {
-        if (response.data.results.length > 0) {
-          setProductsCart(response.data.results);
-          fetchProducts(response.data.results);
-        } else {
-          setProductsCart([]);
-          setProducts([]);
-        }
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
+    try {
+      const response = await axios.request(options);
+
+      if (response.data.results.length > 0) {
+        const updatedProducts = await fetchProducts(response.data.results);
+
+        // Calculate total after setting productsCart
+        const initialTotal = updatedProducts.reduce((sum, item) => {
+          return sum + parseInt(item.product_net_revenue, 10);
+        }, 0);
+
+        setProductsCart(response.data.results);
+        setProducts(updatedProducts);
+        setTotalProductNetRevenue(initialTotal);
+      } else {
+        setProductsCart([]);
+        setProducts([]);
+        setTotalProductNetRevenue(0); // Set total to 0 if there are no products
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const fetchProducts = (data) => {
+  const fetchProducts = async (data) => {
     const promises = data.map((cartItem) => {
       const options = {
         method: "GET",
@@ -90,21 +101,18 @@ const Cart = () => {
         });
     });
 
-    Promise.all(promises)
-      .then((responses) => {
-        const combinedProducts = responses.map(({ cartItem, product }) => ({
-          ...cartItem,
-          product,
-        }));
-
-        setProductsCart(data);
-        setProducts(combinedProducts);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setError(true);
-        setProducts([]);
-      });
+    try {
+      const responses = await Promise.all(promises);
+      const combinedProducts = responses.map(({ cartItem, product }) => ({
+        ...cartItem,
+        product,
+      }));
+      return combinedProducts;
+    } catch (error) {
+      setError(true);
+      setProducts([]);
+      return [];
+    }
   };
 
   const updateCartProducts = (cartId, product_id, qty, product_price) => {
@@ -163,35 +171,56 @@ const Cart = () => {
       });
   };
 
-  const totalProductNetRevenue = productsCart.reduce((sum, item) => {
-    return sum + parseInt(item.product_net_revenue, 10);
-  }, 0);
-
   const handleQuantityChange = (
     value,
     recordIndex,
     product_id,
     product_price
   ) => {
-    // Do something with the changed value, e.g., update your data state
     const updatedProducts = [...products];
     updatedProducts[recordIndex].product_qty = value;
     updatedProducts[recordIndex].product_net_revenue = value * product_price;
 
     setProducts(updatedProducts);
+
     updateCartProducts(cartId, product_id, value, product_price);
+
+    updateProductsNr(updatedProducts[0].product_qty);
+
+    setProductsCart((prevProductsCart) => {
+      const updatedTotal = updatedProducts.reduce((sum, item) => {
+        return sum + parseInt(item.product_net_revenue, 10);
+      }, 0);
+
+      setTotalProductNetRevenue((prevTotal) => {
+        return updatedTotal;
+      });
+
+      return prevProductsCart;
+    });
   };
 
   const handleDelete = (recordIndex, product_id) => {
-    // Create a copy of the products array
     const updatedProducts = [...products];
-
-    // Remove the item at the specified index
     updatedProducts.splice(recordIndex, 1);
 
-    // Update the state or whatever mechanism you are using to manage the products
     setProducts(updatedProducts);
+
     deleteCartProducts(cartId, product_id);
+
+    updateProductsNr(updatedProducts[0].product_qty);
+
+    setProductsCart((prevProductsCart) => {
+      const updatedTotal = updatedProducts.reduce((sum, item) => {
+        return sum + parseInt(item.product_net_revenue, 10);
+      }, 0);
+
+      setTotalProductNetRevenue((prevTotal) => {
+        return updatedTotal;
+      });
+
+      return prevProductsCart;
+    });
   };
 
   return (

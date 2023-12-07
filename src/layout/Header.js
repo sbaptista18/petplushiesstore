@@ -38,15 +38,35 @@ const buildMenuItemProps = (key) => {
 const pages = ["sobre-nos", "produtos", "contactos"];
 
 const PPS_Header = () => {
-  const [productsNr, setProductsNr] = useState(0);
   const [sessionKey, setSessionKey] = useState(null);
   const history = useHistory();
 
   const { setSessionKeyAndCartId } = useCart();
+  const { updateProductsNr } = useCart();
+  const { productsNr } = useCart();
 
   CreateCartKey();
 
   useEffect(() => {
+    const fetchCartId = async (sessionKey) => {
+      const options = {
+        method: "GET",
+        url: `http://localhost:8000/temp_carts/session?id=${sessionKey}`,
+      };
+
+      axios
+        .request(options)
+        .then(function (response) {
+          if (response.data.results.length != 0) {
+            setSessionKeyAndCartId(sessionKey, response.data.results[0].id);
+            fetchCartProducts(response.data.results[0].id);
+          }
+        })
+        .catch(function (error) {
+          console.error(error);
+        });
+    };
+
     const storedSessionData = getSessionDataFromLocalStorage();
 
     if (storedSessionData) {
@@ -61,57 +81,37 @@ const PPS_Header = () => {
       setSessionKey(newSessionKey);
       setSessionInLocalStorage(newSessionKey);
     }
-  }, [setSessionKeyAndCartId]);
 
-  const fetchCartId = async (sessionKey) => {
-    const options = {
-      method: "GET",
-      url: `http://localhost:8000/temp_carts/session?id=${sessionKey}`,
-    };
+    const fetchCartProducts = async (cartId) => {
+      const options = {
+        method: "GET",
+        url: `http://localhost:8000/temp_cart_products_id?cartId=${cartId}`,
+      };
 
-    axios
-      .request(options)
-      .then(function (response) {
-        if (response.data.results.length != 0) {
-          setSessionKeyAndCartId(sessionKey, response.data.results[0].id);
-          fetchCartProducts(response.data.results[0].id);
-        }
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
-  };
-
-  const fetchCartProducts = async (cartId) => {
-    const options = {
-      method: "GET",
-      url: `http://localhost:8000/temp_cart_products_id?cartId=${cartId}`,
-    };
-
-    axios
-      .request(options)
-      .then(function (response) {
-        if (response.data.results.length > 0) {
-          if (response.data.results.length == 1)
-            setProductsNr(response.data.results[0].product_qty);
-          else {
-            const totalQuantity = response.data.results.reduce(
-              (accumulator, prods) => {
-                return accumulator + parseInt(prods.product_qty, 10);
-              },
-              0
-            );
-
-            setProductsNr(totalQuantity);
+      axios
+        .request(options)
+        .then(function (response) {
+          if (response.data.results.length > 0) {
+            if (response.data.results.length == 1) {
+              updateProductsNr(response.data.results[0].product_qty);
+            } else {
+              const totalQuantity = response.data.results.reduce(
+                (accumulator, prods) => {
+                  return accumulator + parseInt(prods.product_qty, 10);
+                },
+                0
+              );
+              updateProductsNr(totalQuantity);
+            }
+          } else {
+            updateProductsNr(0);
           }
-        } else {
-          setProductsNr(0);
-        }
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
-  };
+        })
+        .catch(function (error) {
+          console.error(error);
+        });
+    };
+  }, [setSessionKeyAndCartId, updateProductsNr, productsNr]);
 
   return (
     <StyledHeader>

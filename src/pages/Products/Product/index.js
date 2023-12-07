@@ -38,6 +38,7 @@ const Product = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { cartId } = useCart();
+  const { updateProductsNr } = useCart();
 
   useEffect(() => {
     if (cartId === null) {
@@ -103,6 +104,21 @@ const Product = () => {
         product_net_revenue: product.price * qty,
       };
 
+      const options_prods = {
+        method: "GET",
+        url: `http://localhost:8000/temp_cart_products_id?cartId=${cartId}`,
+      };
+
+      axios
+        .request(options_prods)
+        .then(function (response) {
+          const qty_in_cart = response.data.results[0].product_qty;
+          updateProductsNr(parseInt(qty_in_cart) + 1);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
       const options = {
         method: "GET",
         url: `http://localhost:8000/products`,
@@ -163,6 +179,8 @@ const Product = () => {
         user_agent: navigator.userAgent,
         is_user_cart: storedUserData ? 1 : 0,
       };
+
+      updateProductsNr(1);
 
       const options1 = {
         method: "POST",

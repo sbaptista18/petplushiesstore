@@ -6,9 +6,9 @@ import { CartProvider } from "reducers";
 
 const root = ReactDOM.createRoot(document.getElementById("app"));
 root.render(
-  <React.StrictMode>
-    <CartProvider>
+  <CartProvider>
+    <React.StrictMode>
       <App />
-    </CartProvider>
-  </React.StrictMode>
+    </React.StrictMode>
+  </CartProvider>
 );
