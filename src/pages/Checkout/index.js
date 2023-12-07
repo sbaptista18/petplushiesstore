@@ -473,8 +473,6 @@ const Checkout = () => {
   };
 
   const handleOnPayPalSuccess = (details, data) => {
-    console.log("details:", details);
-    console.log("data:", data);
     console.log("Transaction completed by " + details.payer.name.given_name);
     handlePlaceOrder(data.orderID);
   };

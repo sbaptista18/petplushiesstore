@@ -122,7 +122,6 @@ const Order = () => {
                   };
                 }),
               };
-              console.log(updatedOrder);
               setOrder([updatedOrder]);
               setLoading(false);
             })

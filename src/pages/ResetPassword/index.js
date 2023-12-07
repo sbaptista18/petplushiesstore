@@ -19,7 +19,6 @@ const ResetPassword = () => {
         const response = await axios.post(
           `https://backoffice.petplushies.pt/?rest_route=/simple-jwt-login/v1/user/reset_password&email=${formValues.email}`
         );
-        console.log(response.data);
         setError(response.data.message);
       } catch (error) {
         setError(error.response.data);

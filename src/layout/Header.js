@@ -105,7 +105,6 @@ const PPS_Header = () => {
               );
               updateProductsNr(totalQuantity);
 
-              console.log("Updating header...");
               setUpdateHeader((prev) => !prev);
             }
           } else {

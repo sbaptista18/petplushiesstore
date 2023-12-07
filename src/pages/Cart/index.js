@@ -29,7 +29,6 @@ const Cart = () => {
   const { updateProductsNr } = useCart();
 
   useEffect(() => {
-    console.log(cartId);
     if (cartId != null) {
       setLoading(true);
       fetchCartProducts(cartId);

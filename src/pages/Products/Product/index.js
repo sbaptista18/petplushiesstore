@@ -218,7 +218,6 @@ const Product = () => {
           axios
             .request(options1)
             .then(function (response) {
-              console.log(response);
               setMessage("Product was added to cart!");
               setStatus("success");
               setIsModalOpen(true);
