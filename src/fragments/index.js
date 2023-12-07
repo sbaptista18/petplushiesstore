@@ -5,7 +5,6 @@ import ScrollToTop from "./ScrollToTop";
 import SEOTags from "./SEOTags";
 import ToKebabCase from "./ToKebabCase";
 import IsInViewport from "./IsInViewport";
-import ConnectWC from "./connectWC";
 import tableColumns from "./TableRender";
 import tableColumnsCheckout from "./TableRenderCheckout";
 
@@ -17,7 +16,6 @@ export {
   ScrollToTop,
   SEOTags,
   ToKebabCase,
-  ConnectWC,
   tableColumns,
   tableColumnsCheckout,
 };

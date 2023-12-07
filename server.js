@@ -63,6 +63,30 @@ app.get("/temp_carts", (req, res) => {
     });
 });
 
+app.get("/temp_carts/session", (req, res) => {
+  const id = req.query.id;
+
+  ConnectWC.get(`temp_carts/session/${id}`)
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+app.get("/temp_carts/id", (req, res) => {
+  const id = req.query.id;
+
+  ConnectWC.get(`temp_carts/id/${id}`)
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
 app.get("/temp_cart_products_id", (req, res) => {
   const cartId = req.query.cartId; // This retrieves the cartId from the query parameters
 
@@ -149,7 +173,7 @@ app.post("/temp_cart_products_id", (req, res) => {
 app.post("/temp_cart_products", (req, res) => {
   const dataProduct = req.body.dataProduct;
 
-  ConnectWC.post("temp_cart_products_checkout/", dataProduct)
+  ConnectWC.post("temp_cart_products/", dataProduct)
     .then((data) => {
       res.json(data);
     })

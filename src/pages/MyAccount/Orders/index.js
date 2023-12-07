@@ -139,12 +139,10 @@ const Order = () => {
     fetchOrder(orderId);
   }, [orderId]);
 
-  console.log(order);
-
   return (
     <Container>
       <ContentLocked>
-        <StyledH1>Encomenda #{order.id}</StyledH1>
+        <StyledH1>Encomenda #{orderId}</StyledH1>
         <div style={{ position: "relative" }}>
           {loading && !error && (
             <Spinner

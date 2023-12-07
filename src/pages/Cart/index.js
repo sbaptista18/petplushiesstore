@@ -33,19 +33,16 @@ const Cart = () => {
   const fetchCartId = async (cartId) => {
     const options = {
       method: "GET",
-      url: "http://localhost:8000/temp_carts",
+      url: `http://localhost:8000/temp_carts/id?id=${cartId}`,
     };
 
     axios
       .request(options)
       .then(function (response) {
-        const cartLocalSession = response.data.success.find(
-          (cart) => cart.id === cartId
-        );
-        if (cartLocalSession !== undefined) {
-          fetchCartProducts(cartLocalSession.id);
+        if (response.data.results != undefined) {
+          fetchCartProducts(response.data.results[0].id);
         } else {
-          setLoading(false);
+          setLoading(true);
         }
       })
       .catch(function (error) {

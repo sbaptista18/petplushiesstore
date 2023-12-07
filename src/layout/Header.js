@@ -66,18 +66,15 @@ const PPS_Header = () => {
   const fetchCartId = async (sessionKey) => {
     const options = {
       method: "GET",
-      url: "http://localhost:8000/temp_carts",
+      url: `http://localhost:8000/temp_carts/session?id=${sessionKey}`,
     };
 
     axios
       .request(options)
       .then(function (response) {
-        const cartLocalSession = response.data.success.find(
-          (cart) => cart.local_session_key === sessionKey
-        );
-        if (cartLocalSession != undefined) {
-          setSessionKeyAndCartId(sessionKey, cartLocalSession.id);
-          fetchCartProducts(cartLocalSession.id);
+        if (response.data.results.length != 0) {
+          setSessionKeyAndCartId(sessionKey, response.data.results[0].id);
+          fetchCartProducts(response.data.results[0].id);
         }
       })
       .catch(function (error) {

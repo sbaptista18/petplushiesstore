@@ -177,7 +177,7 @@ const Product = () => {
         .request(options1)
         .then(function (response) {
           const dataProduct = {
-            temp_cart_id: response.success.id,
+            temp_cart_id: response.data.success.id,
             product_id: product.id,
             date_created: new Date()
               .toISOString()
@@ -200,6 +200,7 @@ const Product = () => {
           axios
             .request(options1)
             .then(function (response) {
+              console.log(response);
               setMessage("Product was added to cart!");
               setStatus("success");
               setIsModalOpen(true);
