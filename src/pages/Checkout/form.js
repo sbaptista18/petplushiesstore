@@ -222,27 +222,6 @@ const CheckoutForm = ({
         </Col>
       </FormRow>
 
-      {createAccount && (
-        <FormRow>
-          <Col span={24}>
-            <Form.Item
-              name="password"
-              label="Password"
-              rules={[
-                {
-                  required: true,
-                  message: "Por favor escolha a sua password.",
-                },
-              ]}
-              hasFeedback
-              wrapperCol={24}
-            >
-              <Input.Password />
-            </Form.Item>
-          </Col>
-        </FormRow>
-      )}
-
       <FormRow>
         <Col span={24}>
           <Form.Item

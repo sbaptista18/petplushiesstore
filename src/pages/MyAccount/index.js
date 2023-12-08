@@ -61,7 +61,6 @@ const MyAccount = () => {
   const [message, setMessage] = useState("");
   const [orders, setOrders] = useState([]);
 
-  const location = useLocation();
   const history = useHistory();
 
   const [form] = Form.useForm();
@@ -69,7 +68,7 @@ const MyAccount = () => {
 
   const { clearCartState } = useCart();
 
-  const data = location.state?.data;
+  const data = localStorage.getItem("token");
 
   const storedUserString = localStorage.getItem("user");
   const user = JSON.parse(storedUserString);
@@ -121,24 +120,24 @@ const MyAccount = () => {
   };
 
   const handleLogOut = async () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("userCart");
     try {
       const response = await axios.post(
         `https://backoffice.petplushies.pt/?rest_route=/simple-jwt-login/v1/auth/revoke&JWT=${data}`
       );
-
-      if (response.data.success) {
-        clearCartState();
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        localStorage.removeItem("userCart");
-        history.replace("/login");
-      }
-    } catch (error) {
-      setError(error.response.data.message);
-      history.replace("/login");
+      clearCartState();
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       localStorage.removeItem("userCart");
+      history.replace("/login");
+    } catch (error) {
+      setError(error.response.data.message);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("userCart");
+      history.replace("/login");
       clearCartState();
     }
   };

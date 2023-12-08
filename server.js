@@ -2,6 +2,7 @@ const express = require("express");
 const WooCommerceAPI = require("react-native-woocommerce-api");
 const PORT = 8000;
 require("dotenv").config();
+const axios = require("axios");
 
 const app = express();
 

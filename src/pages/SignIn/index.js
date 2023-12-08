@@ -25,6 +25,7 @@ const SignIn = () => {
           formValues.first_name.toLowerCase() +
           "." +
           formValues.surname.toLowerCase(),
+        role: "customer",
       };
 
       const options = {
@@ -44,7 +45,7 @@ const SignIn = () => {
               formValues.first_name.toLowerCase() +
               "." +
               formValues.surname.toLowerCase() +
-              ") e a password que forneceu."
+              "). Recebera instrucoes para definir a sua password."
           );
           setStatus("success");
           setIsModalOpen(true);

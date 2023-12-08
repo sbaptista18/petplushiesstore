@@ -25,6 +25,7 @@ const Checkout = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const { cartId } = useCart();
+  const { updateProductsNr } = useCart();
   const [productsCart, setProductsCart] = useState([]);
   const [products, setProducts] = useState([]);
   const [shippingCost, setShippingCost] = useState(0);
@@ -41,9 +42,8 @@ const Checkout = () => {
   const history = useHistory();
 
   useEffect(() => {
-    // if (cartId == null) history.replace("/carrinho");
-    // else
-    fetchCartId(cartId);
+    if (cartId == null) history.replace("/carrinho");
+    else fetchCartId(cartId);
   }, [cartId]);
 
   useEffect(() => {
@@ -340,6 +340,10 @@ const Checkout = () => {
             axios
               .request(options)
               .then(function (response) {
+                updateProductsNr(0);
+                setProductsCart([]);
+                setProducts([]);
+
                 if (createAccount) {
                   const dataCustomer = {
                     email: formValues.email,
@@ -375,6 +379,7 @@ const Checkout = () => {
                       postcode: formValues.postcode,
                       country: formValues.country == 2 ? "PT" : "",
                     },
+                    is_paying_customer: true,
                   };
 
                   const options = {
@@ -394,10 +399,11 @@ const Checkout = () => {
                           formValues.first_name.toLowerCase() +
                           "." +
                           formValues.surname.toLowerCase() +
-                          ") e a password que forneceu."
+                          "). Recebera instrucoes para definir a sua password."
                       );
                       setStatus("success");
                       setIsModalOpen(true);
+                      history.replace("/");
                     })
                     .catch(function (error) {
                       setMessage(
@@ -414,6 +420,7 @@ const Checkout = () => {
                   );
                   setStatus("success");
                   setIsModalOpen(true);
+                  history.replace("/");
                 }
               })
               .catch(function (error) {
