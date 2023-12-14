@@ -23,8 +23,20 @@ const ConnectWC = new WooCommerceAPI({
 app.use(express.json());
 
 // GET FUNCTIONS
+app.get("/products/page", (req, res) => {
+  const page = req.query.page;
+  ConnectWC.get("products", { per_page: 12, page: page })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+// GET FUNCTIONS
 app.get("/products", (req, res) => {
-  ConnectWC.get("products")
+  ConnectWC.get("products", { per_page: 99 })
     .then((data) => {
       res.json(data);
     })

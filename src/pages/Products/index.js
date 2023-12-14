@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
-import { Row, Col, Collapse, Slider, Select, Spin } from "antd";
+import { Row, Col, Collapse, Slider, Select, Spin, Pagination } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import axios from "axios";
 
@@ -11,11 +11,12 @@ const { Panel } = Collapse;
 
 const flagText = (stock) => {
   let text;
+  if (stock == null) return;
   if (stock > 0) {
-    if (stock == 1) text = "last in stock!";
-    else if (stock <= 5 && stock != 1) text = "last units in stock!";
+    if (stock == 1) text = "Apenas 1 em stock!";
+    else if (stock <= 5 && stock != 1) text = "Últimas unidades em stock!";
     else text = "";
-  } else text = "out of stock";
+  } else text = "Esgotado";
 
   return text;
 };
@@ -58,8 +59,12 @@ const Products = () => {
 
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
+  const [productsList, setProductsList] = useState([]);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 12; // Set your desired page size
 
   const filterByCategory = (array) => {
     if (categoryFilter.toLowerCase() === "all") {
@@ -91,7 +96,7 @@ const Products = () => {
   useEffect(() => {
     const options = {
       method: "GET",
-      url: "http://localhost:8000/products",
+      url: `http://localhost:8000/products/page?page=${currentPage}`,
     };
     axios
       .request(options)
@@ -186,6 +191,7 @@ const Products = () => {
       axios
         .request(options)
         .then((response) => {
+          setProductsList(response?.data);
           let minPrice = Number.MAX_VALUE;
           let maxPrice = 0;
 
@@ -212,7 +218,69 @@ const Products = () => {
 
   const handleCategoryChange = (value1) => {
     setCategoryFilter(value1);
-    setCatHasProducts(true);
+  };
+
+  const fetchProducts = async (currentPage) => {
+    const options = {
+      method: "GET",
+      url: `http://localhost:8000/products/page?page=${currentPage}`,
+    };
+    axios
+      .request(options)
+      .then((response) => {
+        let originalData = response.data;
+        let result;
+        if (sortOption == "id_DESC") {
+          result = filterByCategory(originalData).sort(sortProductsById);
+        } else if (sortOption == "price_ASC")
+          result = filterByCategory(originalData).sort(sortByPriceLowToHigh);
+        else result = filterByCategory(originalData).sort(sortByPriceHighToLow);
+
+        if (result.length == 0) {
+          if (data.length == 0) {
+            setNoResults(true);
+            setLoading(false);
+            setError(false);
+          } else {
+            const mappedProducts = data.map((item) => {
+              return {
+                key: item.id,
+                name: item.name,
+                price: _.toNumber(item.price),
+                stock: item.stock_quantity,
+                picture: item.images[0].src,
+                url: item.slug,
+              };
+            });
+
+            setProducts(mappedProducts);
+            setLoading(false);
+          }
+        } else {
+          const mappedProducts = result.map((item) => {
+            return {
+              key: item.id,
+              name: item.name,
+              price: _.toNumber(item.price),
+              stock: item.stock_quantity,
+              picture: item.images[0].src,
+              url: item.slug,
+            };
+          });
+
+          setProducts(mappedProducts);
+          setLoading(false);
+        }
+      })
+      .catch((error) => {
+        setError(true);
+      });
+  };
+
+  const handleOnChangePagination = (page) => {
+    setCurrentPage(page);
+    fetchProducts(page);
+    setLoading(true);
   };
 
   return (
@@ -286,6 +354,17 @@ const Products = () => {
                   );
                 })}
               </ProductRow>
+            )}
+            {!error && !loading && !noResults && productsList.length > 0 && (
+              <Pagination
+                total={productsList.length}
+                showTotal={(total, range) =>
+                  `${range[0]}-${range[1]} de ${total} produtos`
+                }
+                defaultPageSize={pageSize}
+                defaultCurrent={currentPage}
+                onChange={handleOnChangePagination}
+              />
             )}
           </ProductListContainer>
         </StyledRow>

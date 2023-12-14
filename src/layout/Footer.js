@@ -78,6 +78,7 @@ const StyledFooter = styled(Footer)`
   flex-direction: column;
   padding: 20px 65px;
   background-color: var(--dark-gray);
+  margin-top: 35px;
 
   & .ant-menu {
     height: 100%;

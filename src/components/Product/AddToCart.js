@@ -20,7 +20,7 @@ const AddToCart = ({ sku, price, sale_price, flag, onClick }) => {
       <StyledButton
         size="large"
         type="primary"
-        text="add to cart"
+        text="Adicionar ao carrinho"
         onClick={onClick}
       />
     </Container>

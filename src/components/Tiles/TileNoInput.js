@@ -90,7 +90,9 @@ const Text = styled.div`
 `;
 
 const Title = styled.div`
-  font-size: ${(props) => (props.size == "large" ? "25px" : "20px")};
+  font-size: ${(props) => (props.size == "large" ? "25px" : "18px")};
+  text-align: center;
+  height: 70px;
 `;
 
 const PriceContainer = styled.div`

@@ -8,36 +8,30 @@ const Accordion = ({ desc }) => {
   const items = [
     {
       key: "1",
-      label: "PRODUCT INFO",
+      label: "Informações sobre o produto",
       children: desc,
     },
     {
       key: "2",
-      label: "RETURN & REFUND POLICY",
+      label: "Política de Retorno e Reembolso",
       children: `<p>
-          I’m a Return and Refund policy. I’m a great place to let your
-          customers know what to do in case they are dissatisfied with their
-          purchase. Having a straightforward refund or exchange policy is a
-          great way to build trust and reassure your customers that they can buy
-          with confidence.
+          Nós fazemos o possível para enviar o melhor trabalho que o artesanato pode oferecer, no entanto também acreditamos que o cliente merece a oportunidade de devolver o produto caso não esteja satisfeito. Nós pagamos os portes para o envio de volta! Pode consultar mais informações na página de Termos e Condições.
         </p>`,
     },
     {
       key: "3",
-      label: "SHIPPING INFO",
+      label: "Informação de Envio",
       children: `<p>
-          I'm a shipping policy. I'm a great place to add more information about
-          your shipping methods, packaging and cost. Providing straightforward
-          information about your shipping policy is a great way to build trust
-          and reassure your customers that they can buy from you with
-          confidence.
+          Os portes de envio serão calculados na página de Finalização de Compra. Pode consultar todas as informações e preços na página de Termos e Condições.
         </p>`,
     },
     {
       key: "4",
-      label: "WE HELP ANIMAL SHELTERS",
+      label: "Nós ajudamos abrigos de animais",
       children: `<p>
-          This should be a text related to the help we provide to animal shelters.
+          A PetPlushies dedica-se a ajudar os abrigos/associações de animais por esse país fora. Todos os meses um abrigo/associação diferente será escolhido para que a ajuda chegue a mais patudos!
+          <br>
+          <b>10% de todas as vendas serão doados ao abrigo/associação anunciados no nosso blog.</b>
         </p>`,
     },
   ];
