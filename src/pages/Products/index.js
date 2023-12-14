@@ -4,22 +4,11 @@ import { useState, useEffect } from "react";
 import { Row, Col, Collapse, Slider, Select, Spin, Pagination } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import axios from "axios";
+import _ from "lodash"; // Import lodash for utility functions
 
 import { Breadcrumbs, TileNoInput } from "components";
 
 const { Panel } = Collapse;
-
-const flagText = (stock) => {
-  let text;
-  if (stock == null) return;
-  if (stock > 0) {
-    if (stock == 1) text = "Apenas 1 em stock!";
-    else if (stock <= 5 && stock != 1) text = "Últimas unidades em stock!";
-    else text = "";
-  } else text = "Esgotado";
-
-  return text;
-};
 
 const SortDropdown = ({ onSelect }) => {
   const handleSortChange = (value) => {
@@ -60,12 +49,23 @@ const Products = () => {
 
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
-  const [productsList, setProductsList] = useState([]);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 12; // Set your desired page size
+  const pageSize = 12;
+
+  // New state for caching
+  const [cachedProducts, setCachedProducts] = useState(null);
+
+  const flagText = (stock) => {
+    if (stock == null) return "";
+    if (stock > 0) {
+      if (stock === 1) return "Apenas 1 em stock!";
+      if (stock <= 5) return "Últimas unidades em stock!";
+      return "";
+    } else return "Esgotado";
+  };
 
   const filterByCategory = (array) => {
     if (categoryFilter.toLowerCase() === "all") {
@@ -73,85 +73,88 @@ const Products = () => {
     }
 
     return array.filter((product) => {
-      return (
-        product.categories &&
-        Array.isArray(product.categories) &&
-        product.categories.some((category) => {
-          return category.name.toLowerCase() === categoryFilter.toLowerCase();
-        })
-      );
+      const productCategories = product.category
+        ? [product.category]
+        : (product.categories || []).map((category) =>
+            category.name.toLowerCase()
+          );
+
+      return productCategories.includes(categoryFilter.toLowerCase());
     });
   };
 
   const sortProductsById = (a, b) => b.id - a.id;
 
-  const sortByPriceLowToHigh = (a, b) => {
-    return parseFloat(a.price) - parseFloat(b.price);
+  const sortByPriceLowToHigh = (a, b) =>
+    parseFloat(a.price) - parseFloat(b.price);
+
+  const sortByPriceHighToLow = (a, b) =>
+    parseFloat(b.price) - parseFloat(a.price);
+
+  const fetchData = async () => {
+    try {
+      if (cachedProducts) {
+        setProducts(cachedProducts);
+        setLoading(false);
+        return;
+      }
+
+      const options = {
+        method: "GET",
+        url: "http://localhost:8000/products",
+      };
+
+      const response = await axios.request(options);
+      const originalData = response.data;
+
+      const result = filterByCategory(originalData).sort(sortProductsById);
+
+      if (result.length === 0) {
+        setNoResults(true);
+      } else {
+        const mappedProducts = result.map((item) => ({
+          id: item.id,
+          name: item.name,
+          price: _.toNumber(item.price),
+          stock: item.stock_quantity,
+          picture: item.images[0].src,
+          url: item.slug,
+          category: item.categories[0].slug,
+        }));
+
+        setProducts(mappedProducts);
+        setCachedProducts(mappedProducts);
+      }
+    } catch (error) {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const sortByPriceHighToLow = (a, b) => {
-    return parseFloat(b.price) - parseFloat(a.price);
-  };
-
-  // FETCH PRODUCTS
   useEffect(() => {
-    const options = {
-      method: "GET",
-      url: `http://localhost:8000/products/page?page=${currentPage}`,
-    };
-    axios
-      .request(options)
-      .then((response) => {
-        let originalData = response.data;
-        let result;
-        if (sortOption == "id_DESC") {
-          result = filterByCategory(originalData).sort(sortProductsById);
-        } else if (sortOption == "price_ASC")
-          result = filterByCategory(originalData).sort(sortByPriceLowToHigh);
-        else result = filterByCategory(originalData).sort(sortByPriceHighToLow);
+    const cachedProducts = localStorage.getItem("cachedProducts");
+    if (cachedProducts) {
+      const parsedData = JSON.parse(cachedProducts);
+      setCachedProducts(parsedData);
+      setProducts(parsedData);
+      setLoading(false);
+      setError(false);
+    } else {
+      fetchData();
+    }
+  }, []);
 
-        if (result.length == 0) {
-          if (data.length == 0) {
-            setNoResults(true);
-            setLoading(false);
-            setError(false);
-          } else {
-            const mappedProducts = data.map((item) => {
-              return {
-                key: item.id,
-                name: item.name,
-                price: _.toNumber(item.price),
-                stock: item.stock_quantity,
-                picture: item.images[0].src,
-                url: item.slug,
-              };
-            });
+  useEffect(() => {
+    if (!loading && !error) {
+      const cachedProducts = localStorage.getItem("cachedProducts");
+      if (!cachedProducts) {
+        setCachedProducts(products);
+        localStorage.setItem("cachedProducts", JSON.stringify(products));
+      }
+    }
+  }, [loading, error, products]);
 
-            setProducts(mappedProducts);
-            setLoading(false);
-          }
-        } else {
-          const mappedProducts = result.map((item) => {
-            return {
-              key: item.id,
-              name: item.name,
-              price: _.toNumber(item.price),
-              stock: item.stock_quantity,
-              picture: item.images[0].src,
-              url: item.slug,
-            };
-          });
-
-          setProducts(mappedProducts);
-          setLoading(false);
-        }
-      })
-      .catch((error) => {
-        setError(true);
-      });
-  }, [categoryFilter, sortOption]);
-
-  // FETCH CATEGORIES
   useEffect(() => {
     const fetchCategories = async () => {
       const options = {
@@ -159,29 +162,24 @@ const Products = () => {
         url: "http://localhost:8000/products/categories",
       };
 
-      axios
-        .request(options)
-        .then((response) => {
-          const mappedCategories = response.data.map((item) => {
-            return {
-              key: item.id,
-              name: item.name,
-              slug: item.slug,
-              count: item.count,
-            };
-          });
+      try {
+        const response = await axios.request(options);
+        const mappedCategories = response.data.map((item) => ({
+          id: item.id,
+          name: item.name,
+          slug: item.slug,
+          count: item.count,
+        }));
 
-          setCategories(mappedCategories);
-        })
-        .catch((error) => {
-          setError(true);
-        });
+        setCategories(mappedCategories);
+      } catch (error) {
+        setError(true);
+      }
     };
 
     fetchCategories();
   }, []);
 
-  // FETCH PRICE RANGE
   useEffect(() => {
     const fetchPriceRange = async () => {
       const options = {
@@ -189,99 +187,126 @@ const Products = () => {
         url: "http://localhost:8000/products",
       };
 
-      axios
-        .request(options)
-        .then((response) => {
-          setProductsList(response?.data);
-          let minPrice = Number.MAX_VALUE;
-          let maxPrice = 0;
+      try {
+        const response = await axios.request(options);
+        let minPrice = Number.MAX_VALUE;
+        let maxPrice = 0;
 
-          response.data.forEach((product) => {
-            let price = parseFloat(product.price);
-            minPrice = Math.min(minPrice, price);
-            maxPrice = Math.max(maxPrice, price);
-          });
-
-          setMinPrice(minPrice);
-          setMaxPrice(maxPrice);
-        })
-        .catch((error) => {
-          setError(true);
+        response.data.forEach((product) => {
+          let price = parseFloat(product.price);
+          minPrice = Math.min(minPrice, price);
+          maxPrice = Math.max(maxPrice, price);
         });
+
+        setMinPrice(minPrice);
+        setMaxPrice(maxPrice);
+      } catch (error) {
+        setError(true);
+      }
     };
 
     fetchPriceRange();
   }, []);
 
+  useEffect(() => {
+    // Check if the data is already in the cache
+    if (cachedProducts) {
+      let filteredProducts;
+      if (sortOption === "id_DESC") {
+        filteredProducts =
+          filterByCategory(cachedProducts).sort(sortProductsById);
+      } else if (sortOption === "price_ASC") {
+        filteredProducts =
+          filterByCategory(cachedProducts).sort(sortByPriceLowToHigh);
+      } else {
+        filteredProducts =
+          filterByCategory(cachedProducts).sort(sortByPriceHighToLow);
+      }
+
+      // Your existing logic for handling results
+      if (filteredProducts.length === 0) {
+        setNoResults(true);
+      } else {
+        const mappedProducts = filteredProducts.map((item) => ({
+          id: item.id,
+          name: item.name,
+          price: _.toNumber(item.price),
+          stock: item.stock,
+          picture: item.picture,
+          url: item.url,
+          category: item.category,
+        }));
+
+        // Update the local state
+        setProducts(mappedProducts);
+      }
+    }
+  }, [categoryFilter, cachedProducts]);
+
   const handleSortChange = (value) => {
     setSortOption(value);
+    let result;
+    if (value === "id_DESC") {
+      result = filterByCategory(cachedProducts).sort(sortProductsById);
+    } else if (value === "price_ASC") {
+      result = filterByCategory(cachedProducts).sort(sortByPriceLowToHigh);
+    } else {
+      result = filterByCategory(cachedProducts).sort(sortByPriceHighToLow);
+    }
+
+    if (result.length === 0) {
+      setNoResults(true);
+    } else {
+      const mappedProducts = result.map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        stock: item.stock,
+        picture: item.picture,
+        url: item.url,
+      }));
+
+      setProducts(mappedProducts);
+    }
   };
 
-  const handleCategoryChange = (value1) => {
-    setCategoryFilter(value1);
-  };
+  const handleCategoryChange = (value) => {
+    setCategoryFilter(value);
 
-  const fetchProducts = async (currentPage) => {
-    const options = {
-      method: "GET",
-      url: `http://localhost:8000/products/page?page=${currentPage}`,
-    };
-    axios
-      .request(options)
-      .then((response) => {
-        let originalData = response.data;
-        let result;
-        if (sortOption == "id_DESC") {
-          result = filterByCategory(originalData).sort(sortProductsById);
-        } else if (sortOption == "price_ASC")
-          result = filterByCategory(originalData).sort(sortByPriceLowToHigh);
-        else result = filterByCategory(originalData).sort(sortByPriceHighToLow);
+    let result;
+    if (sortOption === "id_DESC") {
+      result = filterByCategory(cachedProducts).sort(sortProductsById);
+    } else if (sortOption === "price_ASC") {
+      result = filterByCategory(cachedProducts).sort(sortByPriceLowToHigh);
+    } else {
+      result = filterByCategory(cachedProducts).sort(sortByPriceHighToLow);
+    }
 
-        if (result.length == 0) {
-          if (data.length == 0) {
-            setNoResults(true);
-            setLoading(false);
-            setError(false);
-          } else {
-            const mappedProducts = data.map((item) => {
-              return {
-                key: item.id,
-                name: item.name,
-                price: _.toNumber(item.price),
-                stock: item.stock_quantity,
-                picture: item.images[0].src,
-                url: item.slug,
-              };
-            });
+    if (result.length === 0) {
+      setNoResults(true);
+    } else {
+      const mappedProducts = result.map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        stock: item.stock,
+        picture: item.picture,
+        url: item.url,
+        category: item.category,
+      }));
 
-            setProducts(mappedProducts);
-            setLoading(false);
-          }
-        } else {
-          const mappedProducts = result.map((item) => {
-            return {
-              key: item.id,
-              name: item.name,
-              price: _.toNumber(item.price),
-              stock: item.stock_quantity,
-              picture: item.images[0].src,
-              url: item.slug,
-            };
-          });
-
-          setProducts(mappedProducts);
-          setLoading(false);
-        }
-      })
-      .catch((error) => {
-        setError(true);
-      });
+      setProducts(mappedProducts);
+    }
   };
 
   const handleOnChangePagination = (page) => {
     setCurrentPage(page);
-    fetchProducts(page);
-    setLoading(true);
+  };
+
+  const chunkArray = (array, size) => {
+    return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
+      array.slice(index * size, (index + 1) * size)
+    );
   };
 
   return (
@@ -299,10 +324,10 @@ const Products = () => {
                     Todas as categorias
                   </CategoryListItem>
                   {categories?.map((c) => {
-                    if (c.count != 0) {
+                    if (c.count !== 0) {
                       return (
                         <CategoryListSubItem
-                          key={c.key}
+                          key={c.id}
                           onClick={() => handleCategoryChange(c.slug)}
                         >
                           {c.name}
@@ -340,25 +365,33 @@ const Products = () => {
               <>Não há resultados para o filtro seleccionado.</>
             )}
             {!error && !loading && !noResults && (
-              <ProductRow>
-                {products?.map((p) => {
-                  return (
-                    <TileNoInput
-                      key={p.key}
-                      name={p.name}
-                      price={p.price}
-                      picture={p.picture}
-                      stock={p.stock}
-                      flag={flagText(p.stock)}
-                      url={p.url}
-                    />
-                  );
-                })}
-              </ProductRow>
+              <>
+                {chunkArray(products, pageSize).map((productGroup, index) => (
+                  <ProductRow
+                    key={index}
+                    style={{
+                      display: currentPage === index + 1 ? "flex" : "none",
+                    }}
+                  >
+                    {productGroup.map((p) => (
+                      <TileNoInput
+                        key={p.id}
+                        id={p.id}
+                        name={p.name}
+                        price={p.price}
+                        picture={p.picture}
+                        stock={p.stock}
+                        flag={flagText(p.stock)}
+                        url={p.url}
+                      />
+                    ))}
+                  </ProductRow>
+                ))}
+              </>
             )}
-            {!error && !loading && !noResults && productsList.length > 0 && (
+            {products.length > 0 && (
               <Pagination
-                total={productsList.length}
+                total={products.length}
                 showTotal={(total, range) =>
                   `${range[0]}-${range[1]} de ${total} produtos`
                 }
@@ -383,11 +416,6 @@ const CategoryListItem = styled.li`
 const CategoryListSubItem = styled(CategoryListItem)`
   color: green;
   margin-left: 20px;
-`;
-
-const CategoryListSubSubItem = styled(CategoryListItem)`
-  color: pink;
-  margin-left: 40px;
 `;
 
 const Spinner = styled(Spin)`
