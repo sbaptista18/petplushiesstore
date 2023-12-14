@@ -10,7 +10,6 @@ const { TextArea } = Input;
 const CheckoutForm = ({
   handleCountry,
   handleCheckCreateAccount,
-  createAccount,
   handleCheckShipAddress,
   shipToAddress,
   handleCountryShipping,
@@ -96,10 +95,10 @@ const CheckoutForm = ({
             rules={[
               {
                 required: true,
-                message: "Por favor seleccione o seu pais/regiao.",
+                message: "Por favor seleccione o seu país.",
               },
             ]}
-            label="Pais/Regiao"
+            label="País"
             wrapperCol={24}
             name="country"
           >
@@ -147,10 +146,10 @@ const CheckoutForm = ({
             rules={[
               {
                 required: true,
-                message: "Por favor seleccione o distrito.",
+                message: "Por favor seleccione o distrito/região.",
               },
             ]}
-            label="Distrito"
+            label="Distrito/Região"
             wrapperCol={24}
             name="district"
           >
@@ -169,11 +168,11 @@ const CheckoutForm = ({
           <Form.Item
             wrapperCol={24}
             name="postcode"
-            label="Codigo-postal"
+            label="Código-postal"
             rules={[
               {
                 required: true,
-                message: "Por favor insira o seu codigo-postal.",
+                message: "Por favor insira o seu código-postal.",
               },
             ]}
           >
@@ -194,7 +193,7 @@ const CheckoutForm = ({
             rules={[
               {
                 type: "email",
-                message: "O e-mail inserido nao e valido.",
+                message: "O e-mail inserido nao é válido.",
               },
               {
                 required: true,
@@ -288,10 +287,10 @@ const CheckoutForm = ({
                 rules={[
                   {
                     required: true,
-                    message: "Por favor seleccione o seu pais/regiao.",
+                    message: "Por favor seleccione o seu país.",
                   },
                 ]}
-                label="Pais/Regiao"
+                label="País"
                 wrapperCol={24}
                 name="country_other"
               >
@@ -339,10 +338,10 @@ const CheckoutForm = ({
                 rules={[
                   {
                     required: true,
-                    message: "Por favor seleccione o distrito.",
+                    message: "Por favor seleccione o distrito/região.",
                   },
                 ]}
-                label="Distrito"
+                label="Distrito/Região"
                 wrapperCol={24}
                 name="district_other"
               >
@@ -365,7 +364,7 @@ const CheckoutForm = ({
                 rules={[
                   {
                     required: true,
-                    message: "Por favor insira o seu codigo-postal.",
+                    message: "Por favor insira o seu código-postal.",
                   },
                 ]}
               >
@@ -382,7 +381,7 @@ const CheckoutForm = ({
               <span>Notas para a encomenda</span>
               <TextArea
                 rows={4}
-                placeholder="Aqui pode deixar instrucoes especiais como, por exemplo, 'A campainha nao toca.'"
+                placeholder="Aqui pode deixar instruções especiais como, por exemplo, 'A campaínha não toca.'"
               />
             </>
           </Form.Item>
@@ -393,11 +392,11 @@ const CheckoutForm = ({
         <Form.Item
           wrapperCol={24}
           name="payment_method"
-          label="Metodo de pagamento"
+          label="Método de pagamento"
           rules={[
             {
               required: true,
-              message: "Tem de seleccionar um metodo de pagamento.",
+              message: "Tem de seleccionar um método de pagamento.",
             },
           ]}
         >
@@ -424,14 +423,14 @@ const CheckoutForm = ({
         rules={[
           {
             required: true,
-            message: "Tem de confirmar a leitura dos Termos & Condicoes.",
+            message: "Tem de confirmar a leitura dos Termos & Condições.",
           },
         ]}
       >
         <Checkbox>
           Declaro que li e aceito os{" "}
           <Link to="/termos-e-condicoes" target="_blank">
-            Termos & Condicoes
+            Termos & Condições
           </Link>
         </Checkbox>
       </Form.Item>

@@ -5,7 +5,7 @@ const AboutUs = () => {
   return (
     <Container>
       <ContentLocked>
-        <StyledH1>Sobre Nos</StyledH1>
+        <StyledH1>Sobre Nós</StyledH1>
       </ContentLocked>
     </Container>
   );

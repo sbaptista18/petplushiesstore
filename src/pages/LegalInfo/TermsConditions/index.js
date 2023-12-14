@@ -5,7 +5,7 @@ const TermsConditions = () => {
   return (
     <Container>
       <ContentLocked>
-        <StyledH1>Termos & Condicoes</StyledH1>
+        <StyledH1>Termos & Condições</StyledH1>
       </ContentLocked>
     </Container>
   );

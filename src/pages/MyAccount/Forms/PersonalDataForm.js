@@ -63,7 +63,7 @@ const PersonalDataForm = ({
             </Form.Item>
           </Col>
         </FormRow>
-        <FormRow>Morada de Facturacao</FormRow>
+        <FormRow>Morada de Facturação</FormRow>
         <FormRow>
           <Col span={24}>
             <Form.Item
@@ -77,7 +77,7 @@ const PersonalDataForm = ({
         </FormRow>
         <FormRow>
           <Col span={24}>
-            <Form.Item label="Pais/Regiao" wrapperCol={24} name="country">
+            <Form.Item label="País" wrapperCol={24} name="country">
               <Select value={country} onChange={handleCountry}>
                 <Select.Option value="PT">Portugal</Select.Option>
               </Select>
@@ -98,7 +98,7 @@ const PersonalDataForm = ({
             </Form.Item>
           </Col>
           <Col span={11}>
-            <Form.Item label="Distrito" wrapperCol={24} name="district">
+            <Form.Item label="Distrito/Região" wrapperCol={24} name="district">
               <Select>
                 {secondSelectOptions?.map((option) => (
                   <Select.Option key={option} value={option}>
@@ -111,7 +111,7 @@ const PersonalDataForm = ({
         </FormRow>
         <FormRow>
           <Col span={24}>
-            <Form.Item wrapperCol={24} name="postcode" label="Codigo-postal">
+            <Form.Item wrapperCol={24} name="postcode" label="Código-postal">
               <Input />
             </Form.Item>
           </Col>
@@ -129,7 +129,7 @@ const PersonalDataForm = ({
               rules={[
                 {
                   type: "email",
-                  message: "O e-mail inserido nao e valido.",
+                  message: "O e-mail inserido não é válido.",
                 },
               ]}
               wrapperCol={24}
@@ -166,7 +166,7 @@ const PersonalDataForm = ({
         </FormRow>
         <FormRow>
           <Col span={24}>
-            <Form.Item label="Pais/Regiao" wrapperCol={24} name="country_other">
+            <Form.Item label="Pais" wrapperCol={24} name="country_other">
               <Select value={country} onChange={handleCountryShipping}>
                 <Select.Option value="PT">Portugal</Select.Option>
               </Select>
@@ -187,7 +187,11 @@ const PersonalDataForm = ({
             </Form.Item>
           </Col>
           <Col span={11}>
-            <Form.Item label="Distrito" wrapperCol={24} name="district_other">
+            <Form.Item
+              label="Distrito/Região"
+              wrapperCol={24}
+              name="district_other"
+            >
               <Select>
                 {secondSelectOptions?.map((option) => (
                   <Select.Option key={option} value={option}>
@@ -203,7 +207,7 @@ const PersonalDataForm = ({
             <Form.Item
               wrapperCol={24}
               name="postcode_other"
-              label="Codigo-postal"
+              label="Código-postal"
             >
               <Input />
             </Form.Item>

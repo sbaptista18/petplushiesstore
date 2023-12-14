@@ -31,7 +31,7 @@ const tableColumns = () => [
       let status;
       switch (record) {
         case "on-hold":
-          status = "Aguarda confirmacao de pagamento";
+          status = "Aguarda confirmação de pagamento";
           break;
         case "processing":
           status = "Em processamento";
@@ -165,7 +165,7 @@ const Order = () => {
                   <StyledCol span={3}>Imagem</StyledCol>
                   <StyledCol span={8}>Produto</StyledCol>
                   <StyledCol span={6}>Quantidade</StyledCol>
-                  <StyledCol span={6}>Preco</StyledCol>
+                  <StyledCol span={6}>Preço</StyledCol>
                 </TableHeader>
                 {order[0].line_items.map((i) => {
                   return (

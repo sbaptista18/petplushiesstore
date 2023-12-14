@@ -45,7 +45,7 @@ const SignIn = () => {
               formValues.first_name.toLowerCase() +
               "." +
               formValues.surname.toLowerCase() +
-              "). Recebera instrucoes para definir a sua password."
+              "). Receberá instruções para definir a sua password."
           );
           setStatus("success");
           setIsModalOpen(true);
@@ -127,7 +127,7 @@ const SignIn = () => {
                   rules={[
                     {
                       type: "email",
-                      message: "O e-mail inserido nao e valido.",
+                      message: "O e-mail inserido não é válido.",
                     },
                     {
                       required: true,
@@ -182,7 +182,7 @@ const SignIn = () => {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error("As passwords nao correspondem.")
+                          new Error("As passwords não correspondem.")
                         );
                       },
                     }),
@@ -204,7 +204,7 @@ const SignIn = () => {
                         value
                           ? Promise.resolve()
                           : Promise.reject(
-                              new Error("Tem de aceitar os Termos & Condicoes")
+                              new Error("Tem de aceitar os Termos & Condições")
                             ),
                     },
                   ]}
@@ -212,7 +212,7 @@ const SignIn = () => {
                   <Checkbox>
                     Declaro que li os{" "}
                     <Link to="/termos-e-condicoes" target="_blank">
-                      Termos & Condicoes
+                      Termos & Condições
                     </Link>
                   </Checkbox>
                 </Form.Item>

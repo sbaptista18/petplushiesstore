@@ -20,6 +20,7 @@ const flagText = (stock) => {
 
   return text;
 };
+
 const SortDropdown = ({ onSelect }) => {
   const handleSortChange = (value) => {
     onSelect(value);
@@ -333,10 +334,10 @@ const Products = () => {
               />
             )}
             {error && !loading && !noResults && (
-              <>Error fetching product list.</>
+              <>Erro ao carregar a lista de produtos.</>
             )}
             {!error && !loading && noResults && (
-              <>No results for the selected filter.</>
+              <>Não há resultados para o filtro seleccionado.</>
             )}
             {!error && !loading && !noResults && (
               <ProductRow>

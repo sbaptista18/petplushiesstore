@@ -5,7 +5,7 @@ const PrivacyPolicy = () => {
   return (
     <Container>
       <ContentLocked>
-        <StyledH1>Politica de Privacidade</StyledH1>
+        <StyledH1>Política de Privacidade</StyledH1>
       </ContentLocked>
     </Container>
   );

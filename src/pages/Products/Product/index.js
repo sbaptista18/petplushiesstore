@@ -19,10 +19,12 @@ import {
 
 const flagText = (stock) => {
   let text;
+  if (stock == null) return;
   if (stock > 0) {
-    if (stock == 1) text = "last in stock!";
-    else if (stock <= 5 && stock != 1) text = "last units in stock!";
-  } else text = "out of stock";
+    if (stock == 1) text = "Apenas 1 em stock!";
+    else if (stock <= 5 && stock != 1) text = "Últimas unidades em stock!";
+    else text = "";
+  } else text = "Esgotado";
 
   return text;
 };
@@ -139,13 +141,15 @@ const Product = () => {
           axios
             .request(options1)
             .then(function (response) {
-              setMessage("Product was added to cart!");
+              setMessage("O produto foi adicionado ao carrinho!");
               setStatus("success");
               setIsModalOpen(true);
             })
             .catch(function (error) {
               setMessage(
-                "There was an error adding product to cart. (" + error + ".)"
+                "Houve um erro ao adicionar o produto ao carrinho. (" +
+                  error +
+                  ".)"
               );
               setStatus("error");
               setIsModalOpen(true);
@@ -153,7 +157,7 @@ const Product = () => {
         })
         .catch((error) => {
           setMessage(
-            "There was an error fetching cart products. (" +
+            "Houve um erro ao carregar os produtos do carrinho. (" +
               error.response +
               ".)"
           );
@@ -218,13 +222,13 @@ const Product = () => {
           axios
             .request(options1)
             .then(function (response) {
-              setMessage("Product was added to cart!");
+              setMessage("O produto foi adicionado ao carrinho!");
               setStatus("success");
               setIsModalOpen(true);
             })
             .catch(function (error) {
               setMessage(
-                "There was an error adding product to cart. (" +
+                "Houve um erro ao adicionar um produto ao carrinho. (" +
                   error.response +
                   ".)"
               );
@@ -234,7 +238,7 @@ const Product = () => {
         })
         .catch(function (error) {
           setMessage(
-            "There was an error creating the cart. (" + error.response + ".)"
+            "Houve um erro ao criar o carrinho. (" + error.response + ".)"
           );
           setStatus("error");
           setIsModalOpen(true);
@@ -261,7 +265,7 @@ const Product = () => {
             indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
           />
         )}
-        {error && !loading && <>Error fetching product.</>}
+        {error && !loading && <>Erro ao carregar o produto.</>}
         {product != undefined && (
           <>
             <StyledH1>{product.name}</StyledH1>

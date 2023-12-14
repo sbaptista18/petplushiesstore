@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Row, Checkbox, Form, Input } from "antd";
+import { Row, Form, Input } from "antd";
 import { useState } from "react";
 import axios from "axios";
 import { useHistory, Link } from "react-router-dom";
@@ -33,7 +33,7 @@ const LogIn = () => {
       } catch (error) {
         setError(
           error.response.data.data.errorCode == 48
-            ? "Os dados de login estao incorrectos."
+            ? "Os dados de login estão incorrectos."
             : "Erro no login. Por favor contactar geral@petplushies.pt para resolver o problema."
         );
       }
@@ -106,7 +106,7 @@ const LogIn = () => {
               rules={[
                 {
                   type: "email",
-                  message: "O e-mail inserido nao e valido.",
+                  message: "O e-mail inserido não é válido.",
                 },
                 {
                   required: true,
@@ -128,17 +128,6 @@ const LogIn = () => {
               ]}
             >
               <Input.Password />
-            </Form.Item>
-
-            <Form.Item
-              name="remember"
-              valuePropName="checked"
-              wrapperCol={{
-                offset: 8,
-                span: 16,
-              }}
-            >
-              <Checkbox>Lembrar-me</Checkbox>
             </Form.Item>
 
             <Form.Item

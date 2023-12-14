@@ -1,7 +1,7 @@
 export const paymentMethods = [
   {
-    label: "Transferencia Bancaria",
-    name: "Transferencia Bancaria",
+    label: "Transferência Bancária",
+    name: "Transferência Bancária",
     value: "bacs",
   },
   {

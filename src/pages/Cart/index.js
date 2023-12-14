@@ -11,7 +11,7 @@ import { useCart } from "reducers";
 
 const CustomNoData = () => (
   <div style={{ textAlign: "center", padding: "20px" }}>
-    O carrinho esta vazio.
+    O carrinho está vazio.
   </div>
 );
 
@@ -136,12 +136,12 @@ const Cart = () => {
     axios
       .request(options)
       .then(function (response) {
-        setMessage("Product updated!");
+        setMessage("Produto actualizado!");
         setStatus("success");
         setIsModalOpen(true);
       })
       .catch(function (error) {
-        setMessage("There was an error updating the product. (" + error + ".)");
+        setMessage("Houve um erro ao actualizar o produto. (" + error + ".)");
         setStatus("error");
         setIsModalOpen(true);
       });
@@ -156,15 +156,13 @@ const Cart = () => {
     axios
       .request(options)
       .then(function (response) {
-        setMessage("Product deleted from cart!");
+        setMessage("Produto apagado do carrinho!");
         setStatus("success");
         setIsModalOpen(true);
       })
       .catch(function (error) {
         setMessage(
-          "There was an error deleting the product from the cart. (" +
-            error +
-            ".)"
+          "Houve um erro ao apagar o produto do carrinho. (" + error + ".)"
         );
         setStatus("error");
         setIsModalOpen(true);
@@ -270,7 +268,7 @@ const Cart = () => {
                     <div>{totalProductNetRevenue}&euro;</div>
                   </Subtotal>
                   <Shipping>
-                    <div>Estimativa de portes sera feita no proximo passo</div>
+                    <div>Estimativa de portes será feita no próximo passo</div>
                     <div></div>
                   </Shipping>
                   <Border />

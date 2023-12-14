@@ -88,7 +88,7 @@ const RedefinePassword = () => {
                       return Promise.resolve();
                     }
                     return Promise.reject(
-                      new Error("As passwords nao correspondem.")
+                      new Error("As passwords não correspondem.")
                     );
                   },
                 }),

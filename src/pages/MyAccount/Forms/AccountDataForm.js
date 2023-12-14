@@ -44,7 +44,7 @@ const AccountDataForm = ({
               rules={[
                 {
                   type: "email",
-                  message: "O e-mail inserido nao e valido.",
+                  message: "O e-mail inserido não é válido.",
                 },
                 {
                   required: true,

@@ -399,7 +399,7 @@ const Checkout = () => {
                           formValues.first_name.toLowerCase() +
                           "." +
                           formValues.surname.toLowerCase() +
-                          "). Recebera instrucoes para definir a sua password."
+                          "). Receberá instruções para definir a sua password."
                       );
                       setStatus("success");
                       setIsModalOpen(true);
@@ -407,7 +407,7 @@ const Checkout = () => {
                     })
                     .catch(function (error) {
                       setMessage(
-                        "Houve um erro na criacao da conta. Por favor envie e-mail para geral@petplushies.pt para notificar do sucedido. (" +
+                        "Houve um erro na criação da conta. Por favor envie e-mail para geral@petplushies.pt para notificar do sucedido. (" +
                           error.response.data +
                           ".)"
                       );
@@ -436,7 +436,7 @@ const Checkout = () => {
           });
       })
       .catch((errorInfo) => {
-        setMessage("Tem de preencher todos os campos obrigatorios.");
+        setMessage("Tem de preencher todos os campos obrigatórios.");
         setStatus("error");
         setIsModalOpen(true);
       });
@@ -486,14 +486,14 @@ const Checkout = () => {
 
   const handleOnPayPalError = (err) => {
     console.error("Transaction failed:", err);
-    setMessage("Erro na transaccao. (" + err + ")");
+    setMessage("Erro na transacção. (" + err + ")");
     setStatus("error");
     setIsModalOpen(true);
   };
 
   const handleOnPayPalCancel = (data) => {
     console.log("Transaction canceled:", data);
-    setMessage("Transaccao cancelada. (" + data + ")");
+    setMessage("Transacção cancelada. (" + data + ")");
     setStatus("error");
     setIsModalOpen(true);
   };

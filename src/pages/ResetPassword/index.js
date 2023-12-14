@@ -52,7 +52,7 @@ const ResetPassword = () => {
               rules={[
                 {
                   type: "email",
-                  message: "O e-mail inserido nao e valido.",
+                  message: "O e-mail inserido não é válido.",
                 },
                 {
                   required: true,
@@ -72,7 +72,7 @@ const ResetPassword = () => {
               <StyledButton
                 size="large"
                 color="green"
-                text="Enviar e-mail de recuperacao"
+                text="Enviar e-mail de recuperação"
                 type="primary"
                 htmlType="submit"
               />

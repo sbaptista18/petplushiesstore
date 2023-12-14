@@ -5,7 +5,7 @@ const ShippingReturns = () => {
   return (
     <Container>
       <ContentLocked>
-        <StyledH1>Envios e Devolucoes</StyledH1>
+        <StyledH1>Envios e Devoluções</StyledH1>
       </ContentLocked>
     </Container>
   );

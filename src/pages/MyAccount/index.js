@@ -15,13 +15,13 @@ import { useCart } from "reducers";
 
 const CustomNoData = () => (
   <div style={{ textAlign: "center", padding: "20px" }}>
-    Ainda nao efectuou nenhuma encomenda.
+    Ainda não efectuou nenhuma encomenda.
   </div>
 );
 
 const tableColumns = () => [
   {
-    title: "No.",
+    title: "N.º",
     dataIndex: "id",
     key: "number",
     render: (record) => <div>{record}</div>,
@@ -174,7 +174,7 @@ const MyAccount = () => {
         .then(function (response) {
           if (response.error) {
             setMessage(
-              "Houve um erro na actualizacao do seu e-mail. (" +
+              "Houve um erro na actualizaºão do seu e-mail. (" +
                 response.error +
                 ".)"
             );
@@ -188,7 +188,7 @@ const MyAccount = () => {
         })
         .catch(function (error) {
           setMessage(
-            "Houve um erro na actualizacao do seu e-mail. (" +
+            "Houve um erro na actualização do seu e-mail. (" +
               error.error +
               ".)"
           );
@@ -244,7 +244,7 @@ const MyAccount = () => {
         .then(function (response) {
           if (response.error) {
             setMessage(
-              "Houve um erro na actualizacao dos seus dados. (" +
+              "Houve um erro na actualização dos seus dados. (" +
                 response.error +
                 ".)"
             );
@@ -258,7 +258,7 @@ const MyAccount = () => {
         })
         .catch(function (error) {
           setMessage(
-            "Houve um erro na actualizacao dos seus dados. (" +
+            "Houve um erro na actualização dos seus dados. (" +
               error.error +
               ".)"
           );
