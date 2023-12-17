@@ -576,7 +576,7 @@ const StyledRow = styled(Row)`
 `;
 
 const ProductRow = styled(Row)`
-  justify-content: space-between;
+  /* justify-content: space-between; */
   flex-wrap: wrap;
 `;
 

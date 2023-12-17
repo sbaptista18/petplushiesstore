@@ -189,15 +189,15 @@ const Cart = () => {
     updatedProducts[recordIndex].product_qty = value;
     updatedProducts[recordIndex].product_net_revenue = value * product_price;
 
-    setProducts(updatedProducts);
-
-    updateCartProducts(cartId, product_id, value, product_price);
-
     let totalProductQty = 0;
 
     for (const orderItem of updatedProducts) {
       totalProductQty += parseInt(orderItem.product_qty, 10);
     }
+
+    setProducts(updatedProducts);
+
+    updateCartProducts(cartId, product_id, value, product_price);
 
     updateProductsNr(totalProductQty);
 
@@ -357,6 +357,7 @@ const StyledRow = styled(Row)`
 
 const StyledTable = styled(Table)`
   && {
+    margin-bottom: 50px;
     & .ant-table-empty {
       text-align: center;
     }

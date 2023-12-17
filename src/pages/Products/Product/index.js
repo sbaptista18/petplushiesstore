@@ -134,6 +134,40 @@ const Product = () => {
 
   const addToCart = async (product) => {
     if (cartId || cartId === 0) {
+      //Update number in cart (header)
+      const options_prods = {
+        method: "GET",
+        url: `http://localhost:8000/temp_cart_products_id?cartId=${cartId}`,
+      };
+
+      axios
+        .request(options_prods)
+        .then(function (response) {
+          updateProductsNr(0);
+          let qty_in_cart;
+
+          let totalProductQty = 0;
+          const orderItems = response.data.results;
+
+          if (orderItems != undefined) {
+            console.log("there are products in the cart");
+
+            for (const orderItem of orderItems) {
+              totalProductQty += parseInt(orderItem.product_qty, 10);
+            }
+
+            updateProductsNr(totalProductQty + qty);
+          } else {
+            console.log("there are no products in the cart");
+            qty_in_cart = 0;
+            updateProductsNr(parseInt(qty_in_cart, 10) + qty);
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      //End
+
       const dataProduct = {
         temp_cart_id: cartId,
         product_id: product.id,
@@ -142,18 +176,11 @@ const Product = () => {
         product_net_revenue: product.price * qty,
       };
 
-      // const options = {
-      //   method: "GET",
-      //   url: `http://localhost:8000/products`,
-      // };
+      console.log("product added:", dataProduct);
 
-      // axios
-      //   .request(options)
-      //   .then((response) => {
-      //     console.log("response:", response);
       const options1 = {
         method: "POST",
-        url: `http://localhost:8000/temp_cart_products_id`,
+        url: `http://localhost:8000/temp_cart_products`,
         data: JSON.stringify({ dataProduct }),
         headers: {
           "Content-Type": "application/json",
@@ -174,47 +201,6 @@ const Product = () => {
           setStatus("error");
           setIsModalOpen(true);
         });
-      // })
-      // .catch((error) => {
-      //   setMessage(
-      //     "Houve um erro ao carregar os produtos do carrinho. (" +
-      //       error.response +
-      //       ".)"
-      //   );
-      //   setStatus("error");
-      //   setIsModalOpen(true);
-      // });
-
-      //Update number in cart (header)
-      const options_prods = {
-        method: "GET",
-        url: `http://localhost:8000/temp_cart_products_id?cartId=${cartId}`,
-      };
-
-      axios
-        .request(options_prods)
-        .then(function (response) {
-          updateProductsNr(0);
-          let qty_in_cart;
-
-          let totalProductQty = 0;
-          const orderItems = response.data.results;
-
-          if (orderItems != undefined) {
-            for (const orderItem of orderItems) {
-              totalProductQty += parseInt(orderItem.product_qty, 10);
-            }
-
-            updateProductsNr(parseInt(totalProductQty) + qty);
-          } else {
-            qty_in_cart = 0;
-            updateProductsNr(parseInt(qty_in_cart) + qty);
-          }
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      //End
     } else {
       const storedUserData = localStorage.getItem("user");
 

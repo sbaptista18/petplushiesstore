@@ -47,7 +47,6 @@ app.get("/products/id", (req, res) => {
   const productId = req.query.id; // This retrieves the productId from the query parameters
   ConnectWC.get("products/" + productId, { per_page: 99 })
     .then((data) => {
-      console.log(data);
       res.json(data);
     })
     .catch((error) => {

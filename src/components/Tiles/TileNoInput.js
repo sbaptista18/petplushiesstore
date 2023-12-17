@@ -59,7 +59,7 @@ const Container = styled(Col)`
   display: flex;
   position: relative;
   flex-direction: column;
-  margin: 10px 0;
+  margin: 10px 18px;
 `;
 
 const Flag = styled.div`
