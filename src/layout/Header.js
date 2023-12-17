@@ -59,7 +59,7 @@ const PPS_Header = () => {
       axios
         .request(options)
         .then(function (response) {
-          if (response.data.results.length != 0) {
+          if (response.data.length != 0) {
             setSessionKeyAndCartId(sessionKey, response.data.results[0].id);
             fetchCartProducts(response.data.results[0].id);
           }
@@ -93,17 +93,18 @@ const PPS_Header = () => {
       axios
         .request(options)
         .then(function (response) {
-          if (response.data.results.length > 0) {
+          if (response.data.results != undefined) {
             if (response.data.results.length == 1) {
               updateProductsNr(response.data.results[0].product_qty);
             } else {
-              const totalQuantity = response.data.results.reduce(
-                (accumulator, prods) => {
-                  return accumulator + parseInt(prods.product_qty, 10);
-                },
-                0
-              );
-              updateProductsNr(totalQuantity);
+              const orderItems = response.data.results;
+              let totalProductQty = 0;
+
+              for (const orderItem of orderItems) {
+                totalProductQty += parseInt(orderItem.product_qty, 10);
+              }
+
+              updateProductsNr(totalProductQty);
 
               setUpdateHeader((prev) => !prev);
             }

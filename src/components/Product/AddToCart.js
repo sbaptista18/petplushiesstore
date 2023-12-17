@@ -4,9 +4,17 @@ import { Col, InputNumber } from "antd";
 
 import { Button } from "components";
 
-const AddToCart = ({ sku, price, sale_price, flag, onClick }) => {
+const AddToCart = ({
+  sku,
+  price,
+  sale_price,
+  flag,
+  stock,
+  onClick,
+  onDataFromChild,
+}) => {
   const onChange = (value) => {
-    console.log("changed", value);
+    onDataFromChild(value);
   };
 
   return (
@@ -22,6 +30,7 @@ const AddToCart = ({ sku, price, sale_price, flag, onClick }) => {
         type="primary"
         text="Adicionar ao carrinho"
         onClick={onClick}
+        disabled={stock === "outofstock" ? true : false}
       />
     </Container>
   );
@@ -32,7 +41,9 @@ AddToCart.propTypes = {
   price: PropTypes.string,
   sale_price: PropTypes.string,
   flag: PropTypes.string,
+  stock: PropTypes.string,
   onClick: PropTypes.func,
+  onDataFromChild: PropTypes.func,
 };
 
 const Container = styled(Col)`

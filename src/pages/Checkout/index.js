@@ -204,7 +204,7 @@ const Checkout = () => {
   };
 
   const totalProductNetRevenue = productsCart.reduce((sum, item) => {
-    return sum + parseInt(item.product_net_revenue, 10);
+    return sum + parseFloat(item.product_net_revenue, 10);
   }, 0);
 
   const handleCheckCreateAccount = () => {

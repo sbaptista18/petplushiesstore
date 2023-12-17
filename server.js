@@ -2,7 +2,6 @@ const express = require("express");
 const WooCommerceAPI = require("react-native-woocommerce-api");
 const PORT = 8000;
 require("dotenv").config();
-const axios = require("axios");
 
 const app = express();
 
@@ -34,7 +33,6 @@ app.get("/products/page", (req, res) => {
     });
 });
 
-// GET FUNCTIONS
 app.get("/products", (req, res) => {
   ConnectWC.get("products", { per_page: 99 })
     .then((data) => {
@@ -46,8 +44,31 @@ app.get("/products", (req, res) => {
 });
 
 app.get("/products/id", (req, res) => {
-  const productId = req.query.id; // This retrieves the cartId from the query parameters
-  ConnectWC.get("products/" + productId)
+  const productId = req.query.id; // This retrieves the productId from the query parameters
+  ConnectWC.get("products/" + productId, { per_page: 99 })
+    .then((data) => {
+      console.log(data);
+      res.json(data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+app.get("/product/product_slug", (req, res) => {
+  const productSlug = req.query.product_slug; // This retrieves the productSlug from the query parameters
+  ConnectWC.get("products_list/" + productSlug, { per_page: 99 })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+app.get("/product/product_id", (req, res) => {
+  const productId = req.query.product_id; // This retrieves the productId from the query parameters
+  ConnectWC.get("products_ids/" + productId, { per_page: 99 })
     .then((data) => {
       res.json(data);
     })
@@ -113,7 +134,7 @@ app.get("/temp_cart_products_id", (req, res) => {
 });
 
 app.get("/temp_cart_products", (req, res) => {
-  const prodId = req.query.prodId; // This retrieves the cartId from the query parameters
+  const prodId = req.query.prodId; // This retrieves the prodId from the query parameters
 
   ConnectWC.get("temp_cart_products/" + prodId)
     .then((data) => {
@@ -125,7 +146,7 @@ app.get("/temp_cart_products", (req, res) => {
 });
 
 app.get("/customers", (req, res) => {
-  const userId = req.query.userId; // This retrieves the cartId from the query parameters
+  const userId = req.query.userId; // This retrieves the userId from the query parameters
 
   ConnectWC.get("customers/" + userId)
     .then((data) => {
@@ -137,7 +158,7 @@ app.get("/customers", (req, res) => {
 });
 
 app.get("/shipping", (req, res) => {
-  const area = req.query.area; // This retrieves the cartId from the query parameters
+  const area = req.query.area; // This retrieves the area from the query parameters
 
   ConnectWC.get(`shipping/zones/${area}/methods`)
     .then((data) => {

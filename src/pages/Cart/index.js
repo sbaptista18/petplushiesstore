@@ -44,10 +44,16 @@ const Cart = () => {
   useEffect(() => {
     if (productsCart.length > 0) {
       const updatedTotal = productsCart.reduce((sum, item) => {
-        return sum + parseInt(item.product_net_revenue, 10);
+        return sum + parseFloat(item.product_net_revenue, 10);
       }, 0);
 
-      updateProductsNr(productsCart[0].product_qty);
+      let totalProductQty = 0;
+
+      for (const orderItem of productsCart) {
+        totalProductQty += parseInt(orderItem.product_qty, 10);
+      }
+
+      updateProductsNr(totalProductQty);
       setTotalProductNetRevenue(updatedTotal);
       setLoading(false); // Set loading to false after calculating the total
     }
@@ -62,18 +68,20 @@ const Cart = () => {
     try {
       const response = await axios.request(options);
 
-      if (response.data.results.length > 0) {
+      if (response.data.length != 0) {
         const updatedProducts = await fetchProducts(response.data.results);
 
         // Calculate total after setting productsCart
         const initialTotal = updatedProducts.reduce((sum, item) => {
-          return sum + parseInt(item.product_net_revenue, 10);
+          return sum + parseFloat(item.product_net_revenue, 10);
         }, 0);
 
         setProductsCart(response.data.results);
         setProducts(updatedProducts);
         setTotalProductNetRevenue(initialTotal);
+        setLoading(false);
       } else {
+        setLoading(false);
         setProductsCart([]);
         setProducts([]);
         setTotalProductNetRevenue(0); // Set total to 0 if there are no products
@@ -103,10 +111,12 @@ const Cart = () => {
 
     try {
       const responses = await Promise.all(promises);
-      const combinedProducts = responses.map(({ cartItem, product }) => ({
-        ...cartItem,
-        product,
-      }));
+      const combinedProducts = responses.map(({ cartItem, product }) => {
+        return {
+          ...cartItem,
+          product,
+        };
+      });
       return combinedProducts;
     } catch (error) {
       setError(true);
@@ -183,11 +193,17 @@ const Cart = () => {
 
     updateCartProducts(cartId, product_id, value, product_price);
 
-    updateProductsNr(updatedProducts[0].product_qty);
+    let totalProductQty = 0;
+
+    for (const orderItem of updatedProducts) {
+      totalProductQty += parseInt(orderItem.product_qty, 10);
+    }
+
+    updateProductsNr(totalProductQty);
 
     setProductsCart((prevProductsCart) => {
       const updatedTotal = updatedProducts.reduce((sum, item) => {
-        return sum + parseInt(item.product_net_revenue, 10);
+        return sum + parseFloat(item.product_net_revenue, 10);
       }, 0);
 
       setTotalProductNetRevenue((prevTotal) => {
@@ -206,11 +222,18 @@ const Cart = () => {
 
     deleteCartProducts(cartId, product_id);
 
-    updateProductsNr(updatedProducts[0].product_qty);
+    if (updatedProducts.length > 0) {
+      let totalProductQty = 0;
+
+      for (const orderItem of updatedProducts) {
+        totalProductQty += parseInt(orderItem.product_qty, 10);
+      }
+      updateProductsNr(totalProductQty);
+    } else updateProductsNr(0);
 
     setProductsCart((prevProductsCart) => {
       const updatedTotal = updatedProducts.reduce((sum, item) => {
-        return sum + parseInt(item.product_net_revenue, 10);
+        return sum + parseFloat(item.product_net_revenue, 10);
       }, 0);
 
       setTotalProductNetRevenue((prevTotal) => {

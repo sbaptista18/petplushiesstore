@@ -13,7 +13,7 @@ const ModalMessage = ({ status, message, isVisible, onClose }) => {
       setTimeout(() => {
         onClose();
         setConfirmLoading(false);
-      }, 2000);
+      }, 4000);
     }
   }, [status, onClose]);
 

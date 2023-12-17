@@ -91,7 +91,6 @@ const MyAccount = () => {
           setLoading(false);
         })
         .catch(function (error) {
-          console.log(error);
           setLoading(true);
         });
     };

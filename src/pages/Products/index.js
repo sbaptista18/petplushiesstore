@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Row, Col, Collapse, Slider, Select, Spin, Pagination } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import axios from "axios";
-import _ from "lodash"; // Import lodash for utility functions
+import _, { min } from "lodash"; // Import lodash for utility functions
 
 import { Breadcrumbs, TileNoInput } from "components";
 
@@ -51,20 +51,28 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
+  const [selectedPriceRange, setSelectedPriceRange] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 12;
 
   // New state for caching
   const [cachedProducts, setCachedProducts] = useState(null);
+  const [cachedCategories, setCachedCategories] = useState(null);
+  const [cachedMinPrice, setCachedMinPrice] = useState(null);
+  const [cachedMaxPrice, setCachedMaxPrice] = useState(null);
 
-  const flagText = (stock) => {
-    if (stock == null) return "";
-    if (stock > 0) {
-      if (stock === 1) return "Apenas 1 em stock!";
-      if (stock <= 5) return "Últimas unidades em stock!";
-      return "";
-    } else return "Esgotado";
+  const flagText = (stock, status) => {
+    if (status == "instock") {
+      if (stock == null) return "";
+      if (stock > 0) {
+        if (stock === 1) return "Apenas 1 em stock!";
+        if (stock <= 5) return "Últimas unidades em stock!";
+        return "";
+      } else return "Esgotado";
+    } else {
+      return "Esgotado";
+    }
   };
 
   const filterByCategory = (array) => {
@@ -91,7 +99,10 @@ const Products = () => {
   const sortByPriceHighToLow = (a, b) =>
     parseFloat(b.price) - parseFloat(a.price);
 
-  const fetchData = async () => {
+  /**
+   * PRODUCTS CODEBLOCK
+   */
+  const fetchProducts = async () => {
     try {
       if (cachedProducts) {
         setProducts(cachedProducts);
@@ -117,6 +128,7 @@ const Products = () => {
           name: item.name,
           price: _.toNumber(item.price),
           stock: item.stock_quantity,
+          stock_status: item.stock_status,
           picture: item.images[0].src,
           url: item.slug,
           category: item.categories[0].slug,
@@ -141,7 +153,7 @@ const Products = () => {
       setLoading(false);
       setError(false);
     } else {
-      fetchData();
+      fetchProducts();
     }
   }, []);
 
@@ -154,16 +166,30 @@ const Products = () => {
       }
     }
   }, [loading, error, products]);
+  /**
+   * END
+   */
 
-  useEffect(() => {
-    const fetchCategories = async () => {
+  /**
+   * CATEGORIES CODEBLOCK
+   */
+  const fetchCategories = async () => {
+    try {
+      if (cachedCategories) {
+        setCategories(cachedCategories);
+        return;
+      }
+
       const options = {
         method: "GET",
         url: "http://localhost:8000/products/categories",
       };
 
-      try {
-        const response = await axios.request(options);
+      const response = await axios.request(options);
+
+      if (response.data.length === 0) {
+        //setNoResults(true)
+      } else {
         const mappedCategories = response.data.map((item) => ({
           id: item.id,
           name: item.name,
@@ -172,41 +198,120 @@ const Products = () => {
         }));
 
         setCategories(mappedCategories);
-      } catch (error) {
-        setError(true);
-      }
-    };
+        setCachedCategories(mappedCategories);
 
-    fetchCategories();
+        localStorage.setItem(
+          "cachedCategories",
+          JSON.stringify(mappedCategories)
+        );
+      }
+    } catch (error) {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const cachedCategories = localStorage.getItem("cachedCategories");
+    if (cachedCategories) {
+      const parsedData = JSON.parse(cachedCategories);
+      setCachedCategories(parsedData);
+      setCategories(parsedData);
+      setError(false);
+    } else {
+      fetchCategories();
+    }
   }, []);
 
   useEffect(() => {
-    const fetchPriceRange = async () => {
+    if (!loading && !error) {
+      const cachedCategories = localStorage.getItem("cachedCategories");
+      if (!cachedCategories) {
+        setCachedCategories(categories);
+      }
+    }
+  }, [loading, error, categories]);
+  /**
+   * END
+   */
+
+  /**
+   * PRICE RANGE CODEBLOCK
+   */
+  const fetchPriceRange = async () => {
+    try {
+      if (cachedMinPrice && cachedMaxPrice) {
+        setCachedMinPrice(cachedMinPrice);
+        setCachedMaxPrice(cachedMaxPrice);
+        setLoading(false);
+        return;
+      }
+
       const options = {
         method: "GET",
         url: "http://localhost:8000/products",
       };
 
-      try {
-        const response = await axios.request(options);
-        let minPrice = Number.MAX_VALUE;
-        let maxPrice = 0;
+      const response = await axios.request(options);
+      let minPrice = Number.MAX_VALUE;
+      let maxPrice = 0;
 
-        response.data.forEach((product) => {
-          let price = parseFloat(product.price);
-          minPrice = Math.min(minPrice, price);
-          maxPrice = Math.max(maxPrice, price);
-        });
+      response.data.forEach((product) => {
+        let price = parseFloat(product.price);
+        minPrice = Math.min(minPrice, price);
+        maxPrice = Math.max(maxPrice, price);
+      });
 
-        setMinPrice(minPrice);
-        setMaxPrice(maxPrice);
-      } catch (error) {
-        setError(true);
-      }
-    };
+      setMinPrice(minPrice);
+      setMaxPrice(maxPrice);
 
-    fetchPriceRange();
+      setCachedMinPrice(minPrice);
+      setCachedMaxPrice(maxPrice);
+
+      setSelectedPriceRange([minPrice, maxPrice]);
+
+      localStorage.setItem("cachedMinPrice", JSON.stringify(minPrice));
+      localStorage.setItem("cachedMaxPrice", JSON.stringify(maxPrice));
+    } catch (error) {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const cachedMinPrice = localStorage.getItem("cachedMinPrice");
+    const cachedMaxPrice = localStorage.getItem("cachedMaxPrice");
+    if (cachedMinPrice && cachedMaxPrice) {
+      const parsedDataMin = JSON.parse(cachedMinPrice);
+      const parsedDataMax = JSON.parse(cachedMaxPrice);
+      setCachedMinPrice(parsedDataMin);
+      setCachedMaxPrice(parsedDataMax);
+      setMinPrice(parsedDataMin);
+      setMaxPrice(parsedDataMax);
+
+      setSelectedPriceRange([parsedDataMin, parsedDataMax]);
+      setError(false);
+    } else {
+      fetchPriceRange();
+    }
   }, []);
+
+  useEffect(() => {
+    if (!loading && !error) {
+      const cachedMinPrice = localStorage.getItem("cachedMinPrice");
+      const cachedMaxPrice = localStorage.getItem("cachedMaxPrice");
+      if (!cachedMinPrice && !cachedMaxPrice) {
+        setCachedMinPrice(minPrice);
+        setCachedMaxPrice(maxPrice);
+        setSelectedPriceRange([minPrice, maxPrice]);
+      }
+    }
+  }, [loading, error, minPrice, maxPrice]);
+  /**
+   * END
+   */
 
   useEffect(() => {
     // Check if the data is already in the cache
@@ -223,6 +328,15 @@ const Products = () => {
           filterByCategory(cachedProducts).sort(sortByPriceHighToLow);
       }
 
+      // Filter by price range
+      filteredProducts = filteredProducts.filter((product) => {
+        const productPrice = parseFloat(product.price);
+        return (
+          productPrice >= selectedPriceRange[0] &&
+          productPrice <= selectedPriceRange[1]
+        );
+      });
+
       // Your existing logic for handling results
       if (filteredProducts.length === 0) {
         setNoResults(true);
@@ -232,6 +346,7 @@ const Products = () => {
           name: item.name,
           price: _.toNumber(item.price),
           stock: item.stock,
+          stock_status: item.stock_status,
           picture: item.picture,
           url: item.url,
           category: item.category,
@@ -241,7 +356,7 @@ const Products = () => {
         setProducts(mappedProducts);
       }
     }
-  }, [categoryFilter, cachedProducts]);
+  }, [categoryFilter, cachedProducts, selectedPriceRange]);
 
   const handleSortChange = (value) => {
     setSortOption(value);
@@ -262,6 +377,7 @@ const Products = () => {
         name: item.name,
         price: item.price,
         stock: item.stock,
+        stock_status: item.stock_status,
         picture: item.picture,
         url: item.url,
       }));
@@ -290,6 +406,7 @@ const Products = () => {
         name: item.name,
         price: item.price,
         stock: item.stock,
+        stock_status: item.stock_status,
         picture: item.picture,
         url: item.url,
         category: item.category,
@@ -347,6 +464,7 @@ const Products = () => {
                   defaultValue={[minPrice, maxPrice]}
                   min={minPrice}
                   max={maxPrice}
+                  onChange={setSelectedPriceRange}
                 />
               </Panel>
             </Collapse>
@@ -381,7 +499,7 @@ const Products = () => {
                         price={p.price}
                         picture={p.picture}
                         stock={p.stock}
-                        flag={flagText(p.stock)}
+                        flag={flagText(p.stock, p.stock_status)}
                         url={p.url}
                       />
                     ))}

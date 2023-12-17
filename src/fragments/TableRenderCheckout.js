@@ -41,7 +41,7 @@ const tableColumnsCheckout = [
     title: "Preco",
     dataIndex: "product_net_revenue",
     key: "price",
-    render: (record) => <Price text={record} />,
+    render: (record) => <Price text={`${record}€`} />,
   },
 ];
 

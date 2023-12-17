@@ -21,9 +21,9 @@ const tableColumns = (onQuantityChange, onDelete) => [
     title: "Imagem",
     dataIndex: "product",
     key: "image",
-    render: (record, _, recordIndex) => (
-      <Image image={record.images[0].src} recordIndex={recordIndex} />
-    ),
+    render: (record, _, recordIndex) => {
+      return <Image image={record.images[0].src} recordIndex={recordIndex} />;
+    },
   },
   {
     title: "Nome",
@@ -54,7 +54,7 @@ const tableColumns = (onQuantityChange, onDelete) => [
     title: "Preco",
     dataIndex: "product_net_revenue",
     key: "price",
-    render: (record) => <Price text={record} />,
+    render: (record) => <Price text={`${record}€`} />,
   },
   {
     key: "close",

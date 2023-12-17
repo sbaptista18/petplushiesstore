@@ -17,14 +17,18 @@ import {
   ModalMessage,
 } from "components";
 
-const flagText = (stock) => {
+const flagText = (stock, status) => {
   let text;
-  if (stock == null) return;
-  if (stock > 0) {
-    if (stock == 1) text = "Apenas 1 em stock!";
-    else if (stock <= 5 && stock != 1) text = "Últimas unidades em stock!";
-    else text = "";
-  } else text = "Esgotado";
+
+  if (status == "instock") {
+    if (stock == null) return;
+    if (stock > 0) {
+      if (stock == 1) text = "Apenas 1 em stock!";
+      if (stock <= 5 && stock != 1) text = "Últimas unidades em stock!";
+    }
+  } else {
+    text = "Esgotado";
+  }
 
   return text;
 };
@@ -38,15 +42,20 @@ const Product = () => {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [qty, setQty] = useState(1);
 
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
+
+  const handleDataFromChild = (data) => {
+    setQty(data);
+  };
 
   useEffect(() => {
     if (cartId === null) {
       setLoading(true);
     } else {
-      setLoading(false);
+      //setLoading(false);
     }
   }, [cartId]);
 
@@ -54,38 +63,66 @@ const Product = () => {
     const fetchProduct = async () => {
       const options = {
         method: "GET",
-        url: `http://localhost:8000/products`,
+        url: `http://localhost:8000/product/product_slug?product_slug=${productUrl}`,
       };
 
       axios
         .request(options)
         .then((response) => {
-          const productWithSlug = response.data.find(
-            (product) => product.slug === productUrl
+          const productMainDetails = response.data.results.product_main_details;
+          const productDetails = response.data.results.product_details;
+          const productImages = response.data.results.product_images;
+
+          // Define the gallery array
+          const urls = productImages.map((image) => image.guid);
+
+          // price
+          const productPrice = productDetails.find(
+            (meta) => meta.meta_key === "_price"
           );
 
-          const arrayImages = [];
+          // stock
+          const productStock = productDetails.find(
+            (meta) => meta.meta_key === "_stock"
+          );
+          const productStockStatus = productDetails.find(
+            (meta) => meta.meta_key === "_stock_status"
+          );
 
-          productWithSlug.images.map((image) => {
-            return arrayImages.push(image.src);
-          });
+          // sku
+          const productSKU = productDetails.find(
+            (meta) => meta.meta_key === "_sku"
+          );
+
+          // weight
+          const productWeight = productDetails.find(
+            (meta) => meta.meta_key === "_weight"
+          );
 
           const productData = {
-            id: productWithSlug.id,
-            name: productWithSlug.name,
-            price: _.toNumber(productWithSlug.price),
-            picture: productWithSlug.images[0].src,
-            slideshow: arrayImages,
-            stock: productWithSlug.stock_quantity,
-            flag: flagText(productWithSlug.stock_quantity),
-            url: productWithSlug.slug,
-            desc: productWithSlug.description,
-            desc_short: productWithSlug.short_description,
-            sku: productWithSlug.sku,
+            id: productMainDetails[0].ID,
+            name: productMainDetails[0].post_title,
+            price: _.toNumber(productPrice.meta_value),
+            picture: urls[0],
+            slideshow: urls,
+            stock: productStock.meta_value,
+            stock_status: productStockStatus.meta_value,
+            flag: flagText(
+              productStock.meta_value,
+              productStockStatus.meta_value
+            ),
+            url: productMainDetails[0].post_name,
+            desc: productMainDetails[0].post_content,
+            desc_short: productMainDetails[0].post_excerpt,
+            sku: productSKU.meta_value.toString(),
+            weight: productWeight.meta_value,
           };
 
           setProduct(productData);
-          setLoading(false);
+
+          setTimeout(() => {
+            setLoading(false);
+          }, 1000);
         })
         .catch((error) => {
           setError(true);
@@ -97,7 +134,6 @@ const Product = () => {
 
   const addToCart = async (product) => {
     if (cartId || cartId === 0) {
-      const qty = document.querySelector(".ant-input-number-input").value;
       const dataProduct = {
         temp_cart_id: cartId,
         product_id: product.id,
@@ -106,6 +142,50 @@ const Product = () => {
         product_net_revenue: product.price * qty,
       };
 
+      // const options = {
+      //   method: "GET",
+      //   url: `http://localhost:8000/products`,
+      // };
+
+      // axios
+      //   .request(options)
+      //   .then((response) => {
+      //     console.log("response:", response);
+      const options1 = {
+        method: "POST",
+        url: `http://localhost:8000/temp_cart_products_id`,
+        data: JSON.stringify({ dataProduct }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      axios
+        .request(options1)
+        .then(function (response) {
+          setMessage("O produto foi adicionado ao carrinho!");
+          setStatus("success");
+          setIsModalOpen(true);
+        })
+        .catch(function (error) {
+          setMessage(
+            "Houve um erro ao adicionar o produto ao carrinho. (" + error + ".)"
+          );
+          setStatus("error");
+          setIsModalOpen(true);
+        });
+      // })
+      // .catch((error) => {
+      //   setMessage(
+      //     "Houve um erro ao carregar os produtos do carrinho. (" +
+      //       error.response +
+      //       ".)"
+      //   );
+      //   setStatus("error");
+      //   setIsModalOpen(true);
+      // });
+
+      //Update number in cart (header)
       const options_prods = {
         method: "GET",
         url: `http://localhost:8000/temp_cart_products_id?cartId=${cartId}`,
@@ -114,56 +194,27 @@ const Product = () => {
       axios
         .request(options_prods)
         .then(function (response) {
-          const qty_in_cart = response.data.results[0].product_qty;
-          updateProductsNr(parseInt(qty_in_cart) + 1);
+          updateProductsNr(0);
+          let qty_in_cart;
+
+          let totalProductQty = 0;
+          const orderItems = response.data.results;
+
+          if (orderItems != undefined) {
+            for (const orderItem of orderItems) {
+              totalProductQty += parseInt(orderItem.product_qty, 10);
+            }
+
+            updateProductsNr(parseInt(totalProductQty) + qty);
+          } else {
+            qty_in_cart = 0;
+            updateProductsNr(parseInt(qty_in_cart) + qty);
+          }
         })
         .catch(function (error) {
           console.log(error);
         });
-
-      const options = {
-        method: "GET",
-        url: `http://localhost:8000/products`,
-      };
-
-      axios
-        .request(options)
-        .then((response) => {
-          const options1 = {
-            method: "POST",
-            url: `http://localhost:8000/temp_cart_products`,
-            data: JSON.stringify({ dataProduct }),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          };
-
-          axios
-            .request(options1)
-            .then(function (response) {
-              setMessage("O produto foi adicionado ao carrinho!");
-              setStatus("success");
-              setIsModalOpen(true);
-            })
-            .catch(function (error) {
-              setMessage(
-                "Houve um erro ao adicionar o produto ao carrinho. (" +
-                  error +
-                  ".)"
-              );
-              setStatus("error");
-              setIsModalOpen(true);
-            });
-        })
-        .catch((error) => {
-          setMessage(
-            "Houve um erro ao carregar os produtos do carrinho. (" +
-              error.response +
-              ".)"
-          );
-          setStatus("error");
-          setIsModalOpen(true);
-        });
+      //End
     } else {
       const storedUserData = localStorage.getItem("user");
 
@@ -272,6 +323,8 @@ const Product = () => {
             <Breadcrumbs page="/produtos" item={product.name} />
             <StyledRow>
               <Col span={11}>
+                {product.flag != undefined && <Flag>{product.flag}</Flag>}
+
                 <ImageCarousel
                   pictures={[product.slideshow]}
                   settings={{
@@ -292,6 +345,8 @@ const Product = () => {
                   onClick={() => addToCart(product)}
                   sku={product.sku}
                   price={product.price + "€"}
+                  stock={product.stock_status}
+                  onDataFromChild={handleDataFromChild}
                 />
                 <Accordion desc={product.desc} />
                 <ShareSocials
@@ -316,8 +371,8 @@ const Product = () => {
 const Spinner = styled(Spin)`
   position: absolute;
   background-color: white;
-  width: 99vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   left: 0;
   top: 0;
   z-index: 1;
@@ -339,6 +394,7 @@ const Content = styled(Row)`
 const ContentLocked = styled(Content)`
   max-width: 1440px;
   margin: auto;
+  position: relative;
 `;
 
 const StyledH1 = styled.h1`
@@ -352,6 +408,19 @@ const StyledRow = styled(Row)`
 
 const ProductDesc = styled.div`
   margin-top: 50px;
+`;
+
+const Flag = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: auto;
+  height: 30px;
+  background-color: var(--black);
+  color: var(--white);
+  z-index: 1;
+  font-size: 14px;
+  padding: 5px 10px;
 `;
 
 export default {
