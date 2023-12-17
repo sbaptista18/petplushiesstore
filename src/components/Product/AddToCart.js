@@ -30,7 +30,7 @@ const AddToCart = ({
         type="primary"
         text="Adicionar ao carrinho"
         onClick={onClick}
-        disabled={stock === "outofstock" ? true : false}
+        disabled={stock === "outofstock"}
       />
     </Container>
   );

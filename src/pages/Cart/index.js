@@ -28,6 +28,32 @@ const Cart = () => {
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
 
+  const axiosRequest = async (method, url, data = null) => {
+    const options = {
+      method,
+      url,
+      data: data ? JSON.stringify(data) : null,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    try {
+      const response = await axios.request(options);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
+  const calculateTotalNetRevenue = (items) => {
+    return items.reduce(
+      (sum, item) => sum + parseFloat(item.product_net_revenue, 10),
+      0
+    );
+  };
+
   useEffect(() => {
     if (cartId != null) {
       setLoading(true);
@@ -43,9 +69,7 @@ const Cart = () => {
   // Add this new useEffect
   useEffect(() => {
     if (productsCart.length > 0) {
-      const updatedTotal = productsCart.reduce((sum, item) => {
-        return sum + parseFloat(item.product_net_revenue, 10);
-      }, 0);
+      const updatedTotal = calculateTotalNetRevenue(productsCart);
 
       let totalProductQty = 0;
 
@@ -60,63 +84,41 @@ const Cart = () => {
   }, [productsCart]);
 
   const fetchCartProducts = async (cartId) => {
-    const options = {
-      method: "GET",
-      url: `http://localhost:8000/temp_cart_products_id?cartId=${cartId}`,
-    };
+    const url = `http://localhost:8000/temp_cart_products_id?cartId=${cartId}`;
 
-    try {
-      const response = await axios.request(options);
+    const response = await axiosRequest("GET", url);
 
-      if (response.data.length != 0) {
-        const updatedProducts = await fetchProducts(response.data.results);
+    if (response && response.length !== 0) {
+      const updatedProducts = await fetchProducts(response.results);
 
-        // Calculate total after setting productsCart
-        const initialTotal = updatedProducts.reduce((sum, item) => {
-          return sum + parseFloat(item.product_net_revenue, 10);
-        }, 0);
+      const initialTotal = calculateTotalNetRevenue(updatedProducts);
 
-        setProductsCart(response.data.results);
-        setProducts(updatedProducts);
-        setTotalProductNetRevenue(initialTotal);
-        setLoading(false);
-      } else {
-        setLoading(false);
-        setProductsCart([]);
-        setProducts([]);
-        setTotalProductNetRevenue(0); // Set total to 0 if there are no products
-      }
-    } catch (error) {
-      console.error(error);
+      setProductsCart(response.results);
+      setProducts(updatedProducts);
+      setTotalProductNetRevenue(initialTotal);
+      setLoading(false);
+    } else {
+      setLoading(false);
+      setProductsCart([]);
+      setProducts([]);
+      setTotalProductNetRevenue(0);
     }
   };
 
   const fetchProducts = async (data) => {
     const promises = data.map((cartItem) => {
-      const options = {
-        method: "GET",
-        url: `http://localhost:8000/products/id?id=${cartItem.product_id}`,
-      };
-
-      return axios
-        .request(options)
-        .then((response) => {
-          let product = response.data;
-          return { cartItem, product };
-        })
-        .catch(function (error) {
-          return { error: error.response.data };
-        });
+      const url = `http://localhost:8000/products/id?id=${cartItem.product_id}`;
+      return axiosRequest("GET", url)
+        .then((response) => ({ cartItem, product: response }))
+        .catch((error) => ({ error: error.response.data }));
     });
 
     try {
       const responses = await Promise.all(promises);
-      const combinedProducts = responses.map(({ cartItem, product }) => {
-        return {
-          ...cartItem,
-          product,
-        };
-      });
+      const combinedProducts = responses.map(({ cartItem, product }) => ({
+        ...cartItem,
+        product,
+      }));
       return combinedProducts;
     } catch (error) {
       setError(true);
@@ -134,17 +136,9 @@ const Cart = () => {
       product_net_revenue: product_price * qty,
     };
 
-    const options = {
-      method: "POST",
-      url: `http://localhost:8000/temp_cart_products_id`,
-      data: JSON.stringify({ dataProduct }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
+    const url = `http://localhost:8000/temp_cart_products_id`;
 
-    axios
-      .request(options)
+    axiosRequest("POST", url, { dataProduct })
       .then(function (response) {
         setMessage("Produto actualizado!");
         setStatus("success");
@@ -202,9 +196,7 @@ const Cart = () => {
     updateProductsNr(totalProductQty);
 
     setProductsCart((prevProductsCart) => {
-      const updatedTotal = updatedProducts.reduce((sum, item) => {
-        return sum + parseFloat(item.product_net_revenue, 10);
-      }, 0);
+      const updatedTotal = calculateTotalNetRevenue(updatedProducts);
 
       setTotalProductNetRevenue((prevTotal) => {
         return updatedTotal;
@@ -232,9 +224,7 @@ const Cart = () => {
     } else updateProductsNr(0);
 
     setProductsCart((prevProductsCart) => {
-      const updatedTotal = updatedProducts.reduce((sum, item) => {
-        return sum + parseFloat(item.product_net_revenue, 10);
-      }, 0);
+      const updatedTotal = calculateTotalNetRevenue(updatedProducts);
 
       setTotalProductNetRevenue((prevTotal) => {
         return updatedTotal;

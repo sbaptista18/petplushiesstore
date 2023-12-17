@@ -54,8 +54,6 @@ const Product = () => {
   useEffect(() => {
     if (cartId === null) {
       setLoading(true);
-    } else {
-      //setLoading(false);
     }
   }, [cartId]);
 
@@ -175,8 +173,6 @@ const Product = () => {
         product_qty: qty,
         product_net_revenue: product.price * qty,
       };
-
-      console.log("product added:", dataProduct);
 
       const options1 = {
         method: "POST",
@@ -321,6 +317,7 @@ const Product = () => {
                     slidesToShow: 1,
                     slidesToScroll: 1,
                   }}
+                  name={product.name}
                 />
                 <ProductDesc
                   dangerouslySetInnerHTML={{ __html: product.desc_short }}
