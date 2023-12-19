@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Row, Col, Collapse, Slider, Select, Spin, Pagination } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import axios from "axios";
-import _, { min } from "lodash"; // Import lodash for utility functions
+import _ from "lodash"; // Import lodash for utility functions
 
 import { Breadcrumbs, TileNoInput } from "components";
 
@@ -62,6 +62,35 @@ const Products = () => {
   const [cachedMinPrice, setCachedMinPrice] = useState(null);
   const [cachedMaxPrice, setCachedMaxPrice] = useState(null);
 
+  const setCachedData = (data, localStorageKey) => {
+    const currentTime = new Date().getTime();
+    const sessionData = {
+      data,
+      timestamp: currentTime,
+    };
+
+    localStorage.setItem(localStorageKey, JSON.stringify(sessionData));
+
+    //check timestamp and reset if greater than a week
+    const storedSessionData = localStorage.getItem(localStorageKey);
+    resetCachedData(storedSessionData, data, localStorageKey);
+  };
+
+  const resetCachedData = (storedSessionData, data, localStorageKey) => {
+    if (storedSessionData.timestamp) {
+      const currentTime = new Date().getTime();
+      const elapsedTime = currentTime - timestamp;
+
+      if (elapsedTime < 7 * 24 * 60 * 60 * 1000) {
+        //greater than a week
+        setCachedData(data, localStorageKey);
+      } else {
+        localStorage.removeItem(localStorageKey);
+        setCachedData(data, localStorageKey);
+      }
+    }
+  };
+
   const flagText = (stock, status) => {
     if (status == "instock") {
       if (stock == null) return "";
@@ -105,7 +134,7 @@ const Products = () => {
   const fetchProducts = async () => {
     try {
       if (cachedProducts) {
-        setProducts(cachedProducts);
+        setProducts(cachedProducts.data);
         setLoading(false);
         return;
       }
@@ -136,6 +165,7 @@ const Products = () => {
 
         setProducts(mappedProducts);
         setCachedProducts(mappedProducts);
+        setCachedData(mappedProducts, "cachedProducts");
       }
     } catch (error) {
       setError(true);
@@ -146,14 +176,15 @@ const Products = () => {
 
   useEffect(() => {
     const cachedProducts = localStorage.getItem("cachedProducts");
+
     if (cachedProducts) {
       const parsedData = JSON.parse(cachedProducts);
-      setCachedProducts(parsedData);
-      setProducts(parsedData);
+      setCachedProducts(parsedData.data);
+      setProducts(parsedData.data);
       setLoading(false);
       setError(false);
     } else {
-      fetchProducts();
+      // fetchProducts();
     }
   }, []);
 
@@ -162,7 +193,6 @@ const Products = () => {
       const cachedProducts = localStorage.getItem("cachedProducts");
       if (!cachedProducts) {
         setCachedProducts(products);
-        localStorage.setItem("cachedProducts", JSON.stringify(products));
       }
     }
   }, [loading, error, products]);
@@ -188,7 +218,7 @@ const Products = () => {
       const response = await axios.request(options);
 
       if (response.data.length === 0) {
-        //setNoResults(true)
+        setNoResults(true);
       } else {
         const mappedCategories = response.data.map((item) => ({
           id: item.id,
@@ -196,19 +226,14 @@ const Products = () => {
           slug: item.slug,
           count: item.count,
         }));
-
+        setCachedData(mappedCategories, "cachedCategories");
         setCategories(mappedCategories);
         setCachedCategories(mappedCategories);
-
-        localStorage.setItem(
-          "cachedCategories",
-          JSON.stringify(mappedCategories)
-        );
       }
     } catch (error) {
       setError(true);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -216,8 +241,8 @@ const Products = () => {
     const cachedCategories = localStorage.getItem("cachedCategories");
     if (cachedCategories) {
       const parsedData = JSON.parse(cachedCategories);
-      setCachedCategories(parsedData);
-      setCategories(parsedData);
+      setCachedCategories(parsedData.data);
+      setCategories(parsedData.data);
       setError(false);
     } else {
       fetchCategories();
@@ -270,28 +295,30 @@ const Products = () => {
       setCachedMaxPrice(maxPrice);
 
       setSelectedPriceRange([minPrice, maxPrice]);
-
-      localStorage.setItem("cachedMinPrice", JSON.stringify(minPrice));
-      localStorage.setItem("cachedMaxPrice", JSON.stringify(maxPrice));
+      setCachedData(minPrice, "cachedMinPrice");
+      setCachedData(maxPrice, "cachedMaxPrice");
+      fetchProducts();
     } catch (error) {
       setError(true);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
   useEffect(() => {
     const cachedMinPrice = localStorage.getItem("cachedMinPrice");
     const cachedMaxPrice = localStorage.getItem("cachedMaxPrice");
+
     if (cachedMinPrice && cachedMaxPrice) {
       const parsedDataMin = JSON.parse(cachedMinPrice);
       const parsedDataMax = JSON.parse(cachedMaxPrice);
-      setCachedMinPrice(parsedDataMin);
-      setCachedMaxPrice(parsedDataMax);
-      setMinPrice(parsedDataMin);
-      setMaxPrice(parsedDataMax);
 
-      setSelectedPriceRange([parsedDataMin, parsedDataMax]);
+      setCachedMinPrice(parsedDataMin.data);
+      setCachedMaxPrice(parsedDataMax.data);
+      setMinPrice(parsedDataMin.data);
+      setMaxPrice(parsedDataMax.data);
+
+      setSelectedPriceRange([parsedDataMin.data, parsedDataMax.data]);
       setError(false);
     } else {
       fetchPriceRange();
@@ -315,45 +342,48 @@ const Products = () => {
 
   useEffect(() => {
     // Check if the data is already in the cache
-    if (cachedProducts) {
-      let filteredProducts;
-      if (sortOption === "id_DESC") {
-        filteredProducts =
-          filterByCategory(cachedProducts).sort(sortProductsById);
-      } else if (sortOption === "price_ASC") {
-        filteredProducts =
-          filterByCategory(cachedProducts).sort(sortByPriceLowToHigh);
-      } else {
-        filteredProducts =
-          filterByCategory(cachedProducts).sort(sortByPriceHighToLow);
-      }
+    if (cachedProducts != null) {
+      if (cachedProducts.length != 0) {
+        let filteredProducts;
+        if (sortOption === "id_DESC") {
+          filteredProducts =
+            filterByCategory(cachedProducts).sort(sortProductsById);
+        } else if (sortOption === "price_ASC") {
+          filteredProducts =
+            filterByCategory(cachedProducts).sort(sortByPriceLowToHigh);
+        } else {
+          filteredProducts =
+            filterByCategory(cachedProducts).sort(sortByPriceHighToLow);
+        }
 
-      // Filter by price range
-      filteredProducts = filteredProducts.filter((product) => {
-        const productPrice = parseFloat(product.price);
-        return (
-          productPrice >= selectedPriceRange[0] &&
-          productPrice <= selectedPriceRange[1]
-        );
-      });
+        // Filter by price range
+        filteredProducts = filteredProducts.filter((product) => {
+          const productPrice = parseFloat(product.price);
+          return (
+            productPrice >= selectedPriceRange[0] &&
+            productPrice <= selectedPriceRange[1]
+          );
+        });
 
-      // Your existing logic for handling results
-      if (filteredProducts.length === 0) {
-        setNoResults(true);
-      } else {
-        const mappedProducts = filteredProducts.map((item) => ({
-          id: item.id,
-          name: item.name,
-          price: _.toNumber(item.price),
-          stock: item.stock,
-          stock_status: item.stock_status,
-          picture: item.picture,
-          url: item.url,
-          category: item.category,
-        }));
+        // Your existing logic for handling results
+        if (filteredProducts.length === 0) {
+          setNoResults(true);
+        } else {
+          const mappedProducts = filteredProducts.map((item) => ({
+            id: item.id,
+            name: item.name,
+            price: _.toNumber(item.price),
+            stock: item.stock,
+            stock_status: item.stock_status,
+            picture: item.picture,
+            url: item.url,
+            category: item.category,
+          }));
 
-        // Update the local state
-        setProducts(mappedProducts);
+          // Update the local state
+          setProducts(mappedProducts);
+          setLoading(false);
+        }
       }
     }
   }, [categoryFilter, cachedProducts, selectedPriceRange]);
