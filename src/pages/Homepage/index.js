@@ -3,13 +3,13 @@ import { Row } from "antd";
 
 import { Button, Slideshow } from "components";
 
-import Image from "assets/images/batcat-1.jpg";
+import { data } from "./slideshow_data";
 
 const Homepage = () => {
   return (
     <Container>
       <Slideshow
-        pictures={[Image, Image, Image]}
+        slides={data}
         settings={{
           dots: true,
           infinite: true,

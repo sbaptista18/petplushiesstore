@@ -4,13 +4,13 @@ import PropTypes from "prop-types";
 
 import { LazyImage } from "fragments";
 
-const Slideshow = ({ pictures, settings }) => {
+const Slideshow = ({ slides, settings }) => {
   return (
     <StyledSlider {...settings}>
-      {pictures.map((p) => {
+      {slides.map((p) => {
         return (
           <div key={p}>
-            <LazyImage src={p} alt={" - Pet Plushies"} />
+            <LazyImage src={p.image} alt={`${p.title} - Pet Plushies`} />
           </div>
         );
       })}
@@ -19,8 +19,8 @@ const Slideshow = ({ pictures, settings }) => {
 };
 
 Slideshow.propTypes = {
-  pictures: PropTypes.array.isRequired,
-  settings: PropTypes.object.isRequired,
+  slides: PropTypes.array,
+  settings: PropTypes.object,
 };
 
 const StyledSlider = styled(Slider)`
