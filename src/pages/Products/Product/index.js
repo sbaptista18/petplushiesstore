@@ -43,12 +43,18 @@ const Product = () => {
   const [status, setStatus] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qty, setQty] = useState(1);
+  const [variations, setVariations] = useState(null);
+  const [totalPrice, setTotalPrice] = useState();
 
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
 
   const handleDataFromChild = (data) => {
     setQty(data);
+  };
+
+  const getTotalPrice = (data) => {
+    setTotalPrice(data);
   };
 
   useEffect(() => {
@@ -70,6 +76,13 @@ const Product = () => {
           const productMainDetails = response.data.results.product_main_details;
           const productDetails = response.data.results.product_details;
           const productImages = response.data.results.product_images;
+          const productVariations = response.data.results.product_variations;
+
+          if (productVariations === undefined) {
+            setVariations(null);
+          } else {
+            setVariations(productVariations);
+          }
 
           // Define the gallery array
           const urls = productImages.map((image) => image.guid);
@@ -171,7 +184,7 @@ const Product = () => {
         product_id: product.id,
         date_created: new Date().toISOString().slice(0, 19).replace("T", " "),
         product_qty: qty,
-        product_net_revenue: product.price * qty,
+        product_net_revenue: totalPrice * qty,
       };
 
       const options1 = {
@@ -240,7 +253,7 @@ const Product = () => {
               .replace("T", " "),
             product_qty: document.querySelector(".ant-input-number-input")
               .value,
-            product_net_revenue: product.price,
+            product_net_revenue: totalPrice,
           };
 
           const options1 = {
@@ -327,9 +340,11 @@ const Product = () => {
                 <AddToCart
                   onClick={() => addToCart(product)}
                   sku={product.sku}
-                  price={product.price + "€"}
+                  price={product.price}
                   stock={product.stock_status}
                   onDataFromChild={handleDataFromChild}
+                  variations={variations}
+                  onUpdateTotalPrice={getTotalPrice}
                 />
                 <Accordion desc={product.desc} />
                 <ShareSocials
