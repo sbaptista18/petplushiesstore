@@ -43,6 +43,9 @@ const Product = () => {
   const [status, setStatus] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qty, setQty] = useState(1);
+  const [petName, setPetName] = useState("");
+  const [shelter, setShelter] = useState("");
+  const [chosenVariations, setChosenVariations] = useState("");
   const [variations, setVariations] = useState(null);
   const [totalPrice, setTotalPrice] = useState();
 
@@ -51,6 +54,18 @@ const Product = () => {
 
   const handleDataFromChild = (data) => {
     setQty(data);
+  };
+
+  const handlePetName = (data) => {
+    setPetName(data);
+  };
+
+  const handleShelter = (data) => {
+    setShelter(data);
+  };
+
+  const handleChosenVariations = (data) => {
+    setChosenVariations(data);
   };
 
   const getTotalPrice = (data) => {
@@ -144,7 +159,34 @@ const Product = () => {
   }, [productUrl]);
 
   const addToCart = async (product) => {
-    if (cartId || cartId === 0) {
+    let product_extras;
+    if (variations != null) {
+      function formatData(data) {
+        return `<b>${data.radio}:</b> ${data.name};`;
+      }
+
+      const variation_aux = chosenVariations.map((c) => {
+        return formatData(c);
+      });
+      const textString = variation_aux.join("\n");
+
+      let finalString;
+      if (petName == "" && shelter == "") {
+        finalString = textString;
+      } else {
+        finalString =
+          textString +
+          "\n<b>Nome do pet:</b> " +
+          petName +
+          ";\n<b>Associação:</b> " +
+          shelter;
+      }
+      product_extras = finalString;
+    } else {
+      product_extras = "";
+    }
+
+    if (cartId !== null || cartId === 0) {
       //Update number in cart (header)
       const options_prods = {
         method: "GET",
@@ -161,16 +203,16 @@ const Product = () => {
           const orderItems = response.data.results;
 
           if (orderItems != undefined) {
-            console.log("there are products in the cart");
-
             for (const orderItem of orderItems) {
               totalProductQty += parseInt(orderItem.product_qty, 10);
             }
 
             updateProductsNr(totalProductQty + qty);
           } else {
-            console.log("there are no products in the cart");
             qty_in_cart = 0;
+            console.log("qty:", qty);
+            console.log("qty in cart:", parseInt(qty_in_cart, 10));
+            console.log(parseInt(qty_in_cart, 10) + qty);
             updateProductsNr(parseInt(qty_in_cart, 10) + qty);
           }
         })
@@ -185,6 +227,7 @@ const Product = () => {
         date_created: new Date().toISOString().slice(0, 19).replace("T", " "),
         product_qty: qty,
         product_net_revenue: totalPrice * qty,
+        product_extras: product_extras,
       };
 
       const options1 = {
@@ -230,7 +273,9 @@ const Product = () => {
         is_user_cart: storedUserData ? 1 : 0,
       };
 
-      updateProductsNr(1);
+      const qty_input = document.querySelector(".ant-input-number-input").value;
+
+      updateProductsNr(qty_input);
 
       const options1 = {
         method: "POST",
@@ -244,6 +289,7 @@ const Product = () => {
       axios
         .request(options1)
         .then(function (response) {
+          console.log("create cart response:", response);
           const dataProduct = {
             temp_cart_id: response.data.success.id,
             product_id: product.id,
@@ -251,9 +297,9 @@ const Product = () => {
               .toISOString()
               .slice(0, 19)
               .replace("T", " "),
-            product_qty: document.querySelector(".ant-input-number-input")
-              .value,
-            product_net_revenue: totalPrice,
+            product_qty: qty_input,
+            product_net_revenue: qty_input * totalPrice,
+            product_extras: product_extras,
           };
 
           const options1 = {
@@ -283,6 +329,7 @@ const Product = () => {
             });
         })
         .catch(function (error) {
+          console.log(error);
           setMessage(
             "Houve um erro ao criar o carrinho. (" + error.response + ".)"
           );
@@ -345,6 +392,9 @@ const Product = () => {
                   onDataFromChild={handleDataFromChild}
                   variations={variations}
                   onUpdateTotalPrice={getTotalPrice}
+                  onPetName={handlePetName}
+                  onShelter={handleShelter}
+                  onChosenVariations={handleChosenVariations}
                 />
                 <Accordion desc={product.desc} />
                 <ShareSocials

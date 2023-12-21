@@ -24,6 +24,7 @@ const Cart = () => {
   const [status, setStatus] = useState();
   const [message, setMessage] = useState("");
   const [totalProductNetRevenue, setTotalProductNetRevenue] = useState(0);
+  // const [qty, setQty] = useState(1);
 
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
@@ -55,9 +56,9 @@ const Cart = () => {
   };
 
   useEffect(() => {
-    if (cartId != null) {
-      setLoading(true);
+    if (cartId !== null) {
       fetchCartProducts(cartId);
+      setLoading(true);
     } else {
       setProductsCart([]);
       setProducts([]);
@@ -220,8 +221,12 @@ const Cart = () => {
       for (const orderItem of updatedProducts) {
         totalProductQty += parseInt(orderItem.product_qty, 10);
       }
+      // console.log("total prod qty:", totalProductQty);
       updateProductsNr(totalProductQty);
-    } else updateProductsNr(0);
+    } else {
+      // console.log(updatedProducts.length);
+      updateProductsNr(0);
+    }
 
     setProductsCart((prevProductsCart) => {
       const updatedTotal = calculateTotalNetRevenue(updatedProducts);

@@ -26,6 +26,7 @@ const Checkout = () => {
   const [error, setError] = useState(false);
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
+  const [lockForm, setLockForm] = useState(true);
   const [productsCart, setProductsCart] = useState([]);
   const [products, setProducts] = useState([]);
   const [shippingCost, setShippingCost] = useState(0);
@@ -42,8 +43,9 @@ const Checkout = () => {
   const history = useHistory();
 
   useEffect(() => {
-    if (cartId == null) history.replace("/carrinho");
-    else fetchCartId(cartId);
+    // if (cartId == null) history.replace("/carrinho");
+    // else
+    fetchCartId(cartId);
   }, [cartId]);
 
   useEffect(() => {
@@ -124,6 +126,7 @@ const Checkout = () => {
         .request(options)
         .then((response) => {
           let product = response.data;
+          setLockForm(false);
           return { cartItem, product };
         })
         .catch(function (error) {
@@ -150,6 +153,7 @@ const Checkout = () => {
 
   const calculateShippingCost = (data, weight, subtotal) => {
     if (subtotal > 50) {
+      setShippingTitle("Portes Gratuitos");
       return 0;
     }
 
@@ -216,6 +220,33 @@ const Checkout = () => {
   };
 
   const handlePlaceOrder = (orderId) => {
+    let meta_data;
+    products.map((p) => {
+      if (p.product_extras != "") {
+        const cleanedString = p.product_extras.replace(/<\/?b>/gi, "");
+        const keyValuePairs = cleanedString
+          .split(";")
+          .map((pair) => pair.trim());
+        const resultObject = {};
+
+        keyValuePairs.forEach((pair) => {
+          const [rawKey, value] = pair.split(":");
+          if (rawKey && value) {
+            const key = rawKey.trim();
+            resultObject[key] = value.trim();
+          }
+        });
+
+        const meta_data_aux = Object.keys(resultObject).map((key) => ({
+          key: key,
+          value: resultObject[key],
+        }));
+
+        meta_data = meta_data_aux;
+      } else {
+        meta_data = "";
+      }
+    });
     form
       .validateFields()
       .then(() => {
@@ -238,6 +269,7 @@ const Checkout = () => {
             status: paymentMethod.label == "PayPal" ? "processing" : "on-hold",
             customer_id: userId,
             transaction_id: orderId != undefined ? orderId : "",
+            prices_include_tax: true,
             billing: {
               first_name: formValues.first_name,
               last_name: formValues.surname,
@@ -265,10 +297,14 @@ const Checkout = () => {
             line_items: products.map((p) => ({
               product_id: p.product_id,
               quantity: p.product_qty,
+              total: p.product_net_revenue,
+              meta_data: meta_data,
+              tax_class: "",
             })),
             shipping_lines: [
               {
-                method_id: "flat_rate",
+                method_id:
+                  shippingCost.toString() == 0 ? "free_shipping" : "flat_rate",
                 method_title: shippingTitle,
                 total: shippingCost.toString(),
               },
@@ -282,6 +318,7 @@ const Checkout = () => {
             status: paymentMethod.label == "PayPal" ? "processing" : "on-hold",
             customer_id: userId,
             transaction_id: orderId != undefined ? orderId : "",
+            prices_include_tax: true,
             billing: {
               first_name: formValues.first_name,
               last_name: formValues.surname,
@@ -309,10 +346,14 @@ const Checkout = () => {
             line_items: products.map((p) => ({
               product_id: p.product_id,
               quantity: p.product_qty,
+              total: p.product_net_revenue,
+              meta_data: meta_data,
+              tax_class: "",
             })),
             shipping_lines: [
               {
-                method_id: "flat_rate",
+                method_id:
+                  shippingCost.toString() == 0 ? "free_shipping" : "flat_rate",
                 method_title: shippingTitle,
                 total: shippingCost.toString(),
               },
@@ -403,7 +444,10 @@ const Checkout = () => {
                       );
                       setStatus("success");
                       setIsModalOpen(true);
-                      history.replace("/");
+
+                      setTimeout(() => {
+                        history.replace("/");
+                      }, 5000);
                     })
                     .catch(function (error) {
                       setMessage(
@@ -420,7 +464,10 @@ const Checkout = () => {
                   );
                   setStatus("success");
                   setIsModalOpen(true);
-                  history.replace("/");
+
+                  setTimeout(() => {
+                    history.replace("/");
+                  }, 5000);
                 }
               })
               .catch(function (error) {
@@ -512,6 +559,7 @@ const Checkout = () => {
           <Col span={12}>
             <div>
               <CheckoutForm
+                disabled={lockForm}
                 form={form}
                 handleCountry={handleCountry}
                 handleCheckCreateAccount={handleCheckCreateAccount}

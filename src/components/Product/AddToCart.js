@@ -1,9 +1,11 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { Col, Row, Form, InputNumber, Radio } from "antd";
+import { Col, Row, Form, InputNumber, Radio, Input } from "antd";
 import { useState, useEffect } from "react";
 
 import { Button } from "components";
+
+const { TextArea } = Input;
 
 const AddToCart = ({
   sku,
@@ -15,14 +17,26 @@ const AddToCart = ({
   onDataFromChild,
   variations,
   onUpdateTotalPrice,
+  onPetName,
+  onShelter,
+  onChosenVariations,
 }) => {
   const [variationsPrice, setVariationsPrice] = useState([]);
   const [totalVariationsPrice, setTotalVariationsPrice] = useState(0);
   const [qty, setQty] = useState(1);
+  const [hasName, setHasName] = useState(false);
 
   const onChange = (value) => {
     onDataFromChild(value);
     setQty(value);
+  };
+
+  const handlePetName = (e) => {
+    onPetName(e.target.value);
+  };
+
+  const handleShelter = (e) => {
+    onShelter(e.target.value);
   };
 
   let variationsArray;
@@ -51,9 +65,13 @@ const AddToCart = ({
   }
 
   const handleVariation = (radio, name, price) => {
+    if (radio == "Nome") {
+      if (name == "Sim") setHasName(true);
+      else setHasName(false);
+    }
     setVariationsPrice((prevVariations) => {
       const updatedVariations = prevVariations.filter(
-        (variation) => !(variation.radio === radio)
+        (variation) => variation.radio !== radio
       );
 
       return [...updatedVariations, { radio, name, price }];
@@ -67,6 +85,7 @@ const AddToCart = ({
         0
       );
       setTotalVariationsPrice(totalPrices);
+      onChosenVariations(variationsPrice);
     }
   }, [variationsPrice]);
 
@@ -105,9 +124,13 @@ const AddToCart = ({
                   <Radio.Group optionType="button" buttonStyle="solid">
                     {values.map((value) => (
                       <Radio.Button
-                        onClick={() =>
-                          handleVariation(v.name, value.name, value.price)
-                        }
+                        onClick={() => {
+                          return handleVariation(
+                            v.name,
+                            value.name,
+                            value.price
+                          );
+                        }}
                         key={value.name}
                         value={value.name}
                       >
@@ -125,6 +148,43 @@ const AddToCart = ({
               </FormRow>
             );
           })}
+          {hasName && (
+            <FormRow>
+              <Form.Item
+                wrapperCol={24}
+                name="name_pet"
+                label="Nome do pet"
+                rules={[
+                  {
+                    required: true,
+                    message: "Tem de escrever um nome.",
+                  },
+                ]}
+              >
+                <Input onChange={handlePetName} />
+              </Form.Item>
+            </FormRow>
+          )}
+          <FormRow>
+            <Form.Item name="shelter" wrapperCol={24}>
+              <>
+                <p>
+                  Associação para a qual reverte 10% da compra.
+                  <br />
+                  Pode escrever o nome e deixar um link de Instagram, Facebook,
+                  ou site. Nós tratamos de contactar a associação!
+                  <br />
+                  Se não escrever nada neste campo, os 10% irão reverter para a{" "}
+                  <b>Associação do Mês.</b>
+                </p>
+                <TextArea
+                  onChange={handleShelter}
+                  rows={4}
+                  placeholder="Escreva aqui..."
+                />
+              </>
+            </Form.Item>
+          </FormRow>
         </Form>
       )}
 
@@ -152,6 +212,9 @@ AddToCart.propTypes = {
   onDataFromChild: PropTypes.func,
   variations: PropTypes.object,
   onUpdateTotalPrice: PropTypes.func,
+  onPetName: PropTypes.func,
+  onShelter: PropTypes.func,
+  onChosenVariations: PropTypes.func,
 };
 
 const FormRow = styled(Row)`
@@ -183,8 +246,6 @@ const Sale = styled(Price)`
 const StyledButton = styled(Button)`
   margin-left: 15px;
 `;
-
-const Variations = styled.div``;
 
 const InputContainer = styled.div`
   display: flex;

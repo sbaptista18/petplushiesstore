@@ -232,6 +232,7 @@ app.post("/orders", (req, res) => {
 
   ConnectWC.post("orders/", dataOrder)
     .then((data) => {
+      console.log(data);
       res.json(data);
     })
     .catch((error) => {

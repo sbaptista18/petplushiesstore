@@ -8,6 +8,7 @@ import { paymentMethods } from "./data";
 const { TextArea } = Input;
 
 const CheckoutForm = ({
+  disabled,
   handleCountry,
   handleCheckCreateAccount,
   handleCheckShipAddress,
@@ -42,6 +43,7 @@ const CheckoutForm = ({
 
   return (
     <Form
+      disabled={disabled}
       layout="vertical"
       form={form}
       name="checkout"

@@ -34,6 +34,14 @@ const tableColumns = (onQuantityChange, onDelete) => [
     ),
   },
   {
+    title: "Extras",
+    dataIndex: "product_extras",
+    key: "extras",
+    render: (record) => {
+      return <div dangerouslySetInnerHTML={{ __html: record }} />;
+    },
+  },
+  {
     title: "Quantidade",
     dataIndex: "product_qty",
     key: "qty",
