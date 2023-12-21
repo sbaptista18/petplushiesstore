@@ -1,12 +1,18 @@
 import styled from "styled-components";
-import { Row, Col, Spin } from "antd";
+import { Row, Col, Spin, Form, Input, InputNumber } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import moment from "moment";
 
 import { useCart } from "reducers";
 import { getSessionDataFromLocalStorage } from "helpers";
+
+import Star from "assets/images/star.svg";
+
+const { TextArea } = Input;
+const { useForm } = Form;
 
 import {
   Accordion,
@@ -15,6 +21,7 @@ import {
   ImageCarousel,
   ShareSocials,
   ModalMessage,
+  Button,
 } from "components";
 
 const flagText = (stock, status) => {
@@ -37,8 +44,10 @@ const Product = () => {
   const [sessionKey, setSessionKey] = useState(null);
   const [product, setProduct] = useState([]);
   const { productUrl } = useParams();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [loadingReviews, setLoadingReviews] = useState(true);
   const [error, setError] = useState(false);
+  const [errorReviews, setErrorReviews] = useState(false);
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,9 +57,17 @@ const Product = () => {
   const [chosenVariations, setChosenVariations] = useState("");
   const [variations, setVariations] = useState(null);
   const [totalPrice, setTotalPrice] = useState();
+  const [rating, setRating] = useState(0);
+  const [hoveredRating, setHoveredRating] = useState(0);
+  const [review, setReview] = useState("");
+  const [reviewerName, setReviewerName] = useState("");
+  const [reviewerEmail, setReviewerEmail] = useState("");
+  const [errorRating, setErrorRating] = useState("");
+  const [reviews, setReviews] = useState([]);
 
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
+  const [form] = useForm();
 
   const handleDataFromChild = (data) => {
     setQty(data);
@@ -145,6 +162,23 @@ const Product = () => {
           };
 
           setProduct(productData);
+
+          const options_reviews = {
+            method: "GET",
+            url: `http://localhost:8000/get_reviews?prodId=${productMainDetails[0].ID}`,
+          };
+
+          axios
+            .request(options_reviews)
+            .then(function (response) {
+              setReviews(response.data);
+              setLoadingReviews(false);
+              setErrorReviews(false);
+            })
+            .catch(function (error) {
+              console.log(error);
+              setErrorReviews(true);
+            });
 
           setTimeout(() => {
             setLoading(false);
@@ -344,6 +378,88 @@ const Product = () => {
     setSessionKey(storedSessionData.key);
   }, []);
 
+  const handleReview = (e) => {
+    setReview(e.target.value);
+  };
+
+  const handleRating = (rating) => {
+    setRating(rating);
+  };
+
+  const handleMouseEnter = (hoveredRating) => {
+    setHoveredRating(hoveredRating);
+  };
+
+  const handleReviewerName = (name) => {
+    setReviewerName(name);
+  };
+
+  const handleReviewerEmail = (email) => {
+    setReviewerEmail(email);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredRating(0);
+    if (rating === 0) {
+      setRating(0);
+    }
+  };
+
+  const handleSubmitReview = (review, rating, reviewerName, reviewerEmail) => {
+    if (rating == 0) setErrorRating("Tem de fornecer uma pontuação.");
+    else {
+      form
+        .validateFields()
+        .then(() => {
+          const reviewData = {
+            product_id: product.id,
+            review: review,
+            reviewer:
+              reviewerName == "" ? "Anónimo" : reviewerName.target.value,
+            reviewer_email: reviewerEmail.target.value,
+            rating: rating,
+            status: "hold",
+          };
+
+          const options = {
+            method: "POST",
+            url: `http://localhost:8000/reviews`,
+            data: JSON.stringify({ reviewData }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          };
+
+          axios
+            .request(options)
+            .then(function (response) {
+              setMessage(
+                "Avaliação de produto submetida com sucesso! A nossa equipa aprovará assim que possível."
+              );
+              setStatus("success");
+              setIsModalOpen(true);
+
+              setTimeout(() => {
+                window.location.reload();
+              }, 3000);
+            })
+            .catch(function (error) {
+              setMessage(
+                "Houve um erro ao submeter a avaliação do produto. (" +
+                  error +
+                  ".)"
+              );
+              setStatus("error");
+              setIsModalOpen(true);
+            });
+        })
+        .catch((error) => {
+          console.log(error);
+          console.error("Erro na validação de campos:", error);
+        });
+    }
+  };
+
   return (
     <Container>
       <ModalMessage
@@ -365,8 +481,6 @@ const Product = () => {
             <Breadcrumbs page="/produtos" item={product.name} />
             <StyledRow>
               <Col span={11}>
-                {product.flag != undefined && <Flag>{product.flag}</Flag>}
-
                 <ImageCarousel
                   pictures={[product.slideshow]}
                   settings={{
@@ -379,6 +493,9 @@ const Product = () => {
                   }}
                   name={product.name}
                 />
+
+                {product.flag != undefined && <Flag>{product.flag}</Flag>}
+
                 <ProductDesc
                   dangerouslySetInnerHTML={{ __html: product.desc_short }}
                 />
@@ -409,12 +526,282 @@ const Product = () => {
                 />
               </Col>
             </StyledRow>
+            <ReviewSecion>
+              <Row>
+                <h3>Avaliações</h3>
+              </Row>
+              <ReviewsContent>
+                <Col span={7}>
+                  <div>
+                    <StyledForm
+                      form={form}
+                      name="reviews"
+                      layout="vertical"
+                      scrollToFirstError
+                    >
+                      <FormRow>
+                        <Form.Item name="rating" wrapperCol={24}>
+                          <>
+                            <InputNumber
+                              value={rating}
+                              style={{ display: "none" }}
+                            />
+                            <StarsContainer>
+                              <p>Pontuação:</p>
+                              {[1, 2, 3, 4, 5].map((index) => (
+                                <StyledStar
+                                  key={index}
+                                  filled={
+                                    index <= rating || index <= hoveredRating
+                                      ? "true"
+                                      : "false"
+                                  }
+                                  onMouseEnter={() => handleMouseEnter(index)}
+                                  onMouseLeave={handleMouseLeave}
+                                  onClick={() => handleRating(index)}
+                                />
+                              ))}
+                            </StarsContainer>
+                            <ErrorRating>{errorRating}</ErrorRating>
+                          </>
+                        </Form.Item>
+                      </FormRow>
+                      <FormRow>
+                        <StyledFormItem
+                          name="review"
+                          wrapperCol={24}
+                          rules={[
+                            {
+                              required: true,
+                              message: "Por favor escreva a sua avaliação.",
+                            },
+                          ]}
+                        >
+                          <StyledTextarea
+                            onChange={handleReview}
+                            rows={4}
+                            placeholder="Escreva aqui a sua avaliação..."
+                          />
+                        </StyledFormItem>
+                      </FormRow>
+                      <FormRow>
+                        <StyledFormItem
+                          name="reviewer_name"
+                          wrapperCol={24}
+                          label="Nome"
+                        >
+                          <Input
+                            onChange={handleReviewerName}
+                            placeholder="Escreva aqui o seu nome..."
+                          />
+                        </StyledFormItem>
+                      </FormRow>
+                      <FormRow>
+                        <StyledFormItem
+                          name="reviewer_email"
+                          wrapperCol={24}
+                          label="E-mail"
+                          rules={[
+                            {
+                              type: "email",
+                              message: "O e-mail inserido não é válido.",
+                            },
+                            {
+                              required: true,
+                              message: "Por favor insira o seu e-mail.",
+                            },
+                          ]}
+                        >
+                          <Input
+                            onChange={handleReviewerEmail}
+                            placeholder="Escreva aqui o seu e-mail..."
+                          />
+                        </StyledFormItem>
+                      </FormRow>
+                      <FormRow>
+                        <StyledButton
+                          size="large"
+                          type="primary"
+                          text="Submeter avaliação"
+                          onClick={() =>
+                            handleSubmitReview(
+                              review,
+                              rating,
+                              reviewerName,
+                              reviewerEmail
+                            )
+                          }
+                        />
+                      </FormRow>
+                    </StyledForm>
+                  </div>
+                </Col>
+                <ReviewsContainer span={17}>
+                  {loadingReviews && !errorReviews && (
+                    <SpinnerReviews
+                      indicator={
+                        <LoadingOutlined style={{ fontSize: 50 }} spin />
+                      }
+                    />
+                  )}
+                  {errorReviews && !loadingReviews && (
+                    <>Erro ao carregar as avaliações.</>
+                  )}
+                  {reviews.length > 0 ? (
+                    reviews.map((r) => {
+                      return (
+                        <Review key={r.id}>
+                          <div>
+                            Avaliado em:{" "}
+                            <b>
+                              {moment(r.date_created_gmt).format(
+                                "MMMM Do YYYY"
+                              )}
+                            </b>
+                          </div>
+                          <StarRatingContainer>
+                            {[1, 2, 3, 4, 5].map((index) => (
+                              <StyledStarRating
+                                key={index}
+                                filled={index <= r.rating ? "true" : "false"}
+                              />
+                            ))}
+                          </StarRatingContainer>
+                          <div>
+                            {r.name == "Anonimo" ? (
+                              <b>{r.name}</b>
+                            ) : (
+                              <>
+                                <b>{r.name}</b> ({r.email})
+                              </>
+                            )}
+                          </div>
+                          <ReviewText>{r.review}</ReviewText>
+                        </Review>
+                      );
+                    })
+                  ) : (
+                    <>
+                      Não existem avaliações para este produto. A sua pode ser a
+                      primeira!
+                    </>
+                  )}
+                </ReviewsContainer>
+              </ReviewsContent>
+            </ReviewSecion>
           </>
         )}
       </ContentLocked>
     </Container>
   );
 };
+
+const ReviewsContainer = styled(Col)`
+  position: relative;
+`;
+
+const Review = styled.div`
+  border-bottom: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  padding: 15px 0;
+`;
+
+const ErrorRating = styled.div`
+  color: red;
+`;
+
+const StyledButton = styled(Button)`
+  margin-top: 20px;
+`;
+
+const ReviewSecion = styled(Row)`
+  flex-direction: column;
+`;
+
+const ReviewsContent = styled(Row)`
+  justify-content: space-between;
+`;
+
+const StyledForm = styled(Form)`
+  width: 300px;
+`;
+
+const FormRow = styled(Row)`
+  width: 100%;
+`;
+
+const StarsContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 210px;
+
+  & > p {
+    margin: 0;
+  }
+`;
+
+const StyledStar = styled(Star)`
+  width: 20px;
+  height: auto;
+  cursor: pointer;
+  transition: 0.5s;
+  fill: #fff;
+  stroke: #ed8a19;
+  stroke-width: 4;
+
+  &:hover {
+    fill: #ed8a19;
+  }
+
+  &[filled="true"] {
+    fill: #ed8a19;
+  }
+`;
+
+const StarRatingContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 140px;
+  padding: 10px 0;
+`;
+
+const StyledStarRating = styled(Star)`
+  width: 20px;
+  height: auto;
+  fill: #fff;
+  stroke: #ed8a19;
+  stroke-width: 4;
+
+  &[filled="true"] {
+    fill: #ed8a19;
+  }
+`;
+
+const StyledFormItem = styled(Form.Item)`
+  width: 100%;
+`;
+
+const StyledTextarea = styled(TextArea)`
+  width: 100%;
+`;
+
+const ReviewText = styled.div`
+  margin-top: 10px;
+`;
+
+const SpinnerReviews = styled(Spin)`
+  position: absolute;
+  background-color: white;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 const Spinner = styled(Spin)`
   position: absolute;
@@ -466,7 +853,7 @@ const Flag = styled.div`
   height: 30px;
   background-color: var(--black);
   color: var(--white);
-  z-index: 1;
+  z-index: 0;
   font-size: 14px;
   padding: 5px 10px;
 `;

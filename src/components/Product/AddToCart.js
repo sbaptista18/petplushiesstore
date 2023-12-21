@@ -25,6 +25,7 @@ const AddToCart = ({
   const [totalVariationsPrice, setTotalVariationsPrice] = useState(0);
   const [qty, setQty] = useState(1);
   const [hasName, setHasName] = useState(false);
+  const [form_variations] = Form.useForm();
 
   const onChange = (value) => {
     onDataFromChild(value);
@@ -104,7 +105,7 @@ const AddToCart = ({
       </PriceContainer>
 
       {variationsArray != null && (
-        <Form>
+        <Form form={form_variations}>
           {variationsArray?.map((v) => {
             const values = v.values;
 

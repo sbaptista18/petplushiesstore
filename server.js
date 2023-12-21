@@ -9,6 +9,16 @@ const wcUrl = process.env.WC_URL;
 const wcCK = process.env.WC_CONSUMER_KEY;
 const wcCS = process.env.WC_CONSUMER_SECRET;
 
+const ConnectWCV2 = new WooCommerceAPI({
+  url: wcUrl, // Your store URL
+  ssl: true,
+  consumerKey: wcCK, // Your consumer secret
+  consumerSecret: wcCS, // Your consumer secret
+  wpAPI: true, // Enable the WP REST API integration
+  version: "wc/v2", // WooCommerce WP REST API version
+  queryStringAuth: true,
+});
+
 const ConnectWC = new WooCommerceAPI({
   url: wcUrl, // Your store URL
   ssl: true,
@@ -190,6 +200,18 @@ app.get("/orders/userid", (req, res) => {
     });
 });
 
+app.get("/get_reviews", (req, res) => {
+  const prodId = req.query.prodId;
+
+  ConnectWCV2.get(`products/${prodId}/reviews`)
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
 // POST FUNCTIONS
 app.post("/temp_cart_products_id", (req, res) => {
   const dataProduct = req.body.dataProduct;
@@ -232,7 +254,6 @@ app.post("/orders", (req, res) => {
 
   ConnectWC.post("orders/", dataOrder)
     .then((data) => {
-      console.log(data);
       res.json(data);
     })
     .catch((error) => {
@@ -244,6 +265,18 @@ app.post("/customers", (req, res) => {
   const dataCustomer = req.body.dataCustomer;
 
   ConnectWC.post("customers/", dataCustomer)
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+app.post("/reviews", (req, res) => {
+  const reviewData = req.body.reviewData;
+
+  ConnectWC.post("products/reviews/", reviewData)
     .then((data) => {
       res.json(data);
     })
