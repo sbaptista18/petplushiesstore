@@ -100,7 +100,7 @@ const Product = () => {
     const fetchProduct = async () => {
       const options = {
         method: "GET",
-        url: `http://localhost:8000/product/product_slug?product_slug=${productUrl}`,
+        url: `https://develop.petplushies.pt:8000/product/product_slug?product_slug=${productUrl}`,
       };
 
       axios
@@ -166,7 +166,7 @@ const Product = () => {
 
           const options_reviews = {
             method: "GET",
-            url: `http://localhost:8000/get_reviews?prodId=${productMainDetails[0].ID}`,
+            url: `https://develop.petplushies.pt:8000/get_reviews?prodId=${productMainDetails[0].ID}`,
           };
 
           axios
@@ -225,7 +225,7 @@ const Product = () => {
       //Update number in cart (header)
       const options_prods = {
         method: "GET",
-        url: `http://localhost:8000/temp_cart_products_id?cartId=${cartId}`,
+        url: `https://develop.petplushies.pt:8000/temp_cart_products_id?cartId=${cartId}`,
       };
 
       axios
@@ -267,7 +267,7 @@ const Product = () => {
 
       const options1 = {
         method: "POST",
-        url: `http://localhost:8000/temp_cart_products`,
+        url: `https://develop.petplushies.pt:8000/temp_cart_products`,
         data: JSON.stringify({ dataProduct }),
         headers: {
           "Content-Type": "application/json",
@@ -314,7 +314,7 @@ const Product = () => {
 
       const options1 = {
         method: "POST",
-        url: `http://localhost:8000/temp_carts`,
+        url: `https://develop.petplushies.pt:8000/temp_carts`,
         data: JSON.stringify({ dataCart }),
         headers: {
           "Content-Type": "application/json",
@@ -339,7 +339,7 @@ const Product = () => {
 
           const options1 = {
             method: "POST",
-            url: `http://localhost:8000/temp_cart_products`,
+            url: `https://develop.petplushies.pt:8000/temp_cart_products`,
             data: JSON.stringify({ dataProduct }),
             headers: {
               "Content-Type": "application/json",
@@ -424,7 +424,7 @@ const Product = () => {
 
           const options = {
             method: "POST",
-            url: `http://localhost:8000/reviews`,
+            url: `https://develop.petplushies.pt:8000/reviews`,
             data: JSON.stringify({ reviewData }),
             headers: {
               "Content-Type": "application/json",
