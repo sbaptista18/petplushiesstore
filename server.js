@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const WooCommerceAPI = require("react-native-woocommerce-api");
-const PORT = 8000;
+const PORT = 10000;
 require("dotenv").config();
 
 const app = express();
@@ -345,4 +345,4 @@ app.put("/customers/id", (req, res) => {
     });
 });
 
-app.listen(8000, "0.0.0.0", () => console.log(`App started on PORT ${PORT}`));
+app.listen(PORT, "0.0.0.0", () => console.log(`App started on PORT ${PORT}`));
