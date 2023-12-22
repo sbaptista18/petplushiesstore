@@ -92,7 +92,7 @@ const Order = () => {
     const fetchOrder = (orderId) => {
       const options = {
         method: "GET",
-        url: `//127.0.0.1:8000/orders?id=${orderId}`,
+        url: `http://127.0.0.1:8000/orders?id=${orderId}`,
       };
 
       return axios
@@ -103,7 +103,7 @@ const Order = () => {
 
             const options = {
               method: "GET",
-              url: `//127.0.0.1:8000/products/id?id=${prodId}`,
+              url: `http://127.0.0.1:8000/products/id?id=${prodId}`,
             };
 
             return axios

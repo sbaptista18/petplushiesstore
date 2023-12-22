@@ -86,7 +86,7 @@ const Cart = () => {
   }, [productsCart]);
 
   const fetchCartProducts = async (cartId) => {
-    const url = `//127.0.0.1:8000/temp_cart_products_id?cartId=${cartId}`;
+    const url = `http://127.0.0.1:8000/temp_cart_products_id?cartId=${cartId}`;
 
     const response = await axiosRequest("GET", url);
 
@@ -109,7 +109,7 @@ const Cart = () => {
 
   const fetchProducts = async (data) => {
     const promises = data.map((cartItem) => {
-      const url = `//127.0.0.1:8000/products/id?id=${cartItem.product_id}`;
+      const url = `http://127.0.0.1:8000/products/id?id=${cartItem.product_id}`;
       return axiosRequest("GET", url)
         .then((response) => ({ cartItem, product: response }))
         .catch((error) => ({ error: error.response.data }));
@@ -138,7 +138,7 @@ const Cart = () => {
       product_net_revenue: product_price * qty,
     };
 
-    const url = `//127.0.0.1:8000/temp_cart_products_id`;
+    const url = `http://127.0.0.1:8000/temp_cart_products_id`;
 
     axiosRequest("POST", url, { dataProduct })
       .then(function (response) {
@@ -156,7 +156,7 @@ const Cart = () => {
   const deleteCartProducts = (cartId, product_id) => {
     const options = {
       method: "DELETE",
-      url: `//127.0.0.1:8000/temp_cart_products_delete?cartId=${cartId}&prodId=${product_id}`,
+      url: `http://127.0.0.1:8000/temp_cart_products_delete?cartId=${cartId}&prodId=${product_id}`,
     };
 
     axios

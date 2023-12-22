@@ -58,7 +58,7 @@ const PPS_Header = () => {
   const fetchCartId = async (sessionKey) => {
     const options = {
       method: "GET",
-      url: `//127.0.0.1:8000/temp_carts/session?id=${sessionKey}`,
+      url: `http://127.0.0.1:8000/temp_carts/session?id=${sessionKey}`,
     };
 
     axios
@@ -77,7 +77,7 @@ const PPS_Header = () => {
   const fetchCartProducts = async (cartId) => {
     const options = {
       method: "GET",
-      url: `//127.0.0.1:8000/temp_cart_products_id?cartId=${cartId}`,
+      url: `http://127.0.0.1:8000/temp_cart_products_id?cartId=${cartId}`,
     };
 
     axios
