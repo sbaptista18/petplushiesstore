@@ -32,7 +32,7 @@ const ConnectWC = new WooCommerceAPI({
 
 app.use(express.json());
 
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: "https://develop.petplushies.pt" }));
 
 // GET FUNCTIONS
 app.get("/products/page", (req, res) => {
@@ -345,7 +345,4 @@ app.put("/customers/id", (req, res) => {
     });
 });
 
-app.listen(80, "94.46.22.210", () =>
-  console.log(`App started on PORT ${PORT}`)
-);
-// app.listen(8000, "0.0.0.0", () => console.log(`App started on PORT ${PORT}`));
+app.listen(8000, "0.0.0.0", () => console.log(`App started on PORT ${PORT}`));
