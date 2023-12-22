@@ -345,6 +345,7 @@ app.put("/customers/id", (req, res) => {
     });
 });
 
-app.listen(8000, "94.46.22.210", () =>
+app.listen(80, "94.46.22.210", () =>
   console.log(`App started on PORT ${PORT}`)
 );
+// app.listen(8000, "0.0.0.0", () => console.log(`App started on PORT ${PORT}`));
