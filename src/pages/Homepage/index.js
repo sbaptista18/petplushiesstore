@@ -41,7 +41,7 @@ const Homepage = () => {
     try {
       const options = {
         method: "GET",
-        url: "http://localhost:8000/products",
+        url: "http://0.0.0.0:8000/products",
       };
 
       const response = await axios.request(options);
