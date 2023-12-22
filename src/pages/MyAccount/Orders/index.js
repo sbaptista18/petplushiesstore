@@ -92,7 +92,7 @@ const Order = () => {
     const fetchOrder = (orderId) => {
       const options = {
         method: "GET",
-        url: `https://develop.petplushies.pt:8000/orders?id=${orderId}`,
+        url: `//localhost:8000/orders?id=${orderId}`,
       };
 
       return axios
@@ -103,7 +103,7 @@ const Order = () => {
 
             const options = {
               method: "GET",
-              url: `https://develop.petplushies.pt:8000/products/id?id=${prodId}`,
+              url: `//localhost:8000/products/id?id=${prodId}`,
             };
 
             return axios

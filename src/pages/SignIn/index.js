@@ -32,7 +32,7 @@ const SignIn = () => {
 
       const options = {
         method: "POST",
-        url: `https://develop.petplushies.pt:8000/customers`,
+        url: `//localhost:8000/customers`,
         data: JSON.stringify({ dataCustomer }),
         headers: {
           "Content-Type": "application/json",
