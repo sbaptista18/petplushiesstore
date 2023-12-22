@@ -345,4 +345,4 @@ app.put("/customers/id", (req, res) => {
     });
 });
 
-app.listen(8000, () => console.log(`App started on PORT ${PORT}`));
+app.listen(8000, "0.0.0.0", () => console.log(`App started on PORT ${PORT}`));

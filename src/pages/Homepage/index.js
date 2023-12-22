@@ -104,7 +104,7 @@ const Homepage = () => {
                 <>Erro ao carregar a lista de produtos.</>
               )}
               {!error && !loading && noResults && (
-                <>Não há resultados para o filtro seleccionado..</>
+                <>Não há resultados para o filtro seleccionado.</>
               )}
               {!error && !loading && !noResults && (
                 <>
