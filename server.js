@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const WooCommerceAPI = require("react-native-woocommerce-api");
-const PORT = process.env.PORT;
+const PORT = 8000;
 require("dotenv").config();
 
 const app = express();
