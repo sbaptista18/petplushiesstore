@@ -30,7 +30,7 @@ const StyledButton = styled(Button)`
   padding: 10px 25px;
   border: none;
   box-shadow: none;
-  transition: 0.1s;
+  transition: 0.25s;
   cursor: pointer;
 
   & > span {
@@ -41,49 +41,21 @@ const StyledButton = styled(Button)`
     font-size: 14px;
     font-weight: 500;
     height: unset;
+    background-color: lightblue;
+    color: black;
   }
 
   &.ant-btn-primary {
-    &.green {
-      background-color: var(--green);
-      color: var(--white);
-    }
-
-    &.light-green {
-      background-color: var(--light-green);
-      color: var(--green);
-    }
-
-    &.dark-orange {
-      background-color: var(--dark-orange);
-      color: var(--white);
+    &.white {
+      background-color: var(--white);
+      color: var(--black);
     }
 
     &:hover {
       transform: scale(1.1);
-
-      &.green {
-        background-color: var(--green-onhover);
-      }
-
-      &.dark-orange {
-        background-color: var(--dark-orange-onhover);
-      }
     }
 
     &:active {
-      &.green {
-        background-color: var(--dark-green);
-      }
-
-      &.light-green {
-        background-color: var(--light-green-active);
-        color: var(--green);
-      }
-
-      &.dark-orange {
-        background-color: var(--dark-orange-active);
-      }
     }
   }
 
@@ -103,38 +75,6 @@ const StyledButton = styled(Button)`
       &:active {
         border: 2px solid var(--green-onhover);
         color: var(--green-onhover);
-      }
-    }
-
-    &.light-green {
-      color: var(--light-green);
-      border-color: var(--light-green);
-
-      &:hover {
-        border: 2px solid var(--white);
-        transform: scale(1.1);
-        color: var(--white);
-      }
-
-      &:active {
-        border: 2px solid var(--white);
-        color: var(--white);
-      }
-    }
-
-    &.light-orange {
-      color: var(--light-orange2);
-      border-color: var(--light-orange2);
-
-      &:hover {
-        border: 2px solid var(--white);
-        transform: scale(1.1);
-        color: var(--white);
-      }
-
-      &:active {
-        border: 2px solid var(--white);
-        color: var(--white);
       }
     }
 

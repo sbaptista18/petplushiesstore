@@ -4,6 +4,6 @@ export const data = [
   {
     title: "Peluches personalizados de acordo com o teu pet!",
     image: Slide1,
-    url: "/peluche-personalizado",
+    url: "/produtos/peluche-personalizado",
   },
 ];

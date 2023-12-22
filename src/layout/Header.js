@@ -19,25 +19,29 @@ import {
 
 import Logo from "assets/images/logo.png";
 
+import { MainMenuItems } from "../data/menuItems";
+
 const { Header } = Layout;
 
 const onClickSectionRegistry = {
   home: (history) => history.push(""),
   "sobre-nos": (history) => history.push("/sobre-nos"),
   produtos: (history) => history.push("/produtos"),
+  blog: (history) => history.push("/blog"),
   contactos: (history) => history.push("/contactos"),
 };
 
-const buildMenuItemProps = (key) => {
+const buildMenuItemProps = (item) => {
   return {
-    key,
-    label: _.startCase(key),
+    key: item.path,
+    label: item.label,
   };
 };
 
-const pages = ["sobre-nos", "produtos", "contactos"];
-
 const PPS_Header = () => {
+  const [backgroundColor, setBackgroundColor] = useState("transparent");
+  const [boxShadow, setBoxShadow] = useState("none");
+  const [color, setColor] = useState("black");
   const [sessionKey, setSessionKey] = useState(null);
   const history = useHistory();
 
@@ -130,6 +134,42 @@ const PPS_Header = () => {
       setSessionInLocalStorage(newSessionKey);
     }
 
+    if (location.pathname === "/") {
+      setBackgroundColor("transparent");
+      setBoxShadow("none");
+      setColor("white");
+
+      const handleScroll = () => {
+        const scrollPosition = window.scrollY;
+
+        // You can adjust the scroll threshold as needed
+        const threshold = 500;
+
+        // Change the background color based on the scroll position
+        if (scrollPosition > threshold) {
+          setBackgroundColor("white");
+          setBoxShadow("0px 5px 30px 0px rgba(0, 0, 0, 0.1)");
+          setColor("black");
+        } else {
+          setBackgroundColor("transparent");
+          setBoxShadow("none");
+          setColor("white");
+        }
+      };
+
+      // Attach the event listener when the component mounts
+      window.addEventListener("scroll", handleScroll);
+
+      // Clean up the event listener when the component unmounts
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+      };
+    } else {
+      setBackgroundColor("white");
+      setBoxShadow("0px 5px 30px 0px rgba(0, 0, 0, 0.1)");
+      setColor("black");
+    }
+
     return () => {
       // console.log("Component unmounted or route changed again");
       // Cleanup code here
@@ -143,22 +183,28 @@ const PPS_Header = () => {
   ]);
 
   return (
-    <StyledHeader key={updateHeader ? "update" : "no-update"}>
+    <StyledHeader
+      key={updateHeader ? "update" : "no-update"}
+      location={location.pathname}
+      style={{ backgroundColor, boxShadow }}
+    >
       <Col span={6}>
         <StyledLink to="/">
           <img src={Logo} alt="Pet Plushies Logo" />
         </StyledLink>
       </Col>
       <MenuContainer span={18}>
-        <Menu
+        <StyledMenu
           mode="horizontal"
           overflowedIndicator={<MenuOutlined />}
-          items={pages.map(buildMenuItemProps)}
+          items={MainMenuItems.map(buildMenuItemProps)}
           onClick={({ key }) => {
             onClickSectionRegistry[key](history);
           }}
+          location={location.pathname}
+          style={{ color }}
         />
-        <IconLink to="/carrinho">
+        <IconLink location={location.pathname} style={{ color }} to="/carrinho">
           <ShoppingCartOutlined />
           {productsNr != 0 && (
             <CartProductsNr>
@@ -167,6 +213,8 @@ const PPS_Header = () => {
           )}
         </IconLink>
         <IconLink
+          location={location.pathname}
+          style={{ color }}
           to={localStorage.getItem("token") != null ? "/minha-conta" : "/login"}
         >
           <UserOutlined />
@@ -200,8 +248,13 @@ const StyledHeader = styled(Header)`
   width: 100vw;
   height: var(--menu-height);
   padding: 20px 65px;
-  background-color: var(--white);
-  box-shadow: 0px 5px 30px 0px rgba(0, 0, 0, 0.1);
+  background-color: ${(props) =>
+    props.location == "/" ? "transparent" : "var(--white)"};
+  box-shadow: ${(props) =>
+    props.location == "/"
+      ? "transparent"
+      : "0px 5px 30px 0px rgba(0, 0, 0, 0.1)"};
+  transition: 0.5s;
 
   & .ant-menu {
     height: 100%;
@@ -236,12 +289,18 @@ const IconLink = styled(StyledLink)`
   width: 70px;
   align-items: center;
   justify-content: center;
-  color: black;
+  color: ${(props) => (props.location == "/" ? "white" : "black")};
+  transition: 0.5s;
   position: relative;
 
   &:hover {
     color: #1890ff;
   }
+`;
+
+const StyledMenu = styled(Menu)`
+  color: ${(props) => (props.location == "/" ? "white" : "black")};
+  transition: 0.5s;
 `;
 
 export default PPS_Header;

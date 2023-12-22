@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Row, Col, Collapse, Slider, Select, Spin, Pagination } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import axios from "axios";
-import _ from "lodash"; // Import lodash for utility functions
+import _ from "lodash";
 
 import { Breadcrumbs, TileNoInput } from "components";
 
