@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const WooCommerceAPI = require("react-native-woocommerce-api");
 const PORT = 8000;
 require("dotenv").config();
@@ -30,6 +31,8 @@ const ConnectWC = new WooCommerceAPI({
 });
 
 app.use(express.json());
+
+app.use(cors({ origin: "https://develop.petplushies.pt" }));
 
 // GET FUNCTIONS
 app.get("/products/page", (req, res) => {
