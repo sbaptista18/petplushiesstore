@@ -142,7 +142,7 @@ const Products = () => {
 
       const options = {
         method: "GET",
-        url: "//localhost:8000/products",
+        url: "//127.0.0.1:8000/products",
       };
 
       const response = await axios.request(options);
@@ -213,7 +213,7 @@ const Products = () => {
 
       const options = {
         method: "GET",
-        url: "//localhost:8000/products/categories",
+        url: "//127.0.0.1:8000/products/categories",
       };
 
       const response = await axios.request(options);
@@ -276,7 +276,7 @@ const Products = () => {
 
       const options = {
         method: "GET",
-        url: "//localhost:8000/products",
+        url: "//127.0.0.1:8000/products",
       };
 
       const response = await axios.request(options);
