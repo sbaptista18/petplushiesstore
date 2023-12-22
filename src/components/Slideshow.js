@@ -41,6 +41,7 @@ Slideshow.propTypes = {
 
 const SlideshowContainer = styled.div`
   position: relative;
+  height: 750px;
 `;
 
 const StyledBottomBar = styled(BottomBar)`
@@ -53,6 +54,10 @@ const StyledBottomBar = styled(BottomBar)`
 const StyledSlider = styled(Slider)`
   height: 750px;
   overflow: hidden;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: -1;
 
   & div {
     height: 100%;

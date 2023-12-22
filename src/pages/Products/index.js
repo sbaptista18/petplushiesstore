@@ -6,7 +6,8 @@ import { LoadingOutlined } from "@ant-design/icons";
 import axios from "axios";
 import _ from "lodash";
 
-import { Breadcrumbs, TileNoInput } from "components";
+import { Breadcrumbs, TileNoInput, PageHeader } from "components";
+import DummyImg from "assets/images/batcat-1.jpg";
 
 const { Panel } = Collapse;
 
@@ -457,101 +458,116 @@ const Products = () => {
   };
 
   return (
-    <Container>
-      <ContentLocked>
-        <StyledH1>Produtos</StyledH1>
-        <Breadcrumbs page="/" item="Produtos" />
-        <StyledRow>
-          <Col span={6}>
-            <Span>Filtrar por:</Span>
-            <Collapse defaultActiveKey={["1"]} accordion>
-              <Panel header="Categoria" key="1">
-                <ul>
-                  <CategoryListItem onClick={() => handleCategoryChange("all")}>
-                    Todas as categorias
-                  </CategoryListItem>
-                  {categories?.map((c) => {
-                    if (c.count !== 0) {
-                      return (
-                        <CategoryListSubItem
-                          key={c.id}
-                          onClick={() => handleCategoryChange(c.slug)}
-                        >
-                          {c.name}
-                        </CategoryListSubItem>
-                      );
+    <>
+      <PageHeader
+        title="Produtos"
+        img={DummyImg}
+        alt="Produtos - Pet Plusies"
+      />
+      <Container>
+        <ContentLocked>
+          <div>
+            <Breadcrumbs page="/" item="Produtos" />
+            <StyledRow>
+              <Col span={6}>
+                <Span>Filtrar por:</Span>
+                <Collapse defaultActiveKey={["1"]} accordion>
+                  <Panel header="Categoria" key="1">
+                    <ul>
+                      <CategoryListItem
+                        onClick={() => handleCategoryChange("all")}
+                      >
+                        Todas as categorias
+                      </CategoryListItem>
+                      {categories?.map((c) => {
+                        if (c.count !== 0) {
+                          return (
+                            <CategoryListSubItem
+                              key={c.id}
+                              onClick={() => handleCategoryChange(c.slug)}
+                            >
+                              {c.name}
+                            </CategoryListSubItem>
+                          );
+                        }
+                      })}
+                    </ul>
+                  </Panel>
+                  <Panel header="Preco" key="2">
+                    <Slider
+                      range
+                      marks={{
+                        [minPrice]: `${minPrice}€`,
+                        [maxPrice]: `${maxPrice}€`,
+                      }}
+                      defaultValue={[minPrice, maxPrice]}
+                      min={minPrice}
+                      max={maxPrice}
+                      onChange={setSelectedPriceRange}
+                    />
+                  </Panel>
+                </Collapse>
+              </Col>
+              <ProductListContainer span={16}>
+                <SortDropdown onSelect={handleSortChange} />
+                {loading && !error && (
+                  <Spinner
+                    indicator={
+                      <LoadingOutlined style={{ fontSize: 50 }} spin />
                     }
-                  })}
-                </ul>
-              </Panel>
-              <Panel header="Preco" key="2">
-                <Slider
-                  range
-                  marks={{
-                    [minPrice]: `${minPrice}€`,
-                    [maxPrice]: `${maxPrice}€`,
-                  }}
-                  defaultValue={[minPrice, maxPrice]}
-                  min={minPrice}
-                  max={maxPrice}
-                  onChange={setSelectedPriceRange}
-                />
-              </Panel>
-            </Collapse>
-          </Col>
-          <ProductListContainer span={16}>
-            <SortDropdown onSelect={handleSortChange} />
-            {loading && !error && (
-              <Spinner
-                indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
-              />
-            )}
-            {error && !loading && !noResults && (
-              <>Erro ao carregar a lista de produtos.</>
-            )}
-            {!error && !loading && noResults && (
-              <>Não há resultados para o filtro seleccionado.</>
-            )}
-            {!error && !loading && !noResults && (
-              <>
-                {chunkArray(products, pageSize).map((productGroup, index) => (
-                  <ProductRow
-                    key={index}
-                    style={{
-                      display: currentPage === index + 1 ? "flex" : "none",
-                    }}
-                  >
-                    {productGroup.map((p) => (
-                      <TileNoInput
-                        key={p.id}
-                        id={p.id}
-                        name={p.name}
-                        price={p.price}
-                        picture={p.picture}
-                        stock={p.stock}
-                        flag={flagText(p.stock, p.stock_status)}
-                        url={p.url}
-                      />
-                    ))}
-                  </ProductRow>
-                ))}
-              </>
-            )}
-            {products.length > 0 && (
-              <Pagination
-                total={products.length}
-                showTotal={(total, range) =>
-                  `${range[0]}-${range[1]} de ${total} produtos`
-                }
-                defaultPageSize={pageSize}
-                defaultCurrent={currentPage}
-                onChange={handleOnChangePagination}
-              />
-            )}
-          </ProductListContainer>
-        </StyledRow>
-      </ContentLocked>
-    </Container>
+                  />
+                )}
+                {error && !loading && !noResults && (
+                  <>Erro ao carregar a lista de produtos.</>
+                )}
+                {!error && !loading && noResults && (
+                  <>Não há resultados para o filtro seleccionado.</>
+                )}
+                {!error && !loading && !noResults && (
+                  <>
+                    {chunkArray(products, pageSize).map(
+                      (productGroup, index) => (
+                        <ProductRow
+                          key={index}
+                          style={{
+                            display:
+                              currentPage === index + 1 ? "flex" : "none",
+                          }}
+                        >
+                          {productGroup.map((p) => (
+                            <TileNoInput
+                              key={p.id}
+                              id={p.id}
+                              name={p.name}
+                              price={p.price}
+                              picture={p.picture}
+                              stock={p.stock}
+                              flag={flagText(p.stock, p.stock_status)}
+                              url={p.url}
+                            />
+                          ))}
+                        </ProductRow>
+                      )
+                    )}
+                  </>
+                )}
+                {products.length > 0 && (
+                  <Pagination
+                    total={products.length}
+                    showTotal={(total, range) =>
+                      `${range[0]}-${range[1]} de ${total} produtos`
+                    }
+                    defaultPageSize={pageSize}
+                    defaultCurrent={currentPage}
+                    onChange={handleOnChangePagination}
+                  />
+                )}
+              </ProductListContainer>
+            </StyledRow>
+          </div>
+        </ContentLocked>
+      </Container>
+    </>
   );
 };
 
@@ -583,6 +599,7 @@ const SortSelect = styled(Select)`
 
 const Container = styled.div`
   width: 100%;
+  background-color: white;
 `;
 
 const Content = styled(Row)`
@@ -592,13 +609,14 @@ const Content = styled(Row)`
 `;
 
 const ContentLocked = styled(Content)`
-  max-width: 1440px;
-  margin: auto;
-`;
+  width: 100%;
+  background-color: white;
 
-const StyledH1 = styled.h1`
-  margin-top: 30px;
-  font-size: 52px;
+  & > div {
+    max-width: 1440px;
+    width: 100%;
+    margin: auto;
+  }
 `;
 
 const StyledRow = styled(Row)`
@@ -606,7 +624,6 @@ const StyledRow = styled(Row)`
 `;
 
 const ProductRow = styled(Row)`
-  /* justify-content: space-between; */
   flex-wrap: wrap;
 `;
 

@@ -89,40 +89,42 @@ const Homepage = () => {
         }}
       />
       <ContentLocked>
-        <VerticalDisplay>
-          <Row>
-            <StyledH2Center>As nossas sugestões</StyledH2Center>
-          </Row>
-          <FeaturedProductsContainer>
-            {loading && !error && (
-              <Spinner
-                indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
-              />
-            )}
-            {error && !loading && !noResults && (
-              <>Erro ao carregar a lista de produtos.</>
-            )}
-            {!error && !loading && noResults && (
-              <>Não há resultados para o filtro seleccionado.</>
-            )}
-            {!error && !loading && !noResults && (
-              <>
-                {featuredProducts.map((p) => (
-                  <TileNoInput
-                    key={p.id}
-                    id={p.id}
-                    name={p.name}
-                    price={p.price}
-                    picture={p.picture}
-                    stock={p.stock}
-                    flag={flagText(p.stock, p.stock_status)}
-                    url={p.url}
-                  />
-                ))}
-              </>
-            )}
-          </FeaturedProductsContainer>
-        </VerticalDisplay>
+        <div>
+          <VerticalContent>
+            <Row>
+              <StyledH2Center>As nossas sugestões</StyledH2Center>
+            </Row>
+            <FeaturedProductsContainer>
+              {loading && !error && (
+                <Spinner
+                  indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
+                />
+              )}
+              {error && !loading && !noResults && (
+                <>Erro ao carregar a lista de produtos.</>
+              )}
+              {!error && !loading && noResults && (
+                <>Não há resultados para o filtro seleccionado.</>
+              )}
+              {!error && !loading && !noResults && (
+                <>
+                  {featuredProducts.map((p) => (
+                    <TileNoInput
+                      key={p.id}
+                      id={p.id}
+                      name={p.name}
+                      price={p.price}
+                      picture={p.picture}
+                      stock={p.stock}
+                      flag={flagText(p.stock, p.stock_status)}
+                      url={p.url}
+                    />
+                  ))}
+                </>
+              )}
+            </FeaturedProductsContainer>
+          </VerticalContent>
+        </div>
       </ContentLocked>
       <HighlightSection>
         <StyledTopBar />
@@ -134,7 +136,7 @@ const Homepage = () => {
             <Row>
               <StyledH2Left>A Pet Plushies</StyledH2Left>
             </Row>
-            <VerticalDisplay>
+            <VerticalContent>
               <p>
                 Criada em 2021, é uma marca Portuguesa que se foca em realçar o
                 que é importante para qualquer pet lover: artigos de qualidade
@@ -157,18 +159,20 @@ const Homepage = () => {
                   text="Ler mais"
                 />
               </Link>
-            </VerticalDisplay>
+            </VerticalContent>
           </TextContainer>
         </Row>
         <StyledBottomBar />
       </HighlightSection>
       <ContentLocked>
-        <VerticalDisplay>
-          <Row>
-            <StyledH2Center>Últimas notícias</StyledH2Center>
-          </Row>
-          <Row>Últimos posts do blog</Row>
-        </VerticalDisplay>
+        <div>
+          <VerticalContent>
+            <Row>
+              <StyledH2Center>Últimas notícias</StyledH2Center>
+            </Row>
+            <Row>Últimos posts do blog</Row>
+          </VerticalContent>
+        </div>
       </ContentLocked>
     </Container>
   );
@@ -198,8 +202,14 @@ const Content = styled(Row)`
 `;
 
 const ContentLocked = styled(Content)`
-  max-width: 1440px;
-  margin: auto;
+  width: 100%;
+  background-color: white;
+
+  & > div {
+    max-width: 1440px;
+    width: 100%;
+    margin: auto;
+  }
 `;
 
 const HighlightSection = styled(Content)`
@@ -241,7 +251,7 @@ const StyledH2Left = styled(StyledH2Center)`
   text-align: left;
 `;
 
-const VerticalDisplay = styled(Row)`
+const VerticalContent = styled(Row)`
   padding: 30px 0;
   display: flex;
   flex-direction: column;

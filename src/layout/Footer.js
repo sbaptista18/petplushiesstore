@@ -22,6 +22,7 @@ const onClickSectionRegistry = {
     history.push("/politica-de-privacidade"),
   "termos-e-condicoes": (history) => history.push("/termos-e-condicoes"),
   "envios-e-devolucoes": (history) => history.push("/envios-e-devolucoes"),
+  "perguntas-frequentes": (history) => history.push("/perguntas-frequentes"),
 };
 
 const buildMenuItemProps = (item) => {

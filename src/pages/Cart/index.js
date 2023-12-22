@@ -5,9 +5,11 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-import { Button, ModalMessage } from "components";
+import { Button, ModalMessage, PageHeader } from "components";
 import { tableColumns } from "fragments";
 import { useCart } from "reducers";
+
+import DummyImg from "assets/images/batcat-1.jpg";
 
 const CustomNoData = () => (
   <div style={{ textAlign: "center", padding: "20px" }}>
@@ -24,7 +26,6 @@ const Cart = () => {
   const [status, setStatus] = useState();
   const [message, setMessage] = useState("");
   const [totalProductNetRevenue, setTotalProductNetRevenue] = useState(0);
-  // const [qty, setQty] = useState(1);
 
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
@@ -240,74 +241,84 @@ const Cart = () => {
   };
 
   return (
-    <Container>
-      <ModalMessage
-        status={status}
-        message={message}
-        isVisible={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+    <>
+      <PageHeader
+        title="Carrinho"
+        img={DummyImg}
+        alt="Carrinho - Pet Plusies"
       />
-      <ContentLocked>
-        <StyledH1>Carrinho</StyledH1>
-        <StyledRow>
-          <Col span={15}>
-            <Title>O meu carrinho</Title>
-            <Border />
-            <div style={{ position: "relative" }}>
-              {loading && !error && (
-                <Spinner
-                  indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
-                />
-              )}
-              {!loading && !error && (
-                <StyledTable
-                  columns={tableColumns(handleQuantityChange, handleDelete)}
-                  dataSource={products}
-                  pagination={false}
-                  rowKey="product_id"
-                  locale={{ emptyText: <CustomNoData /> }}
-                />
-              )}
-            </div>
-          </Col>
-          <Col span={5}>
-            <Title>Resumo da compra</Title>
-            <Border />
-            <div style={{ position: "relative" }}>
-              {loading && !error && (
-                <Spinner
-                  indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
-                />
-              )}
-              {!loading && !error && (
-                <>
-                  <Subtotal>
-                    <div>Subtotal</div>
-                    <div>{totalProductNetRevenue}&euro;</div>
-                  </Subtotal>
-                  <Shipping>
-                    <div>Estimativa de portes será feita no próximo passo</div>
-                    <div></div>
-                  </Shipping>
-                  <Border />
-                  <Total>
-                    <div>Subtotal</div>
-                    <div>{totalProductNetRevenue}&euro;</div>
-                  </Total>
-                  <Link to="/finalizar-compra">
-                    <StyledButton
-                      size="large"
-                      type="primary"
-                      text="Finalizar compra"
-                    />
-                  </Link>
-                </>
-              )}
-            </div>
-          </Col>
-        </StyledRow>
-      </ContentLocked>
-    </Container>
+      <Container>
+        <ModalMessage
+          status={status}
+          message={message}
+          isVisible={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+        <ContentLocked>
+          <StyledRow>
+            <Col span={15}>
+              <div style={{ position: "relative" }}>
+                {loading && !error && (
+                  <Spinner
+                    indicator={
+                      <LoadingOutlined style={{ fontSize: 50 }} spin />
+                    }
+                  />
+                )}
+                {!loading && !error && (
+                  <StyledTable
+                    columns={tableColumns(handleQuantityChange, handleDelete)}
+                    dataSource={products}
+                    pagination={false}
+                    rowKey="product_id"
+                    locale={{ emptyText: <CustomNoData /> }}
+                  />
+                )}
+              </div>
+            </Col>
+            <Col span={5}>
+              <Title>Resumo da compra</Title>
+              <Border />
+              <div style={{ position: "relative" }}>
+                {loading && !error && (
+                  <Spinner
+                    indicator={
+                      <LoadingOutlined style={{ fontSize: 50 }} spin />
+                    }
+                  />
+                )}
+                {!loading && !error && (
+                  <>
+                    <Subtotal>
+                      <div>Subtotal</div>
+                      <div>{totalProductNetRevenue}&euro;</div>
+                    </Subtotal>
+                    <Shipping>
+                      <div>
+                        Estimativa de portes será feita no próximo passo
+                      </div>
+                      <div></div>
+                    </Shipping>
+                    <Border />
+                    <Total>
+                      <div>Subtotal</div>
+                      <div>{totalProductNetRevenue}&euro;</div>
+                    </Total>
+                    <Link to="/finalizar-compra">
+                      <StyledButton
+                        size="large"
+                        type="primary"
+                        text="Finalizar compra"
+                      />
+                    </Link>
+                  </>
+                )}
+              </div>
+            </Col>
+          </StyledRow>
+        </ContentLocked>
+      </Container>
+    </>
   );
 };
 
@@ -326,6 +337,7 @@ const Spinner = styled(Spin)`
 
 const Container = styled.div`
   width: 100%;
+  background-color: white;
 `;
 
 const Content = styled(Row)`
@@ -340,14 +352,10 @@ const ContentLocked = styled(Content)`
   margin-bottom: 50px;
 `;
 
-const StyledH1 = styled.h1`
-  position: absolute;
-  left: -200%;
-`;
-
 const StyledRow = styled(Row)`
   justify-content: space-between;
   margin-top: 50px;
+  min-height: 500px;
 `;
 
 const StyledTable = styled(Table)`

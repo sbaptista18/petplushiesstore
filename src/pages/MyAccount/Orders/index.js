@@ -6,6 +6,10 @@ import { useParams, Link } from "react-router-dom";
 import moment from "moment";
 import axios from "axios";
 
+import { PageHeader } from "components";
+
+import DummyImg from "assets/images/batcat-1.jpg";
+
 const tableColumns = () => [
   {
     title: "No.",
@@ -139,69 +143,75 @@ const Order = () => {
   }, [orderId]);
 
   return (
-    <Container>
-      <ContentLocked>
-        <StyledH1>Encomenda #{orderId}</StyledH1>
-        <div style={{ position: "relative" }}>
-          {loading && !error && (
-            <Spinner
-              indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
-            />
-          )}
-
-          {!loading && !error && (
-            <div>
-              <StyledTable
-                columns={tableColumns()}
-                dataSource={order}
-                pagination={false}
-                rowKey="id"
+    <>
+      <PageHeader
+        title={`Encomenda #${orderId}`}
+        img={DummyImg}
+        alt={`Encomenda #${orderId} - Pet Plusies`}
+      />
+      <Container>
+        <ContentLocked>
+          <div style={{ position: "relative" }}>
+            {loading && !error && (
+              <Spinner
+                indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
               />
-              <div>
-                <TableTitle>
-                  <h3>Detalhes</h3>
-                </TableTitle>
-                <TableHeader>
-                  <StyledCol span={3}>Imagem</StyledCol>
-                  <StyledCol span={8}>Produto</StyledCol>
-                  <StyledCol span={6}>Quantidade</StyledCol>
-                  <StyledCol span={6}>Preço</StyledCol>
-                </TableHeader>
-                {order[0].line_items.map((i) => {
-                  return (
-                    <StyledRow key={i.id}>
-                      <StyledCol span={3}>
-                        <img
-                          src={i.image.src}
-                          style={{ width: "100%", height: "auto" }}
-                        />
-                      </StyledCol>
-                      <StyledCol span={8}>
-                        <Link target="_blank" to={`/produtos/${i.slug}`}>
-                          {i.name}
-                        </Link>
-                      </StyledCol>
-                      <StyledCol span={6}>{i.quantity}</StyledCol>
-                      <StyledCol span={6}>
-                        {i.price}
-                        {order[0].currency_symbol}
-                      </StyledCol>
-                    </StyledRow>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+            )}
 
-          {error && (
-            <div
-              style={{ color: "red" }}
-              dangerouslySetInnerHTML={{ __html: error }}
-            ></div>
-          )}
-        </div>
-      </ContentLocked>
-    </Container>
+            {!loading && !error && (
+              <div>
+                <StyledTable
+                  columns={tableColumns()}
+                  dataSource={order}
+                  pagination={false}
+                  rowKey="id"
+                />
+                <div>
+                  <TableTitle>
+                    <h3>Detalhes</h3>
+                  </TableTitle>
+                  <TableHeader>
+                    <StyledCol span={3}>Imagem</StyledCol>
+                    <StyledCol span={8}>Produto</StyledCol>
+                    <StyledCol span={6}>Quantidade</StyledCol>
+                    <StyledCol span={6}>Preço</StyledCol>
+                  </TableHeader>
+                  {order[0].line_items.map((i) => {
+                    return (
+                      <StyledRow key={i.id}>
+                        <StyledCol span={3}>
+                          <img
+                            src={i.image.src}
+                            style={{ width: "100%", height: "auto" }}
+                          />
+                        </StyledCol>
+                        <StyledCol span={8}>
+                          <Link target="_blank" to={`/produtos/${i.slug}`}>
+                            {i.name}
+                          </Link>
+                        </StyledCol>
+                        <StyledCol span={6}>{i.quantity}</StyledCol>
+                        <StyledCol span={6}>
+                          {i.price}
+                          {order[0].currency_symbol}
+                        </StyledCol>
+                      </StyledRow>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {error && (
+              <div
+                style={{ color: "red" }}
+                dangerouslySetInnerHTML={{ __html: error }}
+              ></div>
+            )}
+          </div>
+        </ContentLocked>
+      </Container>
+    </>
   );
 };
 
@@ -269,13 +279,9 @@ const Spinner = styled(Spin)`
   justify-content: center;
 `;
 
-const StyledH1 = styled.h1`
-  margin-top: 30px;
-  font-size: 52px;
-`;
-
 const Container = styled.div`
   width: 100%;
+  background-color: white;
 `;
 
 const Content = styled(Row)`
@@ -287,6 +293,7 @@ const Content = styled(Row)`
 const ContentLocked = styled(Content)`
   max-width: 1440px;
   margin: auto;
+  min-height: 500px;
 `;
 
 export default {

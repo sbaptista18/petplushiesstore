@@ -3,7 +3,9 @@ import { Row, Form, Input } from "antd";
 import { useState } from "react";
 import axios from "axios";
 
-import { Button } from "components";
+import { Button, PageHeader } from "components";
+
+import DummyImg from "assets/images/batcat-1.jpg";
 
 const ResetPassword = () => {
   const [error, setError] = useState("");
@@ -27,79 +29,86 @@ const ResetPassword = () => {
   };
 
   return (
-    <Container>
-      <ContentLocked>
-        <StyledH1>Recuperar password</StyledH1>
-        <div>
-          <Form
-            form={form}
-            name="initiate-reset-password"
-            labelCol={{
-              span: 8,
-            }}
-            wrapperCol={{
-              span: 16,
-            }}
-            style={{
-              maxWidth: 600,
-            }}
-            onFinish={initiatePasswordReset}
-            autoComplete="off"
-          >
-            <Form.Item
-              name="email"
-              label="E-mail"
-              rules={[
-                {
-                  type: "email",
-                  message: "O e-mail inserido não é válido.",
-                },
-                {
-                  required: true,
-                  message: "Por favor insira o seu e-mail.",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-
-            <Form.Item
+    <>
+      <PageHeader
+        title="Recuperar password"
+        img={DummyImg}
+        alt="Recuperar password - Pet Plusies"
+      />
+      <Container>
+        <ContentLocked>
+          <div>
+            <Form
+              form={form}
+              name="initiate-reset-password"
+              labelCol={{
+                span: 8,
+              }}
               wrapperCol={{
-                offset: 8,
                 span: 16,
               }}
-            >
-              <StyledButton
-                size="large"
-                color="green"
-                text="Enviar e-mail de recuperação"
-                type="primary"
-                htmlType="submit"
-              />
-            </Form.Item>
-
-            <Form.Item
-              wrapperCol={{
-                offset: 8,
-                span: 16,
+              style={{
+                maxWidth: 600,
               }}
+              onFinish={initiatePasswordReset}
+              autoComplete="off"
             >
-              {error && (
-                <div
-                  style={{ color: "red" }}
-                  dangerouslySetInnerHTML={{ __html: error }}
-                ></div>
-              )}
-            </Form.Item>
-          </Form>
-        </div>
-      </ContentLocked>
-    </Container>
+              <Form.Item
+                name="email"
+                label="E-mail"
+                rules={[
+                  {
+                    type: "email",
+                    message: "O e-mail inserido não é válido.",
+                  },
+                  {
+                    required: true,
+                    message: "Por favor insira o seu e-mail.",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                wrapperCol={{
+                  offset: 8,
+                  span: 16,
+                }}
+              >
+                <StyledButton
+                  size="large"
+                  color="green"
+                  text="Enviar e-mail de recuperação"
+                  type="primary"
+                  htmlType="submit"
+                />
+              </Form.Item>
+
+              <Form.Item
+                wrapperCol={{
+                  offset: 8,
+                  span: 16,
+                }}
+              >
+                {error && (
+                  <div
+                    style={{ color: "red" }}
+                    dangerouslySetInnerHTML={{ __html: error }}
+                  ></div>
+                )}
+              </Form.Item>
+            </Form>
+          </div>
+        </ContentLocked>
+      </Container>
+    </>
   );
 };
 
 const Container = styled.div`
   width: 100%;
+  background-color: white;
 `;
 
 const Content = styled(Row)`
@@ -111,11 +120,7 @@ const Content = styled(Row)`
 const ContentLocked = styled(Content)`
   max-width: 1440px;
   margin: auto;
-`;
-
-const StyledH1 = styled.h1`
-  margin-top: 30px;
-  font-size: 52px;
+  min-height: 500px;
 `;
 
 const StyledButton = styled(Button)`

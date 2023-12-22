@@ -3,7 +3,9 @@ import { Row, Form, Input } from "antd";
 import { useState } from "react";
 import axios from "axios";
 
-import { Button } from "components";
+import { Button, PageHeader } from "components";
+
+import DummyImg from "assets/images/batcat-1.jpg";
 
 const RedefinePassword = () => {
   const [error, setError] = useState("");
@@ -30,109 +32,116 @@ const RedefinePassword = () => {
   };
 
   return (
-    <Container>
-      <ContentLocked>
-        <StyledH1>Redefinir password</StyledH1>
-        <div>
-          <Form
-            form={form}
-            name="redefine-password"
-            labelCol={{
-              span: 8,
-            }}
-            wrapperCol={{
-              span: 16,
-            }}
-            style={{
-              maxWidth: 600,
-            }}
-            onFinish={resetPassword}
-            autoComplete="off"
-          >
-            <Form.Item
-              wrapperCol={24}
-              name="password"
-              label="Password"
-              rules={[
-                {
-                  required: true,
-                  message: "Por favor escolha a sua password.",
-                },
-                {
-                  min: 8,
-                  message: "A password deve ter pelo menos 8 caracteres.",
-                },
-                {
-                  pattern: /[!@#$%^&*(),.?":{}|<>_]/,
-                  message: "A password deve incluir símbolos.",
-                },
-              ]}
-              hasFeedback
+    <>
+      <PageHeader
+        title="Redefinir password"
+        img={DummyImg}
+        alt="Redefinir password - Pet Plusies"
+      />
+      <Container>
+        <ContentLocked>
+          <div>
+            <Form
+              form={form}
+              name="redefine-password"
+              labelCol={{
+                span: 8,
+              }}
+              wrapperCol={{
+                span: 16,
+              }}
+              style={{
+                maxWidth: 600,
+              }}
+              onFinish={resetPassword}
+              autoComplete="off"
             >
-              <Input.Password />
-            </Form.Item>
-            <Form.Item
-              wrapperCol={24}
-              name="confirm"
-              label="Confirmar Password"
-              dependencies={["password"]}
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: "Por favor confirme a password que escolheu.",
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error("As passwords não correspondem.")
-                    );
+              <Form.Item
+                wrapperCol={24}
+                name="password"
+                label="Password"
+                rules={[
+                  {
+                    required: true,
+                    message: "Por favor escolha a sua password.",
                   },
-                }),
-              ]}
-            >
-              <Input.Password />
-            </Form.Item>
-            <Form.Item
-              wrapperCol={{
-                offset: 8,
-                span: 16,
-              }}
-            >
-              <StyledButton
-                size="large"
-                color="green"
-                text="Redefinir password"
-                type="primary"
-                htmlType="submit"
-              />
-            </Form.Item>
+                  {
+                    min: 8,
+                    message: "A password deve ter pelo menos 8 caracteres.",
+                  },
+                  {
+                    pattern: /[!@#$%^&*(),.?":{}|<>_]/,
+                    message: "A password deve incluir símbolos.",
+                  },
+                ]}
+                hasFeedback
+              >
+                <Input.Password />
+              </Form.Item>
+              <Form.Item
+                wrapperCol={24}
+                name="confirm"
+                label="Confirmar Password"
+                dependencies={["password"]}
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Por favor confirme a password que escolheu.",
+                  },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue("password") === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error("As passwords não correspondem.")
+                      );
+                    },
+                  }),
+                ]}
+              >
+                <Input.Password />
+              </Form.Item>
+              <Form.Item
+                wrapperCol={{
+                  offset: 8,
+                  span: 16,
+                }}
+              >
+                <StyledButton
+                  size="large"
+                  color="green"
+                  text="Redefinir password"
+                  type="primary"
+                  htmlType="submit"
+                />
+              </Form.Item>
 
-            <Form.Item
-              wrapperCol={{
-                offset: 8,
-                span: 16,
-              }}
-            >
-              {error && (
-                <div
-                  style={{ color: "red" }}
-                  dangerouslySetInnerHTML={{ __html: error }}
-                ></div>
-              )}
-            </Form.Item>
-          </Form>
-        </div>
-      </ContentLocked>
-    </Container>
+              <Form.Item
+                wrapperCol={{
+                  offset: 8,
+                  span: 16,
+                }}
+              >
+                {error && (
+                  <div
+                    style={{ color: "red" }}
+                    dangerouslySetInnerHTML={{ __html: error }}
+                  ></div>
+                )}
+              </Form.Item>
+            </Form>
+          </div>
+        </ContentLocked>
+      </Container>
+    </>
   );
 };
 
 const Container = styled.div`
   width: 100%;
+  background-color: white;
 `;
 
 const Content = styled(Row)`
@@ -144,11 +153,7 @@ const Content = styled(Row)`
 const ContentLocked = styled(Content)`
   max-width: 1440px;
   margin: auto;
-`;
-
-const StyledH1 = styled.h1`
-  margin-top: 30px;
-  font-size: 52px;
+  min-height: 500px;
 `;
 
 const StyledButton = styled(Button)`

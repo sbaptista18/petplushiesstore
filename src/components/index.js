@@ -4,6 +4,8 @@ import Slideshow from "./Slideshow";
 import Tile from "./Tiles/Tile";
 import TileNoInput from "./Tiles/TileNoInput";
 import ModalMessage from "./ModalMessage";
+import PageHeader from "./PageHeader";
+import PageHeaderProduct from "./PageHeaderProduct";
 
 //Product Page Components
 import Accordion from "./Product/Accordion";
@@ -23,4 +25,6 @@ export {
   AddToCart,
   ImageCarousel,
   ShareSocials,
+  PageHeader,
+  PageHeaderProduct,
 };

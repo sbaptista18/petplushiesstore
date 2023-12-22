@@ -37,4 +37,9 @@ export const LegalMenuItems = [
     label: "Envios & Devoluções",
     path: "envios-e-devolucoes",
   },
+  {
+    key: 4,
+    label: "Perguntas Frequentes",
+    path: "perguntas-frequentes",
+  },
 ];

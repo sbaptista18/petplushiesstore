@@ -8,6 +8,7 @@ import moment from "moment";
 
 import { useCart } from "reducers";
 import { getSessionDataFromLocalStorage } from "helpers";
+import { PageHeaderProduct } from "components";
 
 import Star from "assets/images/star.svg";
 
@@ -461,238 +462,240 @@ const Product = () => {
   };
 
   return (
-    <Container>
-      <ModalMessage
-        status={status}
-        message={message}
-        isVisible={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
-      <ContentLocked>
-        {loading && !error && (
-          <Spinner
-            indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
-          />
-        )}
-        {error && !loading && <>Erro ao carregar o produto.</>}
-        {product != undefined && (
-          <>
-            <StyledH1>{product.name}</StyledH1>
-            <Breadcrumbs page="/produtos" item={product.name} />
-            <StyledRow>
-              <Col span={11}>
-                <ImageCarousel
-                  pictures={[product.slideshow]}
-                  settings={{
-                    dots: true,
-                    infinite: true,
-                    speed: 500,
-                    //add thumbnails after
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                  }}
-                  name={product.name}
-                />
+    <div style={{ position: "relative" }}>
+      {loading && !error && (
+        <Spinner
+          indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
+        />
+      )}
+      {error && !loading && <>Erro ao carregar o produto.</>}
+      {product != undefined && (
+        <>
+          <PageHeaderProduct title={product.name} />
+          <Container>
+            <ModalMessage
+              status={status}
+              message={message}
+              isVisible={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+            />
+            <ContentLocked>
+              <Breadcrumbs page="/produtos" item={product.name} />
+              <StyledRow>
+                <Col span={11}>
+                  <ImageCarousel
+                    pictures={[product.slideshow]}
+                    settings={{
+                      dots: true,
+                      infinite: true,
+                      speed: 500,
+                      //add thumbnails after
+                      slidesToShow: 1,
+                      slidesToScroll: 1,
+                    }}
+                    name={product.name}
+                  />
 
-                {product.flag != undefined && <Flag>{product.flag}</Flag>}
+                  {product.flag != undefined && <Flag>{product.flag}</Flag>}
 
-                <ProductDesc
-                  dangerouslySetInnerHTML={{ __html: product.desc_short }}
-                />
-              </Col>
-              <Col span={11}>
-                <AddToCart
-                  onClick={() => addToCart(product)}
-                  sku={product.sku}
-                  price={product.price}
-                  stock={product.stock_status}
-                  onDataFromChild={handleDataFromChild}
-                  variations={variations}
-                  onUpdateTotalPrice={getTotalPrice}
-                  onPetName={handlePetName}
-                  onShelter={handleShelter}
-                  onChosenVariations={handleChosenVariations}
-                />
-                <Accordion desc={product.desc} />
-                <ShareSocials
-                  item={{
-                    key: product.key,
-                    name: product.name,
-                    url: `${product.main_img_id}-large_default/${product.url}.jpg`,
-                    picture: product.picture,
-                    desc: product.desc_short,
-                  }}
-                  page="produtos"
-                />
-              </Col>
-            </StyledRow>
-            <ReviewSecion>
-              <Row>
-                <h3>Avaliações</h3>
-              </Row>
-              <ReviewsContent>
-                <Col span={7}>
-                  <div>
-                    <StyledForm
-                      form={form}
-                      name="reviews"
-                      layout="vertical"
-                      scrollToFirstError
-                    >
-                      <FormRow>
-                        <Form.Item name="rating" wrapperCol={24}>
-                          <>
-                            <InputNumber
-                              value={rating}
-                              style={{ display: "none" }}
+                  <ProductDesc
+                    dangerouslySetInnerHTML={{ __html: product.desc_short }}
+                  />
+                </Col>
+                <Col span={11}>
+                  <AddToCart
+                    onClick={() => addToCart(product)}
+                    sku={product.sku}
+                    price={product.price}
+                    stock={product.stock_status}
+                    onDataFromChild={handleDataFromChild}
+                    variations={variations}
+                    onUpdateTotalPrice={getTotalPrice}
+                    onPetName={handlePetName}
+                    onShelter={handleShelter}
+                    onChosenVariations={handleChosenVariations}
+                  />
+                  <Accordion desc={product.desc} />
+                  <ShareSocials
+                    item={{
+                      key: product.key,
+                      name: product.name,
+                      url: `${product.main_img_id}-large_default/${product.url}.jpg`,
+                      picture: product.picture,
+                      desc: product.desc_short,
+                    }}
+                    page="produtos"
+                  />
+                </Col>
+              </StyledRow>
+              <ReviewSecion>
+                <Row>
+                  <h3>Avaliações</h3>
+                </Row>
+                <ReviewsContent>
+                  <Col span={7}>
+                    <div>
+                      <StyledForm
+                        form={form}
+                        name="reviews"
+                        layout="vertical"
+                        scrollToFirstError
+                      >
+                        <FormRow>
+                          <Form.Item name="rating" wrapperCol={24}>
+                            <>
+                              <InputNumber
+                                value={rating}
+                                style={{ display: "none" }}
+                              />
+                              <StarsContainer>
+                                <p>Pontuação:</p>
+                                {[1, 2, 3, 4, 5].map((index) => (
+                                  <StyledStar
+                                    key={index}
+                                    filled={
+                                      index <= rating || index <= hoveredRating
+                                        ? "true"
+                                        : "false"
+                                    }
+                                    onMouseEnter={() => handleMouseEnter(index)}
+                                    onMouseLeave={handleMouseLeave}
+                                    onClick={() => handleRating(index)}
+                                  />
+                                ))}
+                              </StarsContainer>
+                              <ErrorRating>{errorRating}</ErrorRating>
+                            </>
+                          </Form.Item>
+                        </FormRow>
+                        <FormRow>
+                          <StyledFormItem
+                            name="review"
+                            wrapperCol={24}
+                            rules={[
+                              {
+                                required: true,
+                                message: "Por favor escreva a sua avaliação.",
+                              },
+                            ]}
+                          >
+                            <StyledTextarea
+                              onChange={handleReview}
+                              rows={4}
+                              placeholder="Escreva aqui a sua avaliação..."
                             />
-                            <StarsContainer>
-                              <p>Pontuação:</p>
+                          </StyledFormItem>
+                        </FormRow>
+                        <FormRow>
+                          <StyledFormItem
+                            name="reviewer_name"
+                            wrapperCol={24}
+                            label="Nome"
+                          >
+                            <Input
+                              onChange={handleReviewerName}
+                              placeholder="Escreva aqui o seu nome..."
+                            />
+                          </StyledFormItem>
+                        </FormRow>
+                        <FormRow>
+                          <StyledFormItem
+                            name="reviewer_email"
+                            wrapperCol={24}
+                            label="E-mail"
+                            rules={[
+                              {
+                                type: "email",
+                                message: "O e-mail inserido não é válido.",
+                              },
+                              {
+                                required: true,
+                                message: "Por favor insira o seu e-mail.",
+                              },
+                            ]}
+                          >
+                            <Input
+                              onChange={handleReviewerEmail}
+                              placeholder="Escreva aqui o seu e-mail..."
+                            />
+                          </StyledFormItem>
+                        </FormRow>
+                        <FormRow>
+                          <StyledButton
+                            size="large"
+                            type="primary"
+                            text="Submeter avaliação"
+                            onClick={() =>
+                              handleSubmitReview(
+                                review,
+                                rating,
+                                reviewerName,
+                                reviewerEmail
+                              )
+                            }
+                          />
+                        </FormRow>
+                      </StyledForm>
+                    </div>
+                  </Col>
+                  <ReviewsContainer span={17}>
+                    {loadingReviews && !errorReviews && (
+                      <SpinnerReviews
+                        indicator={
+                          <LoadingOutlined style={{ fontSize: 50 }} spin />
+                        }
+                      />
+                    )}
+                    {errorReviews && !loadingReviews && (
+                      <>Erro ao carregar as avaliações.</>
+                    )}
+                    {reviews.length > 0 ? (
+                      reviews.map((r) => {
+                        return (
+                          <Review key={r.id}>
+                            <div>
+                              Avaliado em:{" "}
+                              <b>
+                                {moment(r.date_created_gmt).format(
+                                  "MMMM Do YYYY"
+                                )}
+                              </b>
+                            </div>
+                            <StarRatingContainer>
                               {[1, 2, 3, 4, 5].map((index) => (
-                                <StyledStar
+                                <StyledStarRating
                                   key={index}
-                                  filled={
-                                    index <= rating || index <= hoveredRating
-                                      ? "true"
-                                      : "false"
-                                  }
-                                  onMouseEnter={() => handleMouseEnter(index)}
-                                  onMouseLeave={handleMouseLeave}
-                                  onClick={() => handleRating(index)}
+                                  filled={index <= r.rating ? "true" : "false"}
                                 />
                               ))}
-                            </StarsContainer>
-                            <ErrorRating>{errorRating}</ErrorRating>
-                          </>
-                        </Form.Item>
-                      </FormRow>
-                      <FormRow>
-                        <StyledFormItem
-                          name="review"
-                          wrapperCol={24}
-                          rules={[
-                            {
-                              required: true,
-                              message: "Por favor escreva a sua avaliação.",
-                            },
-                          ]}
-                        >
-                          <StyledTextarea
-                            onChange={handleReview}
-                            rows={4}
-                            placeholder="Escreva aqui a sua avaliação..."
-                          />
-                        </StyledFormItem>
-                      </FormRow>
-                      <FormRow>
-                        <StyledFormItem
-                          name="reviewer_name"
-                          wrapperCol={24}
-                          label="Nome"
-                        >
-                          <Input
-                            onChange={handleReviewerName}
-                            placeholder="Escreva aqui o seu nome..."
-                          />
-                        </StyledFormItem>
-                      </FormRow>
-                      <FormRow>
-                        <StyledFormItem
-                          name="reviewer_email"
-                          wrapperCol={24}
-                          label="E-mail"
-                          rules={[
-                            {
-                              type: "email",
-                              message: "O e-mail inserido não é válido.",
-                            },
-                            {
-                              required: true,
-                              message: "Por favor insira o seu e-mail.",
-                            },
-                          ]}
-                        >
-                          <Input
-                            onChange={handleReviewerEmail}
-                            placeholder="Escreva aqui o seu e-mail..."
-                          />
-                        </StyledFormItem>
-                      </FormRow>
-                      <FormRow>
-                        <StyledButton
-                          size="large"
-                          type="primary"
-                          text="Submeter avaliação"
-                          onClick={() =>
-                            handleSubmitReview(
-                              review,
-                              rating,
-                              reviewerName,
-                              reviewerEmail
-                            )
-                          }
-                        />
-                      </FormRow>
-                    </StyledForm>
-                  </div>
-                </Col>
-                <ReviewsContainer span={17}>
-                  {loadingReviews && !errorReviews && (
-                    <SpinnerReviews
-                      indicator={
-                        <LoadingOutlined style={{ fontSize: 50 }} spin />
-                      }
-                    />
-                  )}
-                  {errorReviews && !loadingReviews && (
-                    <>Erro ao carregar as avaliações.</>
-                  )}
-                  {reviews.length > 0 ? (
-                    reviews.map((r) => {
-                      return (
-                        <Review key={r.id}>
-                          <div>
-                            Avaliado em:{" "}
-                            <b>
-                              {moment(r.date_created_gmt).format(
-                                "MMMM Do YYYY"
+                            </StarRatingContainer>
+                            <div>
+                              {r.name == "Anonimo" ? (
+                                <b>{r.name}</b>
+                              ) : (
+                                <>
+                                  <b>{r.name}</b> ({r.email})
+                                </>
                               )}
-                            </b>
-                          </div>
-                          <StarRatingContainer>
-                            {[1, 2, 3, 4, 5].map((index) => (
-                              <StyledStarRating
-                                key={index}
-                                filled={index <= r.rating ? "true" : "false"}
-                              />
-                            ))}
-                          </StarRatingContainer>
-                          <div>
-                            {r.name == "Anonimo" ? (
-                              <b>{r.name}</b>
-                            ) : (
-                              <>
-                                <b>{r.name}</b> ({r.email})
-                              </>
-                            )}
-                          </div>
-                          <ReviewText>{r.review}</ReviewText>
-                        </Review>
-                      );
-                    })
-                  ) : (
-                    <>
-                      Não existem avaliações para este produto. A sua pode ser a
-                      primeira!
-                    </>
-                  )}
-                </ReviewsContainer>
-              </ReviewsContent>
-            </ReviewSecion>
-          </>
-        )}
-      </ContentLocked>
-    </Container>
+                            </div>
+                            <ReviewText>{r.review}</ReviewText>
+                          </Review>
+                        );
+                      })
+                    ) : (
+                      <>
+                        Não existem avaliações para este produto. A sua pode ser
+                        a primeira!
+                      </>
+                    )}
+                  </ReviewsContainer>
+                </ReviewsContent>
+              </ReviewSecion>
+            </ContentLocked>
+          </Container>
+        </>
+      )}
+    </div>
   );
 };
 
@@ -818,6 +821,7 @@ const Spinner = styled(Spin)`
 
 const Container = styled.div`
   width: 100%;
+  background-color: white;
 `;
 
 const Content = styled(Row)`
@@ -830,11 +834,6 @@ const ContentLocked = styled(Content)`
   max-width: 1440px;
   margin: auto;
   position: relative;
-`;
-
-const StyledH1 = styled.h1`
-  margin-top: 30px;
-  font-size: 52px;
 `;
 
 const StyledRow = styled(Row)`

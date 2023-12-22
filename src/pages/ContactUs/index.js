@@ -1,18 +1,28 @@
 import styled from "styled-components";
 import { Row } from "antd";
 
+import { PageHeader } from "components";
+
+import DummyImg from "assets/images/batcat-1.jpg";
+
 const ContactUs = () => {
   return (
-    <Container>
-      <ContentLocked>
-        <StyledH1>Contactos</StyledH1>
-      </ContentLocked>
-    </Container>
+    <>
+      <PageHeader
+        title="Contactos"
+        img={DummyImg}
+        alt="Contactos - Pet Plusies"
+      />
+      <Container>
+        <ContentLocked></ContentLocked>
+      </Container>
+    </>
   );
 };
 
 const Container = styled.div`
   width: 100%;
+  background-color: white;
 `;
 
 const Content = styled(Row)`
@@ -24,11 +34,7 @@ const Content = styled(Row)`
 const ContentLocked = styled(Content)`
   max-width: 1440px;
   margin: auto;
-`;
-
-const StyledH1 = styled.h1`
-  margin-top: 30px;
-  font-size: 52px;
+  min-height: 500px;
 `;
 
 export default {

@@ -4,9 +4,11 @@ import { useState } from "react";
 import axios from "axios";
 import { useHistory, Link } from "react-router-dom";
 
-import { Button } from "components";
+import { Button, PageHeader } from "components";
 
 import { useCart } from "reducers";
+
+import DummyImg from "assets/images/batcat-1.jpg";
 
 const LogIn = () => {
   const [error, setError] = useState("");
@@ -78,104 +80,126 @@ const LogIn = () => {
   };
 
   return (
-    <Container>
-      <ContentLocked>
-        <StyledH1>Entrar na conta</StyledH1>
-        <div>
-          <Form
-            form={form}
-            name="basic"
-            labelCol={{
-              span: 8,
-            }}
-            wrapperCol={{
-              span: 16,
-            }}
-            style={{
-              maxWidth: 600,
-            }}
-            initialValues={{
-              remember: true,
-            }}
-            onFinish={handleAuth}
-            autoComplete="off"
-          >
-            <Form.Item
-              name="email"
-              label="E-mail"
-              rules={[
-                {
-                  type: "email",
-                  message: "O e-mail inserido não é válido.",
-                },
-                {
-                  required: true,
-                  message: "Por favor insira o seu e-mail.",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-
-            <Form.Item
-              label="Password"
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: "Por favor insira a password!",
-                },
-              ]}
-            >
-              <Input.Password />
-            </Form.Item>
-
-            <Form.Item
+    <>
+      <PageHeader
+        title="Entrar na conta"
+        img={DummyImg}
+        alt="Entrar na conta - Pet Plusies"
+      />
+      <Container>
+        <ContentLocked>
+          <FormContainer>
+            <Form
+              form={form}
+              name="basic"
+              labelCol={{
+                span: 4,
+              }}
               wrapperCol={{
-                offset: 8,
                 span: 16,
               }}
-            >
-              <StyledButton
-                size="large"
-                color="green"
-                text="Entrar"
-                type="primary"
-                htmlType="submit"
-              />
-            </Form.Item>
-
-            <Form.Item
-              wrapperCol={{
-                offset: 8,
-                span: 16,
+              style={{
+                maxWidth: 600,
+                width: "100%",
               }}
-            >
-              <Link to="/recuperar-password">Recuperar password</Link>
-            </Form.Item>
-
-            <Form.Item
-              wrapperCol={{
-                offset: 8,
-                span: 16,
+              initialValues={{
+                remember: true,
               }}
+              onFinish={handleAuth}
+              autoComplete="off"
             >
-              {error && (
-                <div
-                  style={{ color: "red" }}
-                  dangerouslySetInnerHTML={{ __html: error }}
-                ></div>
-              )}
-            </Form.Item>
-          </Form>
-        </div>
-      </ContentLocked>
-    </Container>
+              <Form.Item
+                name="email"
+                label="E-mail"
+                rules={[
+                  {
+                    type: "email",
+                    message: "O e-mail inserido não é válido.",
+                  },
+                  {
+                    required: true,
+                    message: "Por favor insira o seu e-mail.",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                label="Password"
+                name="password"
+                rules={[
+                  {
+                    required: true,
+                    message: "Por favor insira a password!",
+                  },
+                ]}
+              >
+                <Input.Password />
+              </Form.Item>
+
+              <Form.Item
+                wrapperCol={{
+                  offset: 4,
+                  span: 16,
+                }}
+              >
+                <StyledButton
+                  size="large"
+                  text="Entrar"
+                  type="primary"
+                  htmlType="submit"
+                />
+              </Form.Item>
+
+              <Form.Item
+                wrapperCol={{
+                  offset: 4,
+                  span: 16,
+                }}
+              >
+                <Link to="/recuperar-password">Recuperar password</Link>
+              </Form.Item>
+
+              <Form.Item
+                wrapperCol={{
+                  offset: 4,
+                  span: 16,
+                }}
+              >
+                <Link to="/registar">Não possui conta? Registe-se aqui!</Link>
+              </Form.Item>
+
+              <Form.Item
+                wrapperCol={{
+                  offset: 4,
+                  span: 16,
+                }}
+              >
+                {error && (
+                  <div
+                    style={{ color: "red" }}
+                    dangerouslySetInnerHTML={{ __html: error }}
+                  ></div>
+                )}
+              </Form.Item>
+            </Form>
+          </FormContainer>
+        </ContentLocked>
+      </Container>
+    </>
   );
 };
 
+const FormContainer = styled.div`
+  padding: 65px 0;
+  display: flex;
+  justify-content: center;
+`;
+
 const Container = styled.div`
   width: 100%;
+  background-color: white;
 `;
 
 const Content = styled(Row)`
@@ -187,11 +211,6 @@ const Content = styled(Row)`
 const ContentLocked = styled(Content)`
   max-width: 1440px;
   margin: auto;
-`;
-
-const StyledH1 = styled.h1`
-  margin-top: 30px;
-  font-size: 52px;
 `;
 
 const StyledButton = styled(Button)`

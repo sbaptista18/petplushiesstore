@@ -6,12 +6,14 @@ import { useHistory } from "react-router-dom";
 import { PayPalButton } from "react-paypal-button-v2";
 import axios from "axios";
 
-import { Button, ModalMessage } from "components";
+import { Button, ModalMessage, PageHeader } from "components";
 import { tableColumnsCheckout } from "fragments";
 import { useCart } from "reducers";
 
 import CheckoutForm from "./form";
 import { PortugalDistricts } from "./data";
+
+import DummyImg from "assets/images/batcat-1.jpg";
 
 const CustomNoData = () => (
   <div style={{ textAlign: "center", padding: "20px" }}>
@@ -546,94 +548,102 @@ const Checkout = () => {
   };
 
   return (
-    <Container>
-      <ModalMessage
-        status={status}
-        message={message}
-        isVisible={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+    <>
+      <PageHeader
+        title="Finalizar Compra"
+        img={DummyImg}
+        alt="Finalizar Compra - Pet Plusies"
       />
-      <ContentLocked>
-        <StyledH1>Finalizar compra</StyledH1>
-        <StyledRow>
-          <Col span={12}>
-            <div>
-              <CheckoutForm
-                disabled={lockForm}
-                form={form}
-                handleCountry={handleCountry}
-                handleCheckCreateAccount={handleCheckCreateAccount}
-                createAccount={createAccount}
-                handleCheckShipAddress={handleCheckShipAddress}
-                shipToAddress={shipToAddress}
-                handleCountryShipping={handleCountryShipping}
-                country={country}
-                secondSelectOptions={secondSelectOptions}
-                handlePaymentMethod={handlePaymentMethod}
-                paymentMethod={paymentMethod}
-                data={userPersonalData}
-              />
-            </div>
-          </Col>
-          <Col span={11}>
-            <Title>O meu carrinho</Title>
-            <Border />
-            <div style={{ position: "relative" }}>
-              {loading && !error && (
-                <Spinner
-                  indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
+      <Container>
+        <ModalMessage
+          status={status}
+          message={message}
+          isVisible={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+        <ContentLocked>
+          <StyledRow>
+            <Col span={12}>
+              <div>
+                <CheckoutForm
+                  disabled={lockForm}
+                  form={form}
+                  handleCountry={handleCountry}
+                  handleCheckCreateAccount={handleCheckCreateAccount}
+                  createAccount={createAccount}
+                  handleCheckShipAddress={handleCheckShipAddress}
+                  shipToAddress={shipToAddress}
+                  handleCountryShipping={handleCountryShipping}
+                  country={country}
+                  secondSelectOptions={secondSelectOptions}
+                  handlePaymentMethod={handlePaymentMethod}
+                  paymentMethod={paymentMethod}
+                  data={userPersonalData}
                 />
-              )}
-              {!loading && !error && (
-                <StyledTable
-                  columns={tableColumnsCheckout}
-                  dataSource={products}
-                  pagination={false}
-                  rowKey="product_id"
-                  locale={{ emptyText: <CustomNoData /> }}
-                />
-              )}
-            </div>
+              </div>
+            </Col>
+            <Col span={11}>
+              <Title>O meu carrinho</Title>
+              <Border />
+              <div style={{ position: "relative" }}>
+                {loading && !error && (
+                  <Spinner
+                    indicator={
+                      <LoadingOutlined style={{ fontSize: 50 }} spin />
+                    }
+                  />
+                )}
+                {!loading && !error && (
+                  <StyledTable
+                    columns={tableColumnsCheckout}
+                    dataSource={products}
+                    pagination={false}
+                    rowKey="product_id"
+                    locale={{ emptyText: <CustomNoData /> }}
+                  />
+                )}
+              </div>
 
-            <Title>Resumo da compra</Title>
-            <Border />
-            <Subtotal>
-              <div>Subtotal</div>
-              <div>{totalProductNetRevenue}&euro;</div>
-            </Subtotal>
-            <Shipping>
-              <div>Estimativa de portes</div>
-              <div>{shippingCost}&euro;</div>
-            </Shipping>
-            <Border />
-            <Total>
-              <div>Subtotal</div>
-              <div>{totalProductNetRevenue + shippingCost}&euro;</div>
-            </Total>
-            {paymentMethod.label == "PayPal" ? (
-              <PayPalButton
-                amount={totalProductNetRevenue + shippingCost} // Set your transaction amount
-                onSuccess={handleOnPayPalSuccess}
-                onError={handleOnPayPalError}
-                onCancel={handleOnPayPalCancel}
-                options={{
-                  clientId:
-                    "AS_49gaJ4KOHzPP5mOgS3Ih58UojUfWU08_gj6GuMEZRMShDfNjY_JDbjVogZZcTrLqzAjWde_OxTxKk", //change this to the Production Code when deploying to online site
-                  currency: "EUR", // Set your currency
-                }}
-              />
-            ) : (
-              <StyledButton
-                size="large"
-                type="primary"
-                text="Finalizar encomenda"
-                onClick={() => handlePlaceOrder()}
-              />
-            )}
-          </Col>
-        </StyledRow>
-      </ContentLocked>
-    </Container>
+              <Title>Resumo da compra</Title>
+              <Border />
+              <Subtotal>
+                <div>Subtotal</div>
+                <div>{totalProductNetRevenue}&euro;</div>
+              </Subtotal>
+              <Shipping>
+                <div>Estimativa de portes</div>
+                <div>{shippingCost}&euro;</div>
+              </Shipping>
+              <Border />
+              <Total>
+                <div>Subtotal</div>
+                <div>{totalProductNetRevenue + shippingCost}&euro;</div>
+              </Total>
+              {paymentMethod.label == "PayPal" ? (
+                <PayPalButton
+                  amount={totalProductNetRevenue + shippingCost} // Set your transaction amount
+                  onSuccess={handleOnPayPalSuccess}
+                  onError={handleOnPayPalError}
+                  onCancel={handleOnPayPalCancel}
+                  options={{
+                    clientId:
+                      "AS_49gaJ4KOHzPP5mOgS3Ih58UojUfWU08_gj6GuMEZRMShDfNjY_JDbjVogZZcTrLqzAjWde_OxTxKk", //change this to the Production Code when deploying to online site
+                    currency: "EUR", // Set your currency
+                  }}
+                />
+              ) : (
+                <StyledButton
+                  size="large"
+                  type="primary"
+                  text="Finalizar encomenda"
+                  onClick={() => handlePlaceOrder()}
+                />
+              )}
+            </Col>
+          </StyledRow>
+        </ContentLocked>
+      </Container>
+    </>
   );
 };
 
@@ -652,6 +662,7 @@ const Spinner = styled(Spin)`
 
 const Container = styled.div`
   width: 100%;
+  background-color: white;
 `;
 
 const Content = styled(Row)`

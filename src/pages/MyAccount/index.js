@@ -3,15 +3,17 @@ import { Row, Form, Tabs, Spin, Table } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useLocation, useHistory, Link } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 
-import { Button, ModalMessage } from "components";
+import { Button, ModalMessage, PageHeader } from "components";
 
 import { PortugalDistricts } from "../Checkout/data";
 import PersonalDataForm from "./Forms/PersonalDataForm";
 import AccountDataForm from "./Forms/AccountDataForm";
 
 import { useCart } from "reducers";
+
+import DummyImg from "assets/images/batcat-1.jpg";
 
 const CustomNoData = () => (
   <div style={{ textAlign: "center", padding: "20px" }}>
@@ -334,45 +336,51 @@ const MyAccount = () => {
   ];
 
   return (
-    <Container>
-      <ModalMessage
-        status={status}
-        message={message}
-        isVisible={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+    <>
+      <PageHeader
+        title="A minha conta"
+        img={DummyImg}
+        alt="A minha conta - Pet Plusies"
       />
-      <ContentLocked>
-        <StyledH1>A minha conta</StyledH1>
-        <div style={{ position: "relative" }}>
-          {loading && !error && (
-            <Spinner
-              indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
-            />
-          )}
-
-          {!loading && !error && (
-            <div>
-              <Tabs tabPosition={"left"} items={tabs} />
-              <StyledButton
-                size="large"
-                color="green"
-                text="Sair da conta"
-                type="primary"
-                htmlType="submit"
-                onClick={() => handleLogOut()}
+      <Container>
+        <ModalMessage
+          status={status}
+          message={message}
+          isVisible={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+        <ContentLocked>
+          <div style={{ position: "relative" }}>
+            {loading && !error && (
+              <Spinner
+                indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
               />
-            </div>
-          )}
+            )}
 
-          {error && (
-            <div
-              style={{ color: "red" }}
-              dangerouslySetInnerHTML={{ __html: error }}
-            ></div>
-          )}
-        </div>
-      </ContentLocked>
-    </Container>
+            {!loading && !error && (
+              <div>
+                <Tabs tabPosition={"left"} items={tabs} />
+                <StyledButton
+                  size="large"
+                  color="green"
+                  text="Sair da conta"
+                  type="primary"
+                  htmlType="submit"
+                  onClick={() => handleLogOut()}
+                />
+              </div>
+            )}
+
+            {error && (
+              <div
+                style={{ color: "red" }}
+                dangerouslySetInnerHTML={{ __html: error }}
+              ></div>
+            )}
+          </div>
+        </ContentLocked>
+      </Container>
+    </>
   );
 };
 
@@ -413,13 +421,9 @@ const Spinner = styled(Spin)`
   justify-content: center;
 `;
 
-const StyledH1 = styled.h1`
-  margin-top: 30px;
-  font-size: 52px;
-`;
-
 const Container = styled.div`
   width: 100%;
+  background-color: white;
 `;
 
 const Content = styled(Row)`
@@ -431,6 +435,7 @@ const Content = styled(Row)`
 const ContentLocked = styled(Content)`
   max-width: 1440px;
   margin: auto;
+  min-height: 500px;
 `;
 
 const StyledButton = styled(Button)`
