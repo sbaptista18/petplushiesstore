@@ -32,7 +32,7 @@ const SignIn = () => {
 
       const options = {
         method: "POST",
-        url: `http://0.0.0.0:8000/customers`,
+        url: `https://94.46.22.210:8000/customers`,
         data: JSON.stringify({ dataCustomer }),
         headers: {
           "Content-Type": "application/json",

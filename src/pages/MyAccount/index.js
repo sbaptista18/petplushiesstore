@@ -83,7 +83,7 @@ const MyAccount = () => {
     const fetchCustomerData = async (userId) => {
       const options = {
         method: "GET",
-        url: `http://0.0.0.0:8000/customers?userId=${userId}`,
+        url: `https://94.46.22.210:8000/customers?userId=${userId}`,
       };
 
       axios
@@ -104,7 +104,7 @@ const MyAccount = () => {
   const fetchOrders = (userId) => {
     const options = {
       method: "GET",
-      url: `http://0.0.0.0:8000/orders/userid`,
+      url: `https://94.46.22.210:8000/orders/userid`,
     };
 
     axios
@@ -163,7 +163,7 @@ const MyAccount = () => {
 
       const options = {
         method: "PUT",
-        url: `http://0.0.0.0:8000/users/id?userId=${user.ID}`,
+        url: `https://94.46.22.210:8000/users/id?userId=${user.ID}`,
         data: JSON.stringify({ data }),
         headers: {
           "Content-Type": "application/json",
@@ -233,7 +233,7 @@ const MyAccount = () => {
 
       const options = {
         method: "PUT",
-        url: `http://0.0.0.0:8000/customers/id?userId=${user.ID}`,
+        url: `https://94.46.22.210:8000/customers/id?userId=${user.ID}`,
         data: JSON.stringify({ dataUser }),
         headers: {
           "Content-Type": "application/json",
