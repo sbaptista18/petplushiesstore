@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Sniglet&display=swap");
-@import "antd/dist/antd.css";
-@import "slick-carousel/slick/slick.css";
-@import "slick-carousel/slick/slick-theme.css";
+@import "../node_modules/antd/dist/antd.css";
+@import "../node_modules/slick-carousel/slick/slick.css";
+@import "../node_modules/slick-carousel/slick/slick-theme.css";
 
 :root {
   --white: #fff;
@@ -9,6 +9,8 @@
   --dark-gray: #667589;
   --blue: #08bef3;
   --menu-height: 150px;
+  --light-blue: #add8e6;
+  --green: #008000;
 }
 
 body {
@@ -37,34 +39,36 @@ html {
   height: unset !important;
 }
 
-.ant-menu-sub {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  padding: 22px 36px 22px 22px;
-  transition: 0.5s;
-  top: 58px;
-  left: -10px;
-  width: 280px;
-  background-color: var(--white);
-  border: 10px solid;
-  border-image-slice: 1;
-  border-width: 5px;
-  border-image-source: linear-gradient(to left, #58ade1 0%, #fdda91 80%);
-  border-left: 0;
-  border-right: 0;
-  border-top: 0;
-  z-index: 3;
-}
-
 .ant-input,
 .ant-input-password,
 .ant-select {
   border-radius: 5px;
-  border: 1px solid black;
+  border: 1px solid var(--black);
 }
 
 .ant-select:not(.ant-select-customize-input) .ant-select-selector {
   background-color: transparent;
   border: none;
+}
+
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item:hover,
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-submenu:hover,
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item-active,
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-submenu-active,
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item-open,
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-submenu-open,
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item-selected,
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-submenu-selected {
+  color: var(--dark-gray);
+}
+
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item:hover::after,
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-submenu:hover::after,
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item-active::after,
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-submenu-active::after,
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item-open::after,
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-submenu-open::after,
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item-selected::after,
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-submenu-selected::after {
+  border-bottom: 2px solid var(--dark-gray);
 }

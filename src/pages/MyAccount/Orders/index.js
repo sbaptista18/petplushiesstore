@@ -183,6 +183,7 @@ const Order = () => {
                           <img
                             src={i.image.src}
                             style={{ width: "100%", height: "auto" }}
+                            alt={`${i.name} - Pet Plushies`}
                           />
                         </StyledCol>
                         <StyledCol span={8}>
@@ -232,8 +233,8 @@ const TableHeader = styled(Row)`
 
 const StyledRow = styled(Row)`
   justify-content: space-between;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
+  border-top: 1px solid var(--black);
+  border-bottom: 1px solid var(--black);
   padding: 15px 0;
 `;
 
@@ -249,7 +250,7 @@ const StyledTable = styled(Table)`
     }
     & .ant-table-thead > tr > th {
       background-color: transparent;
-      border-color: black;
+      border-color: var(--black);
 
       &:before {
         display: none;
@@ -261,14 +262,14 @@ const StyledTable = styled(Table)`
     }
 
     & .ant-table-cell {
-      border-color: black;
+      border-color: var(--black);
     }
   }
 `;
 
 const Spinner = styled(Spin)`
   position: absolute;
-  background-color: white;
+  background-color: var(--white);
   width: 100%;
   height: 500px;
   left: 0;
@@ -281,7 +282,7 @@ const Spinner = styled(Spin)`
 
 const Container = styled.div`
   width: 100%;
-  background-color: white;
+  background-color: var(--white);
 `;
 
 const Content = styled(Row)`

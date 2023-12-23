@@ -100,13 +100,14 @@ const PriceContainer = styled.div`
 `;
 
 const Price = styled.div`
-  color: ${(props) => (props.flag == "sale" ? "gray" : "black")};
+  color: ${(props) =>
+    props.flag == "sale" ? "var(--dark-gray)" : "var(--black)"};
   text-decoration: ${(props) =>
     props.flag == "sale" ? "line-through" : "none"};
 `;
 
 const Sale = styled(Price)`
-  color: black;
+  color: var(--black);
   margin-left: 10px;
 `;
 

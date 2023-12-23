@@ -1,4 +1,4 @@
-import Slide1 from "assets/images/batcat-1.jpg";
+import Slide1 from "assets/images/slideshow/slide1.jpg";
 
 export const data = [
   {

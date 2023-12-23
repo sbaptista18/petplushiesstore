@@ -48,7 +48,7 @@ const StyledSlider = styled(Slider)`
       & button {
         &:before {
           font-size: 10px;
-          color: white;
+          color: var(--white);
         }
       }
 

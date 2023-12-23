@@ -41,7 +41,7 @@ const buildMenuItemProps = (item) => {
 const PPS_Header = () => {
   const [backgroundColor, setBackgroundColor] = useState("transparent");
   const [boxShadow, setBoxShadow] = useState("none");
-  const [color, setColor] = useState("black");
+  const [color, setColor] = useState("var(--black)");
   const [sessionKey, setSessionKey] = useState(null);
   const history = useHistory();
 
@@ -64,7 +64,7 @@ const PPS_Header = () => {
     axios
       .request(options)
       .then(function (response) {
-        if (response.data.length != 0) {
+        if (response.data.results.length != 0) {
           setSessionKeyAndCartId(sessionKey, response.data.results[0].id);
           fetchCartProducts(response.data.results[0].id);
         }
@@ -137,7 +137,7 @@ const PPS_Header = () => {
     if (location.pathname === "/") {
       setBackgroundColor("transparent");
       setBoxShadow("none");
-      setColor("white");
+      setColor("var(--white)");
 
       const handleScroll = () => {
         const scrollPosition = window.scrollY;
@@ -147,13 +147,13 @@ const PPS_Header = () => {
 
         // Change the background color based on the scroll position
         if (scrollPosition > threshold) {
-          setBackgroundColor("white");
+          setBackgroundColor("var(--white)");
           setBoxShadow("0px 5px 30px 0px rgba(0, 0, 0, 0.1)");
-          setColor("black");
+          setColor("var(--black)");
         } else {
           setBackgroundColor("transparent");
           setBoxShadow("none");
-          setColor("white");
+          setColor("var(--white)");
         }
       };
 
@@ -165,9 +165,9 @@ const PPS_Header = () => {
         window.removeEventListener("scroll", handleScroll);
       };
     } else {
-      setBackgroundColor("white");
+      setBackgroundColor("var(--white)");
       setBoxShadow("0px 5px 30px 0px rgba(0, 0, 0, 0.1)");
-      setColor("black");
+      setColor("var(--black)");
     }
 
     return () => {
@@ -226,7 +226,7 @@ const PPS_Header = () => {
 
 const CartProductsNr = styled.div`
   border-radius: 50%;
-  background-color: black;
+  background-color: var(--black);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -236,7 +236,7 @@ const CartProductsNr = styled.div`
   margin-top: -17px;
 
   & span {
-    color: white;
+    color: var(--white);
     font-size: 10px;
   }
 `;
@@ -289,17 +289,19 @@ const IconLink = styled(StyledLink)`
   width: 70px;
   align-items: center;
   justify-content: center;
-  color: ${(props) => (props.location == "/" ? "white" : "black")};
+  color: ${(props) =>
+    props.location == "/" ? "var(--white)" : "var(--black)"};
   transition: 0.5s;
   position: relative;
 
   &:hover {
-    color: #1890ff;
+    color: var(--dark-gray) !important;
   }
 `;
 
 const StyledMenu = styled(Menu)`
-  color: ${(props) => (props.location == "/" ? "white" : "black")};
+  color: ${(props) =>
+    props.location == "/" ? "var(--white)" : "var(--black)"};
   transition: 0.5s;
 `;
 

@@ -18,7 +18,7 @@ const Blog = () => {
 
 const Container = styled.div`
   width: 100%;
-  background-color: white;
+  background-color: var(--white);
 `;
 
 const Content = styled(Row)`

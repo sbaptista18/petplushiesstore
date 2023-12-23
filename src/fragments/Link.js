@@ -1,9 +1,7 @@
 import PropTypes from "prop-types";
 
 function isExternalLink(url) {
-  return url.includes("https://")
-    ? new URL(url)
-    : url.origin === window.location.origin;
+  return url.startsWith("https://") || url.origin !== window.location.origin;
 }
 
 const Link = ({ href, children, ...rest }) => {
