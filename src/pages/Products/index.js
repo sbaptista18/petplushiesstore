@@ -63,6 +63,54 @@ const Products = () => {
   const [cachedMinPrice, setCachedMinPrice] = useState(null);
   const [cachedMaxPrice, setCachedMaxPrice] = useState(null);
 
+  const [isUpToDate, setIsUpToDate] = useState(true);
+
+  const findLatestModifiedPost = (posts) => {
+    if (posts.length === 0) {
+      return null;
+    }
+
+    const sortedPosts = posts.sort(
+      (a, b) => new Date(b.post_modified) - new Date(a.post_modified)
+    );
+
+    return sortedPosts[0];
+  };
+
+  const checkForUpdates = async () => {
+    try {
+      const response = await fetch(
+        "https://backoffice.petplushies.pt/wp-json/custom/v1/posts-with-timestamp"
+      );
+      const latestDataWithTimestamp = await response.json();
+
+      const cachedDataWithTimestamp = JSON.parse(
+        localStorage.getItem("cachedProducts")
+      );
+
+      const latestModifiedPost = findLatestModifiedPost(
+        latestDataWithTimestamp
+      );
+
+      if (cachedDataWithTimestamp) {
+        const latestCachedPost = findLatestModifiedPost(
+          cachedDataWithTimestamp.data
+        );
+
+        if (latestModifiedPost.post_modified > latestCachedPost.post_modified) {
+          setIsUpToDate(false);
+          fetchProducts();
+          fetchCategories();
+          fetchPriceRange();
+        } else {
+          setIsUpToDate(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error checking for updates:", error);
+    }
+  };
+
   const setCachedData = (data, localStorageKey) => {
     const currentTime = new Date().getTime();
     const sessionData = {
@@ -71,25 +119,6 @@ const Products = () => {
     };
 
     localStorage.setItem(localStorageKey, JSON.stringify(sessionData));
-
-    //check timestamp and reset if greater than a week
-    const storedSessionData = localStorage.getItem(localStorageKey);
-    resetCachedData(storedSessionData, data, localStorageKey);
-  };
-
-  const resetCachedData = (storedSessionData, data, localStorageKey) => {
-    if (storedSessionData.timestamp) {
-      const currentTime = new Date().getTime();
-      const elapsedTime = currentTime - timestamp;
-
-      if (elapsedTime < 7 * 24 * 60 * 60 * 1000) {
-        //greater than a week
-        setCachedData(data, localStorageKey);
-      } else {
-        localStorage.removeItem(localStorageKey);
-        setCachedData(data, localStorageKey);
-      }
-    }
   };
 
   const flagText = (stock, status) => {
@@ -133,13 +162,12 @@ const Products = () => {
    * PRODUCTS CODEBLOCK
    */
   const fetchProducts = async () => {
+    if (cachedProducts) {
+      setProducts(cachedProducts.data);
+      setLoading(false);
+      return;
+    }
     try {
-      if (cachedProducts) {
-        setProducts(cachedProducts.data);
-        setLoading(false);
-        return;
-      }
-
       const options = {
         method: "GET",
         url: "http://127.0.0.1/products",
@@ -162,6 +190,7 @@ const Products = () => {
           picture: item.images[0].src,
           url: item.slug,
           category: item.categories[0].slug,
+          post_modified: item.date_modified.split("T").join(" "),
         }));
 
         setProducts(mappedProducts);
@@ -176,6 +205,8 @@ const Products = () => {
   };
 
   useEffect(() => {
+    checkForUpdates();
+
     const cachedProducts = localStorage.getItem("cachedProducts");
 
     if (cachedProducts) {
@@ -184,8 +215,6 @@ const Products = () => {
       setProducts(parsedData.data);
       setLoading(false);
       setError(false);
-    } else {
-      // fetchProducts();
     }
   }, []);
 
@@ -246,9 +275,12 @@ const Products = () => {
       setCategories(parsedData.data);
       setError(false);
     } else {
+      // if (!isUpToDate) {
+      // Fetch data only if it's not up to date
       fetchCategories();
+      // }
     }
-  }, []);
+  }, [isUpToDate]);
 
   useEffect(() => {
     if (!loading && !error) {
@@ -298,7 +330,10 @@ const Products = () => {
       setSelectedPriceRange([minPrice, maxPrice]);
       setCachedData(minPrice, "cachedMinPrice");
       setCachedData(maxPrice, "cachedMaxPrice");
+
+      // if (!isUpToDate) {
       fetchProducts();
+      // }
     } catch (error) {
       setError(true);
     }
@@ -320,9 +355,12 @@ const Products = () => {
       setSelectedPriceRange([parsedDataMin.data, parsedDataMax.data]);
       setError(false);
     } else {
+      // if (!isUpToDate) {
+      // Fetch data only if it's not up to date
       fetchPriceRange();
+      // }
     }
-  }, []);
+  }, [isUpToDate]);
 
   useEffect(() => {
     if (!loading && !error) {

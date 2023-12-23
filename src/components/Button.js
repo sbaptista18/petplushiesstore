@@ -9,7 +9,6 @@ const Btn = ({ size, type, color, text, disabled, loading, ...rest }) => {
       size={size}
       type={type}
       className={color}
-      // loading={loading}
       {...rest}
     >
       {loading ? <Spin /> : <span>{text}</span>}
@@ -35,10 +34,6 @@ const StyledButton = styled(Button)`
   transition: 0.25s;
   cursor: pointer;
 
-  & > span {
-    text-transform: capitalize;
-  }
-
   &.ant-btn-lg {
     font-size: 14px;
     font-weight: 500;
@@ -51,6 +46,14 @@ const StyledButton = styled(Button)`
     &.white {
       background-color: var(--white);
       color: var(--black);
+    }
+
+    &[disabled] {
+      color: rgba(0, 0, 0, 0.25);
+      border-color: #d9d9d9;
+      background: #f5f5f5;
+      text-shadow: none;
+      box-shadow: none;
     }
 
     &:hover {
