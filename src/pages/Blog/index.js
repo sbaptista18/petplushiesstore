@@ -1,11 +1,31 @@
 import styled from "styled-components";
 import { Row } from "antd";
+import { useState, useEffect } from "react";
 
 import { PageHeader } from "components";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
 const Blog = () => {
+  const [posts, setPosts] = useState([]);
+
+  const fetchBlogPosts = async () => {
+    try {
+      const response = await fetch(
+        "https://backoffice.petplushies.pt/wp-json/custom/v1/blog-posts"
+      );
+      const blogPosts = await response.json();
+
+      console.log(blogPosts);
+    } catch (error) {
+      console.error("Error fetching the blog posts:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBlogPosts();
+  }, []);
+
   return (
     <>
       <PageHeader title="Blog" img={DummyImg} alt="Blog - Pet Plusies" />
