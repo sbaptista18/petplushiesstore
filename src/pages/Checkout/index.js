@@ -57,7 +57,7 @@ const Checkout = () => {
     const fetchCustomerData = async (userId) => {
       const options = {
         method: "GET",
-        url: `http://127.0.0.1:8000/customers?userId=${userId}`,
+        url: `http://127.0.0.1/customers?userId=${userId}`,
       };
 
       axios
@@ -78,7 +78,7 @@ const Checkout = () => {
   const fetchCartId = async (cartId) => {
     const options = {
       method: "GET",
-      url: `http://127.0.0.1:8000/temp_carts/id?id=${cartId}`,
+      url: `http://127.0.0.1/temp_carts/id?id=${cartId}`,
     };
 
     axios
@@ -98,7 +98,7 @@ const Checkout = () => {
   const fetchCartProducts = async (cartId) => {
     const options = {
       method: "GET",
-      url: `http://127.0.0.1:8000/temp_cart_products_id?cartId=${cartId}`,
+      url: `http://127.0.0.1/temp_cart_products_id?cartId=${cartId}`,
     };
 
     axios
@@ -121,7 +121,7 @@ const Checkout = () => {
     const promises = data.map((cartItem) => {
       const options = {
         method: "GET",
-        url: `http://127.0.0.1:8000/products/id?id=${cartItem.product_id}`,
+        url: `http://127.0.0.1/products/id?id=${cartItem.product_id}`,
       };
 
       return axios
@@ -189,7 +189,7 @@ const Checkout = () => {
   const fetchShippingZonesDetails = async (area) => {
     const options = {
       method: "GET",
-      url: `http://127.0.0.1:8000/shipping?area=${area}`,
+      url: `http://127.0.0.1/shipping?area=${area}`,
     };
 
     return axios
@@ -365,7 +365,7 @@ const Checkout = () => {
 
         const options = {
           method: "POST",
-          url: `http://127.0.0.1:8000/orders`,
+          url: `http://127.0.0.1/orders`,
           data: JSON.stringify({ dataOrder }),
           headers: {
             "Content-Type": "application/json",
@@ -377,7 +377,7 @@ const Checkout = () => {
           .then(function (response) {
             const options = {
               method: "DELETE",
-              url: `http://127.0.0.1:8000/temp_cart_delete_on_order?cartId=${cartId}`,
+              url: `http://127.0.0.1/temp_cart_delete_on_order?cartId=${cartId}`,
             };
 
             axios
@@ -427,7 +427,7 @@ const Checkout = () => {
 
                   const options = {
                     method: "POST",
-                    url: `http://127.0.0.1:8000/customers`,
+                    url: `http://127.0.0.1/customers`,
                     data: JSON.stringify({ dataCustomer }),
                     headers: {
                       "Content-Type": "application/json",
