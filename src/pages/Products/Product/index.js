@@ -261,7 +261,7 @@ const Product = () => {
 
       const options1 = {
         method: "POST",
-        url: "http://127.0.0.1/temp_cart_products",
+        url: `http://127.0.0.1/temp_cart_products`,
         data: JSON.stringify({ dataProduct }),
         headers: {
           "Content-Type": "application/json",
