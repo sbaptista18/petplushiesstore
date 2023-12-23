@@ -17,6 +17,7 @@ const Slideshow = ({ slides, settings }) => {
             <div key={p}>
               <Container>
                 <LazyImage src={p.image} alt={`${p.title} - Pet Plushies`} />
+                <Overlay />
                 <Text>
                   <span>{p.title}</span>
 
@@ -39,6 +40,15 @@ Slideshow.propTypes = {
   settings: PropTypes.object,
 };
 
+const Overlay = styled.div`
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  position: absolute;
+  top: 0%;
+  left: 0%;
+`;
+
 const SlideshowContainer = styled.div`
   position: relative;
   height: 750px;
@@ -57,7 +67,7 @@ const StyledSlider = styled(Slider)`
   position: fixed;
   width: 100%;
   top: 0;
-  z-index: -1;
+  z-index: 0;
 
   & div {
     height: 100%;
@@ -70,14 +80,14 @@ const StyledSlider = styled(Slider)`
       & button {
         &:before {
           font-size: 20px;
-          color: white;
+          color: var(--white);
         }
       }
 
       &.slick-active {
         & button {
           &:before {
-            color: green;
+            color: var(--green);
           }
         }
       }
@@ -94,13 +104,12 @@ const Text = styled.span`
   height: auto;
   width: 100%;
   text-align: center;
-  color: white;
+  color: var(--white);
   position: absolute;
   bottom: 70px;
   left: 50%;
   transform: translateX(-50%);
   padding: 10px 0;
-  background-color: rgba(0, 0, 0, 0.4);
   font-size: 26px;
   display: flex;
   flex-direction: column;

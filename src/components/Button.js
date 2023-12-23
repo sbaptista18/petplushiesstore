@@ -41,8 +41,8 @@ const StyledButton = styled(Button)`
     font-size: 14px;
     font-weight: 500;
     height: unset;
-    background-color: lightblue;
-    color: black;
+    background-color: var(--light-blue);
+    color: var(--black);
   }
 
   &.ant-btn-primary {

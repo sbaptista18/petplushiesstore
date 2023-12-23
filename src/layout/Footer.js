@@ -107,7 +107,7 @@ const SocialLink = styled.a`
     transition: 0.5s;
 
     &:hover {
-      fill: lightblue;
+      fill: var(--light-blue);
     }
   }
 `;
@@ -128,14 +128,14 @@ const StyledFooter = styled(Footer)`
   background-color: var(--dark-gray);
   margin-top: 35px;
   position: relative;
-  color: white;
+  color: var(--white);
 
   & a {
-    color: white;
+    color: var(--white);
     transition: 0.5s;
 
     &:hover {
-      color: lightblue;
+      color: var(--light-blue);
     }
   }
 
@@ -165,7 +165,7 @@ const Container = styled(Row)`
 
 const StyledH3 = styled.h3`
   font-size: 20px;
-  color: white;
+  color: var(--white);
   font-weight: 600;
 `;
 
@@ -177,10 +177,10 @@ const StyledMenu = styled(Menu)`
 
   && > li {
     padding: 0;
-    color: white;
+    color: var(--white);
 
     &:hover {
-      color: lightblue;
+      color: var(--light-blue);
     }
   }
 `;
@@ -190,10 +190,10 @@ const LegalMenu = styled(StyledMenu)`
 
   && > li {
     padding: 0 16px;
-    color: white;
+    color: var(--white);
 
     &:hover {
-      color: lightblue;
+      color: var(--light-blue);
     }
   }
 

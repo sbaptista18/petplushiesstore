@@ -8,7 +8,6 @@ import moment from "moment";
 
 import { useCart } from "reducers";
 import { getSessionDataFromLocalStorage } from "helpers";
-import { PageHeaderProduct } from "components";
 
 import Star from "assets/images/star.svg";
 
@@ -23,6 +22,7 @@ import {
   ShareSocials,
   ModalMessage,
   Button,
+  PageHeaderProduct,
 } from "components";
 
 const flagText = (stock, status) => {
@@ -45,7 +45,7 @@ const Product = () => {
   const [sessionKey, setSessionKey] = useState(null);
   const [product, setProduct] = useState([]);
   const { productUrl } = useParams();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [loadingReviews, setLoadingReviews] = useState(true);
   const [error, setError] = useState(false);
   const [errorReviews, setErrorReviews] = useState(false);
@@ -193,68 +193,60 @@ const Product = () => {
     fetchProduct();
   }, [productUrl]);
 
-  const addToCart = async (product) => {
-    let product_extras;
-    if (variations != null) {
-      function formatData(data) {
-        return `<b>${data.radio}:</b> ${data.name};`;
-      }
+  const formatVariations = (chosenVariations, petName, shelter) => {
+    if (!chosenVariations) return "";
 
-      const variation_aux = chosenVariations.map((c) => {
-        return formatData(c);
-      });
-      const textString = variation_aux.join("\n");
-
-      let finalString;
-      if (petName == "" && shelter == "") {
-        finalString = textString;
-      } else {
-        finalString =
-          textString +
-          "\n<b>Nome do pet:</b> " +
-          petName +
-          ";\n<b>Associação:</b> " +
-          shelter;
-      }
-      product_extras = finalString;
-    } else {
-      product_extras = "";
+    function formatData(data) {
+      return `<b>${data.radio}:</b> ${data.name};`;
     }
 
+    const variationString = chosenVariations.map(formatData).join("\n");
+
+    if (petName === "" && shelter === "") {
+      return variationString;
+    } else {
+      return `${variationString}\n<b>Nome do pet:</b> ${petName};\n<b>Associação:</b> ${shelter}`;
+    }
+  };
+
+  const updateCartHeader = (cartId, qty) => {
     if (cartId !== null || cartId === 0) {
-      //Update number in cart (header)
-      const options_prods = {
+      const optionsProds = {
         method: "GET",
         url: `http://127.0.0.1/temp_cart_products_id?cartId=${cartId}`,
       };
 
       axios
-        .request(options_prods)
+        .request(optionsProds)
         .then(function (response) {
           updateProductsNr(0);
-          let qty_in_cart;
 
-          let totalProductQty = 0;
-          const orderItems = response.data.results;
+          const orderItems = response.data.results || [];
+          const totalProductQty = orderItems.reduce(
+            (total, orderItem) => total + parseInt(orderItem.product_qty, 10),
+            0
+          );
 
-          if (orderItems != undefined) {
-            for (const orderItem of orderItems) {
-              totalProductQty += parseInt(orderItem.product_qty, 10);
-            }
-
-            updateProductsNr(totalProductQty + qty);
-          } else {
-            qty_in_cart = 0;
-            console.log("qty:", qty);
-            console.log("qty in cart:", parseInt(qty_in_cart, 10));
-            console.log(parseInt(qty_in_cart, 10) + qty);
-            updateProductsNr(parseInt(qty_in_cart, 10) + qty);
-          }
+          updateProductsNr(totalProductQty + qty);
         })
         .catch(function (error) {
           console.log(error);
         });
-      //End
+    }
+  };
+
+  const addToCart = async (product) => {
+    let productExtras = "";
+
+    const variationsString = formatVariations(
+      chosenVariations,
+      petName,
+      shelter
+    );
+    productExtras = variationsString;
+
+    if (cartId !== null || cartId === 0) {
+      updateCartHeader(cartId, qty);
 
       const dataProduct = {
         temp_cart_id: cartId,
@@ -262,32 +254,31 @@ const Product = () => {
         date_created: new Date().toISOString().slice(0, 19).replace("T", " "),
         product_qty: qty,
         product_net_revenue: totalPrice * qty,
-        product_extras: product_extras,
+        product_extras: productExtras,
       };
 
       const options1 = {
         method: "POST",
-        url: `http://127.0.0.1/temp_cart_products`,
+        url: "http://127.0.0.1/temp_cart_products",
         data: JSON.stringify({ dataProduct }),
         headers: {
           "Content-Type": "application/json",
         },
       };
 
-      axios
-        .request(options1)
-        .then(function (response) {
-          setMessage("O produto foi adicionado ao carrinho!");
-          setStatus("success");
-          setIsModalOpen(true);
-        })
-        .catch(function (error) {
-          setMessage(
-            "Houve um erro ao adicionar o produto ao carrinho. (" + error + ".)"
-          );
-          setStatus("error");
-          setIsModalOpen(true);
-        });
+      try {
+        const response = await axios.request(options1);
+        console.log(response);
+        setMessage("O produto foi adicionado ao carrinho!");
+        setStatus("success");
+        setIsModalOpen(true);
+      } catch (error) {
+        setMessage(
+          `Houve um erro ao adicionar o produto ao carrinho. (${error}.)`
+        );
+        setStatus("error");
+        setIsModalOpen(true);
+      }
     } else {
       const storedUserData = localStorage.getItem("user");
 
@@ -324,7 +315,6 @@ const Product = () => {
       axios
         .request(options1)
         .then(function (response) {
-          console.log("create cart response:", response);
           const dataProduct = {
             temp_cart_id: response.data.success.id,
             product_id: product.id,
@@ -334,7 +324,7 @@ const Product = () => {
               .replace("T", " "),
             product_qty: qty_input,
             product_net_revenue: qty_input * totalPrice,
-            product_extras: product_extras,
+            product_extras: productExtras,
           };
 
           const options1 = {
@@ -670,7 +660,7 @@ const Product = () => {
                               ))}
                             </StarRatingContainer>
                             <div>
-                              {r.name == "Anonimo" ? (
+                              {r.name == "Anónimo" ? (
                                 <b>{r.name}</b>
                               ) : (
                                 <>
@@ -704,7 +694,7 @@ const ReviewsContainer = styled(Col)`
 `;
 
 const Review = styled.div`
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid var(--black);
   display: flex;
   flex-direction: column;
   padding: 15px 0;
@@ -719,6 +709,7 @@ const StyledButton = styled(Button)`
 `;
 
 const ReviewSecion = styled(Row)`
+  margin-top: 30px;
   flex-direction: column;
 `;
 
@@ -795,7 +786,7 @@ const ReviewText = styled.div`
 
 const SpinnerReviews = styled(Spin)`
   position: absolute;
-  background-color: white;
+  background-color: var(--white);
   width: 100%;
   height: 100%;
   left: 0;
@@ -808,7 +799,7 @@ const SpinnerReviews = styled(Spin)`
 
 const Spinner = styled(Spin)`
   position: absolute;
-  background-color: white;
+  background-color: var(--white);
   width: 100%;
   height: 100%;
   left: 0;
@@ -821,7 +812,7 @@ const Spinner = styled(Spin)`
 
 const Container = styled.div`
   width: 100%;
-  background-color: white;
+  background-color: var(--white);
 `;
 
 const Content = styled(Row)`

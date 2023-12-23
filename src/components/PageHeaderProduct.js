@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Row } from "antd";
+import PropTypes from "prop-types";
 
 import BottomBar from "assets/images/bottom-bar.svg";
 
@@ -12,6 +13,10 @@ const PageHeaderProduct = ({ title }) => {
       <StyledBottomBar />
     </Container>
   );
+};
+
+PageHeaderProduct.propTypes = {
+  title: PropTypes.string,
 };
 
 const StyledBottomBar = styled(BottomBar)`
@@ -40,12 +45,12 @@ const ContentLocked = styled(Content)`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: lightblue;
+  background-color: var(--light-blue);
 `;
 
 const StyledH1 = styled.h1`
   font-size: 52px;
-  color: black;
+  color: var(--black);
 `;
 
 export default PageHeaderProduct;

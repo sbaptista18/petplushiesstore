@@ -301,8 +301,6 @@ const Products = () => {
       fetchProducts();
     } catch (error) {
       setError(true);
-    } finally {
-      // setLoading(false);
     }
   };
 
@@ -578,7 +576,7 @@ const CategoryListItem = styled.li`
 `;
 
 const CategoryListSubItem = styled(CategoryListItem)`
-  color: green;
+  color: var(--green);
   margin-left: 20px;
 `;
 
@@ -599,7 +597,7 @@ const SortSelect = styled(Select)`
 
 const Container = styled.div`
   width: 100%;
-  background-color: white;
+  background-color: var(--white);
 `;
 
 const Content = styled(Row)`
@@ -610,7 +608,7 @@ const Content = styled(Row)`
 
 const ContentLocked = styled(Content)`
   width: 100%;
-  background-color: white;
+  background-color: var(--white);
 
   & > div {
     max-width: 1440px;

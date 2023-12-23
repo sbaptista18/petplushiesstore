@@ -75,7 +75,7 @@ const Homepage = () => {
   };
 
   return (
-    <Container>
+    <>
       <Slideshow
         slides={data}
         settings={{
@@ -88,93 +88,97 @@ const Homepage = () => {
           autoplaySpeed: 5000,
         }}
       />
-      <ContentLocked>
-        <div>
-          <VerticalContent>
-            <Row>
-              <StyledH2Center>As nossas sugestões</StyledH2Center>
-            </Row>
-            <FeaturedProductsContainer>
-              {loading && !error && (
-                <Spinner
-                  indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
-                />
-              )}
-              {error && !loading && !noResults && (
-                <>Erro ao carregar a lista de produtos.</>
-              )}
-              {!error && !loading && noResults && (
-                <>Não há resultados para o filtro seleccionado.</>
-              )}
-              {!error && !loading && !noResults && (
-                <>
-                  {featuredProducts.map((p) => (
-                    <TileNoInput
-                      key={p.id}
-                      id={p.id}
-                      name={p.name}
-                      price={p.price}
-                      picture={p.picture}
-                      stock={p.stock}
-                      flag={flagText(p.stock, p.stock_status)}
-                      url={p.url}
-                    />
-                  ))}
-                </>
-              )}
-            </FeaturedProductsContainer>
-          </VerticalContent>
-        </div>
-      </ContentLocked>
-      <HighlightSection>
-        <StyledTopBar />
-        <Row>
-          <Col span={11}>
-            <LazyImage src={Img} alt={`Qualquer coisa - Pet Plushies`} />
-          </Col>
-          <TextContainer span={11}>
-            <Row>
-              <StyledH2Left>A Pet Plushies</StyledH2Left>
-            </Row>
+      <Container>
+        <ContentLocked>
+          <div>
             <VerticalContent>
-              <p>
-                Criada em 2021, é uma marca Portuguesa que se foca em realçar o
-                que é importante para qualquer pet lover: artigos de qualidade
-                para eles e os patudos!
-              </p>
-              <p>
-                Todos os atigos sáo 100% artesanais e sustentáveis para que
-                possamos todos ser amigos do planeta enquanto nos mimamos com o
-                que há de melhor!
-              </p>
-              <p>
-                A nossa principal missão é levar ajuda a vários
-                abrigos/associações de animais doando 10% de cada compra.
-              </p>
-              <Link to={"/sobre-nos"}>
-                <Button
-                  size="large"
-                  type="primary"
-                  color="white"
-                  text="Ler mais"
-                />
-              </Link>
+              <Row>
+                <StyledH2Center>As nossas sugestões</StyledH2Center>
+              </Row>
+              <FeaturedProductsContainer>
+                {loading && !error && (
+                  <Spinner
+                    indicator={
+                      <LoadingOutlined style={{ fontSize: 50 }} spin />
+                    }
+                  />
+                )}
+                {error && !loading && !noResults && (
+                  <>Erro ao carregar a lista de produtos.</>
+                )}
+                {!error && !loading && noResults && (
+                  <>Não há resultados para o filtro seleccionado.</>
+                )}
+                {!error && !loading && !noResults && (
+                  <>
+                    {featuredProducts.map((p) => (
+                      <TileNoInput
+                        key={p.id}
+                        id={p.id}
+                        name={p.name}
+                        price={p.price}
+                        picture={p.picture}
+                        stock={p.stock}
+                        flag={flagText(p.stock, p.stock_status)}
+                        url={p.url}
+                      />
+                    ))}
+                  </>
+                )}
+              </FeaturedProductsContainer>
             </VerticalContent>
-          </TextContainer>
-        </Row>
-        <StyledBottomBar />
-      </HighlightSection>
-      <ContentLocked>
-        <div>
-          <VerticalContent>
-            <Row>
-              <StyledH2Center>Últimas notícias</StyledH2Center>
-            </Row>
-            <Row>Últimos posts do blog</Row>
-          </VerticalContent>
-        </div>
-      </ContentLocked>
-    </Container>
+          </div>
+        </ContentLocked>
+        <HighlightSection>
+          <StyledTopBar />
+          <Row>
+            <Col span={11}>
+              <LazyImage src={Img} alt={`Qualquer coisa - Pet Plushies`} />
+            </Col>
+            <TextContainer span={11}>
+              <Row>
+                <StyledH2Left>A Pet Plushies</StyledH2Left>
+              </Row>
+              <VerticalContent>
+                <p>
+                  Criada em 2021, é uma marca Portuguesa que se foca em realçar
+                  o que é importante para qualquer pet lover: artigos de
+                  qualidade para eles e os patudos!
+                </p>
+                <p>
+                  Todos os atigos sáo 100% artesanais e sustentáveis para que
+                  possamos todos ser amigos do planeta enquanto nos mimamos com
+                  o que há de melhor!
+                </p>
+                <p>
+                  A nossa principal missão é levar ajuda a vários
+                  abrigos/associações de animais doando 10% de cada compra.
+                </p>
+                <Link to={"/sobre-nos"}>
+                  <Button
+                    size="large"
+                    type="primary"
+                    color="white"
+                    text="Ler mais"
+                  />
+                </Link>
+              </VerticalContent>
+            </TextContainer>
+          </Row>
+          <StyledBottomBar />
+        </HighlightSection>
+        <ContentLocked>
+          <div>
+            <VerticalContent>
+              <Row>
+                <StyledH2Center>Últimas notícias</StyledH2Center>
+              </Row>
+              <Row>Últimos posts do blog</Row>
+            </VerticalContent>
+          </div>
+        </ContentLocked>
+      </Container>
+    </>
   );
 };
 
@@ -203,7 +207,8 @@ const Content = styled(Row)`
 
 const ContentLocked = styled(Content)`
   width: 100%;
-  background-color: white;
+  background-color: var(--white);
+  position: relative;
 
   & > div {
     max-width: 1440px;
@@ -214,7 +219,7 @@ const ContentLocked = styled(Content)`
 
 const HighlightSection = styled(Content)`
   height: auto;
-  background-color: lightblue;
+  background-color: var(--light-blue);
   padding-top: 100px;
   padding-bottom: 100px;
   position: relative;

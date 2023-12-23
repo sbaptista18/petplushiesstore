@@ -221,224 +221,170 @@ const Checkout = () => {
     setShipToAddress((prevState) => !prevState);
   };
 
-  const handlePlaceOrder = (orderId) => {
-    let meta_data;
-    products.map((p) => {
-      if (p.product_extras != "") {
-        const cleanedString = p.product_extras.replace(/<\/?b>/gi, "");
-        const keyValuePairs = cleanedString
-          .split(";")
-          .map((pair) => pair.trim());
-        const resultObject = {};
+  const formatMetaFromExtras = (productExtras) => {
+    if (!productExtras) return [];
 
-        keyValuePairs.forEach((pair) => {
-          const [rawKey, value] = pair.split(":");
-          if (rawKey && value) {
-            const key = rawKey.trim();
-            resultObject[key] = value.trim();
-          }
-        });
+    const cleanedString = productExtras.replace(/<\/?b>/gi, "");
+    const keyValuePairs = cleanedString.split(";").map((pair) => pair.trim());
+    const resultObject = {};
 
-        const meta_data_aux = Object.keys(resultObject).map((key) => ({
-          key: key,
-          value: resultObject[key],
-        }));
-
-        meta_data = meta_data_aux;
-      } else {
-        meta_data = "";
+    keyValuePairs.forEach((pair) => {
+      const [rawKey, value] = pair.split(":");
+      if (rawKey && value) {
+        const key = rawKey.trim();
+        resultObject[key] = value.trim();
       }
     });
+
+    return Object.keys(resultObject).map((key) => ({
+      key,
+      value: resultObject[key],
+    }));
+  };
+
+  const buildBillingDetails = (formValues) => ({
+    first_name: formValues.first_name,
+    last_name: formValues.surname,
+    company: formValues.company !== "" ? formValues.company : "",
+    address_1: formValues.address,
+    address_2: "",
+    city: formValues.local,
+    state: formValues.district,
+    postcode: formValues.postcode,
+    country: formValues.country == 2 ? "PT" : "",
+    email: formValues.email,
+    phone: formValues.phone,
+  });
+
+  const buildShippingDetails = (formValues) => ({
+    first_name: formValues.first_name_other || formValues.first_name,
+    last_name: formValues.surname_other || formValues.surname,
+    company: formValues.company !== "" ? formValues.company : "",
+    address_1: formValues.address_other || formValues.address,
+    address_2: "",
+    city: formValues.local_other || formValues.local,
+    state: formValues.district_other || formValues.district,
+    postcode: formValues.postcode_other || formValues.postcode,
+    country: formValues.country_other == 2 ? "PT" : "",
+  });
+
+  const buildOrderData = (
+    formValues,
+    userId,
+    orderId,
+    meta_data,
+    createAccount
+  ) => {
+    const commonOrderData = {
+      payment_method: paymentMethod.value,
+      payment_method_title: paymentMethod.label,
+      set_paid: paymentMethod.label == "PayPal" ? true : false,
+      status: paymentMethod.label == "PayPal" ? "processing" : "on-hold",
+      customer_id: userId,
+      transaction_id: orderId !== undefined ? orderId : "",
+      prices_include_tax: true,
+      billing: buildBillingDetails(formValues),
+      shipping: buildShippingDetails(formValues),
+      line_items: products.map((p) => ({
+        product_id: p.product_id,
+        quantity: p.product_qty,
+        total: p.product_net_revenue,
+        meta_data: meta_data,
+        tax_class: "",
+      })),
+      shipping_lines: [
+        {
+          method_id:
+            shippingCost.toString() == 0 ? "free_shipping" : "flat_rate",
+          method_title: shippingTitle,
+          total: shippingCost.toString(),
+        },
+      ],
+    };
+
+    return formValues.first_name_other
+      ? { ...commonOrderData, shipping: buildShippingDetails(formValues) }
+      : commonOrderData;
+  };
+
+  const createCustomer = (formValues) => {
+    const dataCustomer = {
+      email: formValues.email,
+      first_name: formValues.first_name,
+      last_name: formValues.surname,
+      username: `${formValues.first_name.toLowerCase()}.${formValues.surname.toLowerCase()}`,
+      billing: buildBillingDetails(formValues),
+      shipping: buildShippingDetails(formValues),
+      is_paying_customer: true,
+    };
+
+    const options = {
+      method: "POST",
+      url: "http://127.0.0.1/customers",
+      data: JSON.stringify({ dataCustomer }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    return axios.request(options);
+  };
+
+  const createOrder = (dataOrder) => {
+    const options = {
+      method: "POST",
+      url: "http://127.0.0.1/orders",
+      data: JSON.stringify({ dataOrder }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    return axios.request(options);
+  };
+
+  const handlePlaceOrder = (orderId) => {
     form
       .validateFields()
       .then(() => {
         const formValues = form.getFieldsValue();
+        const userId = localStorage.getItem("user")
+          ? parseInt(JSON.parse(localStorage.getItem("user")).ID)
+          : 0;
+        const meta_data = products
+          .map((p) =>
+            p.product_extras !== ""
+              ? formatMetaFromExtras(p.product_extras)
+              : ""
+          )
+          .pop();
+        const dataOrder = buildOrderData(
+          formValues,
+          userId,
+          orderId,
+          meta_data,
+          createAccount
+        );
 
-        const userLocalStorageData = localStorage.getItem("user");
-        let userId;
-
-        if (userLocalStorageData)
-          userId = parseInt(JSON.parse(localStorage.getItem("user")).ID);
-        else userId = 0;
-
-        let dataOrder;
-
-        if (formValues.first_name_other) {
-          dataOrder = {
-            payment_method: paymentMethod.value,
-            payment_method_title: paymentMethod.label,
-            set_paid: paymentMethod.label == "PayPal" ? true : false,
-            status: paymentMethod.label == "PayPal" ? "processing" : "on-hold",
-            customer_id: userId,
-            transaction_id: orderId != undefined ? orderId : "",
-            prices_include_tax: true,
-            billing: {
-              first_name: formValues.first_name,
-              last_name: formValues.surname,
-              company: formValues.company !== "" ? formValues.company : "",
-              address_1: formValues.address,
-              address_2: "",
-              city: formValues.local,
-              state: formValues.district,
-              postcode: formValues.postcode,
-              country: formValues.country == 2 ? "PT" : "",
-              email: formValues.email,
-              phone: formValues.phone,
-            },
-            shipping: {
-              first_name: formValues.first_name_other,
-              last_name: formValues.surname_other,
-              company: formValues.company !== "" ? formValues.company : "",
-              address_1: formValues.address_other,
-              address_2: "",
-              city: formValues.local_other,
-              state: formValues.district_other,
-              postcode: formValues.postcode_other,
-              country: formValues.country_other == 2 ? "PT" : "",
-            },
-            line_items: products.map((p) => ({
-              product_id: p.product_id,
-              quantity: p.product_qty,
-              total: p.product_net_revenue,
-              meta_data: meta_data,
-              tax_class: "",
-            })),
-            shipping_lines: [
-              {
-                method_id:
-                  shippingCost.toString() == 0 ? "free_shipping" : "flat_rate",
-                method_title: shippingTitle,
-                total: shippingCost.toString(),
-              },
-            ],
-          };
-        } else {
-          dataOrder = {
-            payment_method: paymentMethod.value,
-            payment_method_title: paymentMethod.label,
-            set_paid: paymentMethod.label == "PayPal" ? true : false,
-            status: paymentMethod.label == "PayPal" ? "processing" : "on-hold",
-            customer_id: userId,
-            transaction_id: orderId != undefined ? orderId : "",
-            prices_include_tax: true,
-            billing: {
-              first_name: formValues.first_name,
-              last_name: formValues.surname,
-              company: formValues.company !== "" ? formValues.company : "",
-              address_1: formValues.address,
-              address_2: "",
-              city: formValues.local,
-              state: formValues.district,
-              postcode: formValues.postcode,
-              country: formValues.country == 2 ? "PT" : "",
-              email: formValues.email,
-              phone: formValues.phone,
-            },
-            shipping: {
-              first_name: formValues.first_name,
-              last_name: formValues.surname,
-              company: formValues.company !== "" ? formValues.company : "",
-              address_1: formValues.address,
-              address_2: "",
-              city: formValues.local,
-              state: formValues.district,
-              postcode: formValues.postcode,
-              country: formValues.country == 2 ? "PT" : "",
-            },
-            line_items: products.map((p) => ({
-              product_id: p.product_id,
-              quantity: p.product_qty,
-              total: p.product_net_revenue,
-              meta_data: meta_data,
-              tax_class: "",
-            })),
-            shipping_lines: [
-              {
-                method_id:
-                  shippingCost.toString() == 0 ? "free_shipping" : "flat_rate",
-                method_title: shippingTitle,
-                total: shippingCost.toString(),
-              },
-            ],
-          };
-        }
-
-        const options = {
-          method: "POST",
-          url: `http://127.0.0.1/orders`,
-          data: JSON.stringify({ dataOrder }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        };
-
-        axios
-          .request(options)
+        createOrder(dataOrder)
           .then(function (response) {
-            const options = {
+            const deleteCartOptions = {
               method: "DELETE",
               url: `http://127.0.0.1/temp_cart_delete_on_order?cartId=${cartId}`,
             };
 
             axios
-              .request(options)
-              .then(function (response) {
+              .request(deleteCartOptions)
+              .then(function () {
                 updateProductsNr(0);
                 setProductsCart([]);
                 setProducts([]);
 
                 if (createAccount) {
-                  const dataCustomer = {
-                    email: formValues.email,
-                    first_name: formValues.first_name,
-                    last_name: formValues.surname,
-                    username:
-                      formValues.first_name.toLowerCase() +
-                      "." +
-                      formValues.surname.toLowerCase(),
-                    billing: {
-                      first_name: formValues.first_name,
-                      last_name: formValues.surname,
-                      company:
-                        formValues.company !== "" ? formValues.company : "",
-                      address_1: formValues.address,
-                      address_2: "",
-                      city: formValues.local,
-                      state: formValues.district,
-                      postcode: formValues.postcode,
-                      country: formValues.country == 2 ? "PT" : "",
-                      email: formValues.email,
-                      phone: formValues.phone,
-                    },
-                    shipping: {
-                      first_name: formValues.first_name,
-                      last_name: formValues.surname,
-                      company:
-                        formValues.company !== "" ? formValues.company : "",
-                      address_1: formValues.address,
-                      address_2: "",
-                      city: formValues.local,
-                      state: formValues.district,
-                      postcode: formValues.postcode,
-                      country: formValues.country == 2 ? "PT" : "",
-                    },
-                    is_paying_customer: true,
-                  };
-
-                  const options = {
-                    method: "POST",
-                    url: `http://127.0.0.1/customers`,
-                    data: JSON.stringify({ dataCustomer }),
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                  };
-
-                  axios
-                    .request(options)
+                  createCustomer(formValues)
                     .then(function (response) {
                       setMessage(
-                        "A sua conta foi criada com sucesso! Pode efectuar o login com o seu nome de utilizador gerado (" +
+                        "A sua conta foi criada com sucesso! Pode efetuar o login com o seu nome de utilizador gerado (" +
                           formValues.first_name.toLowerCase() +
                           "." +
                           formValues.surname.toLowerCase() +
@@ -455,14 +401,14 @@ const Checkout = () => {
                       setMessage(
                         "Houve um erro na criação da conta. Por favor envie e-mail para geral@petplushies.pt para notificar do sucedido. (" +
                           error.response.data +
-                          ".)"
+                          ")."
                       );
                       setStatus("error");
                       setIsModalOpen(true);
                     });
                 } else {
                   setMessage(
-                    "Encomenda efectuada com sucesso! Vai receber um e-mail com os detalhes da encomenda e do seu pagamento."
+                    "Encomenda efetuada com sucesso! Vai receber um e-mail com os detalhes da encomenda e do seu pagamento."
                   );
                   setStatus("success");
                   setIsModalOpen(true);
@@ -474,7 +420,7 @@ const Checkout = () => {
               })
               .catch(function (error) {
                 setMessage(
-                  "Houve um erro ao efectuar a encomenda. (" + error + ".)"
+                  "Houve um erro ao efetuar a encomenda. (" + error + ")."
                 );
                 setStatus("error");
                 setIsModalOpen(true);
@@ -649,7 +595,7 @@ const Checkout = () => {
 
 const Spinner = styled(Spin)`
   position: absolute;
-  background-color: white;
+  background-color: var(--white);
   width: 100%;
   height: 500px;
   left: 0;
@@ -662,7 +608,7 @@ const Spinner = styled(Spin)`
 
 const Container = styled.div`
   width: 100%;
-  background-color: white;
+  background-color: var(--white);
 `;
 
 const Content = styled(Row)`
@@ -691,7 +637,7 @@ const StyledTable = styled(Table)`
   && {
     & .ant-table-thead > tr > th {
       background-color: transparent;
-      border-color: black;
+      border-color: var(--black);
 
       &:before {
         display: none;
@@ -703,7 +649,7 @@ const StyledTable = styled(Table)`
     }
 
     & .ant-table-cell {
-      border-color: black;
+      border-color: var(--black);
     }
   }
 `;
@@ -715,7 +661,7 @@ const Title = styled.p`
 const Border = styled.div`
   height: 1px;
   width: 100%;
-  background-color: black;
+  background-color: var(--black);
   margin-bottom: 30px;
 `;
 

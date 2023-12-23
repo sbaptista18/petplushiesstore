@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Row } from "antd";
+import PropTypes from "prop-types";
 
 import { LazyImage } from "fragments";
 
@@ -18,6 +19,12 @@ const PageHeader = ({ title, img, alt }) => {
       <StyledBottomBar />
     </Container>
   );
+};
+
+PageHeader.propTypes = {
+  title: PropTypes.string,
+  img: PropTypes.string,
+  alt: PropTypes.string,
 };
 
 const StyledBottomBar = styled(BottomBar)`
@@ -59,7 +66,7 @@ const ContentLocked = styled(Content)`
 const StyledH1 = styled.h1`
   margin-top: 30px;
   font-size: 52px;
-  color: white;
+  color: var(--white);
 `;
 
 export default PageHeader;

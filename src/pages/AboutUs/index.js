@@ -163,7 +163,7 @@ const StyledTopBar = styled(StyledBottomBar)`
 
 const HighlightSection = styled(Content)`
   height: auto;
-  background-color: lightblue;
+  background-color: var(--light-blue);
   padding-top: 100px;
   padding-bottom: 100px;
   position: relative;
@@ -182,7 +182,7 @@ const StyledH2 = styled.h2`
 
 const Container = styled.div`
   width: 100%;
-  background-color: white;
+  background-color: var(--white);
 `;
 
 const TextContainer = styled(Col)`
