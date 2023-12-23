@@ -39,30 +39,23 @@ const Homepage = () => {
 
   const fetchFeaturedProducts = async () => {
     try {
-      const options = {
-        method: "GET",
-        url: "http://127.0.0.1/products",
-      };
-
-      const response = await axios.request(options);
-      const data = response.data;
+      const response = await fetch(
+        "https://backoffice.petplushies.pt/wp-json/wc/v3/get_featured_products"
+      );
+      const data = await response.json();
 
       if (data.length === 0) {
         setNoResults(true);
       } else {
-        const featured_products = data.filter(
-          (product) => product.featured === true
-        );
-
-        const mappedFeaturedProducts = featured_products.map((item) => ({
+        const mappedFeaturedProducts = data.map((item) => ({
           id: item.id,
           name: item.name,
           price: _.toNumber(item.price),
           stock: item.stock_quantity,
           stock_status: item.stock_status,
-          picture: item.images[0].src,
+          picture: item.main_image_url,
           url: item.slug,
-          category: item.categories[0].slug,
+          category: item.categories,
         }));
 
         setFeaturedProducts(mappedFeaturedProducts);

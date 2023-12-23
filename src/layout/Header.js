@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { Layout, Menu, Col } from "antd";
 import { useState, useEffect } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
-import axios from "axios";
 
 import { useCart, CreateCartKey } from "reducers";
 import {
@@ -56,55 +55,48 @@ const PPS_Header = () => {
   const location = useLocation();
 
   const fetchCartId = async (sessionKey) => {
-    const options = {
-      method: "GET",
-      url: `http://127.0.0.1/temp_carts/session?id=${sessionKey}`,
-    };
-
-    axios
-      .request(options)
-      .then(function (response) {
-        if (response.data.results.length != 0) {
-          setSessionKeyAndCartId(sessionKey, response.data.results[0].id);
-          fetchCartProducts(response.data.results[0].id);
-        }
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
+    try {
+      const response = await fetch(
+        `https://backoffice.petplushies.pt/wp-json/wc/v3/temp_carts?id=${sessionKey}`
+      );
+      const data = await response.json();
+      if (data.length != 0) {
+        setSessionKeyAndCartId(sessionKey, data[0].id);
+        fetchCartProducts(data[0].id);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const fetchCartProducts = async (cartId) => {
-    const options = {
-      method: "GET",
-      url: `http://127.0.0.1/temp_cart_products_id?cartId=${cartId}`,
-    };
+    try {
+      const response = await fetch(
+        `https://backoffice.petplushies.pt/wp-json/wc/v3/temp_cart_products_id?cartId=${cartId}`
+      );
+      const data = await response.json();
 
-    axios
-      .request(options)
-      .then(function (response) {
-        if (response.data.results != undefined) {
-          if (response.data.results.length == 1) {
-            updateProductsNr(response.data.results[0].product_qty);
-          } else {
-            const orderItems = response.data.results;
-            let totalProductQty = 0;
-
-            for (const orderItem of orderItems) {
-              totalProductQty += parseInt(orderItem.product_qty, 10);
-            }
-
-            updateProductsNr(totalProductQty);
-
-            setUpdateHeader((prev) => !prev);
-          }
+      if (data != undefined) {
+        if (data.length == 1) {
+          updateProductsNr(data[0].product_qty);
         } else {
-          updateProductsNr(0);
+          const orderItems = data;
+          let totalProductQty = 0;
+
+          for (const orderItem of orderItems) {
+            totalProductQty += parseInt(orderItem.product_qty, 10);
+          }
+
+          updateProductsNr(totalProductQty);
+
+          setUpdateHeader((prev) => !prev);
         }
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
+      } else {
+        updateProductsNr(0);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
