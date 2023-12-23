@@ -14,6 +14,7 @@ const AddToCart = ({
   flag,
   stock,
   onClick,
+  loading,
   onDataFromChild,
   variations,
   onUpdateTotalPrice,
@@ -196,6 +197,7 @@ const AddToCart = ({
           type="primary"
           text="Adicionar ao carrinho"
           onClick={onClick}
+          loading={loading}
           disabled={stock === "outofstock"}
         />
       </InputContainer>
@@ -216,6 +218,7 @@ AddToCart.propTypes = {
   onPetName: PropTypes.func,
   onShelter: PropTypes.func,
   onChosenVariations: PropTypes.func,
+  loading: PropTypes.bool,
 };
 
 const FormRow = styled(Row)`

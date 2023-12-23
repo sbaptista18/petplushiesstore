@@ -46,6 +46,7 @@ const Product = () => {
   const [product, setProduct] = useState([]);
   const { productUrl } = useParams();
   const [loading, setLoading] = useState(true);
+  const [loadingAddToCart, setLoadingAddToCart] = useState(false);
   const [loadingReviews, setLoadingReviews] = useState(true);
   const [error, setError] = useState(false);
   const [errorReviews, setErrorReviews] = useState(false);
@@ -236,6 +237,7 @@ const Product = () => {
   };
 
   const addToCart = async (product) => {
+    setLoadingAddToCart(true);
     let productExtras = "";
 
     const variationsString = formatVariations(
@@ -268,16 +270,17 @@ const Product = () => {
 
       try {
         const response = await axios.request(options1);
-        console.log(response);
         setMessage("O produto foi adicionado ao carrinho!");
         setStatus("success");
         setIsModalOpen(true);
+        setLoadingAddToCart(false);
       } catch (error) {
         setMessage(
           `Houve um erro ao adicionar o produto ao carrinho. (${error}.)`
         );
         setStatus("error");
         setIsModalOpen(true);
+        setLoadingAddToCart(false);
       }
     } else {
       const storedUserData = localStorage.getItem("user");
@@ -342,6 +345,7 @@ const Product = () => {
               setMessage("O produto foi adicionado ao carrinho!");
               setStatus("success");
               setIsModalOpen(true);
+              setLoadingAddToCart(false);
             })
             .catch(function (error) {
               setMessage(
@@ -351,6 +355,7 @@ const Product = () => {
               );
               setStatus("error");
               setIsModalOpen(true);
+              setLoadingAddToCart(false);
             });
         })
         .catch(function (error) {
@@ -360,6 +365,7 @@ const Product = () => {
           );
           setStatus("error");
           setIsModalOpen(true);
+          setLoadingAddToCart(false);
         });
     }
   };
@@ -495,6 +501,7 @@ const Product = () => {
                 <Col span={11}>
                   <AddToCart
                     onClick={() => addToCart(product)}
+                    loading={loadingAddToCart}
                     sku={product.sku}
                     price={product.price}
                     stock={product.stock_status}

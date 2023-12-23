@@ -124,7 +124,7 @@ const PPS_Header = () => {
       } else {
         api_call_count++;
 
-        if (api_call_count <= 1) {
+        if (api_call_count < 1) {
           fetchCartId(key);
         }
       }

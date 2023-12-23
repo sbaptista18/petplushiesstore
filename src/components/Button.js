@@ -1,17 +1,18 @@
 import styled from "styled-components";
-import { Button } from "antd";
+import { Button, Spin } from "antd";
 import PropTypes from "prop-types";
 
-const Btn = ({ size, type, color, text, disabled, ...rest }) => {
+const Btn = ({ size, type, color, text, disabled, loading, ...rest }) => {
   return (
     <StyledButton
       disabled={disabled}
       size={size}
       type={type}
       className={color}
+      // loading={loading}
       {...rest}
     >
-      <span>{text}</span>
+      {loading ? <Spin /> : <span>{text}</span>}
     </StyledButton>
   );
 };
@@ -22,6 +23,7 @@ Btn.propTypes = {
   color: PropTypes.string,
   text: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
+  loading: PropTypes.bool,
 };
 
 const StyledButton = styled(Button)`

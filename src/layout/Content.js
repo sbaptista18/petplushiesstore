@@ -3,11 +3,14 @@ import pages from "pages";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
+import { ScrollToTop } from "fragments";
+
 const Content = () => {
   const location = useLocation();
 
   return (
     <Container location={location.pathname}>
+      <ScrollToTop />
       <Switch>
         {pages.map((props) => (
           <Route {...props} key={props.path} />
