@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { Row, Col, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import axios from "axios";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 

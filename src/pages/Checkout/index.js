@@ -55,19 +55,15 @@ const Checkout = () => {
     const user = JSON.parse(storedUserString);
 
     const fetchCustomerData = async (userId) => {
-      const options = {
-        method: "GET",
-        url: `http://127.0.0.1/customers?userId=${userId}`,
-      };
-
-      axios
-        .request(options)
-        .then(function (response) {
-          setUserPersonalData(response.data);
-        })
-        .catch(function (error) {
-          console.error(error);
-        });
+      try {
+        const response = await fetch(
+          `https://backoffice.petplushies.pt/wp-json/wc/v3/get_customer_data?userId=${userId}`
+        );
+        const responseData = await response.json();
+        setUserPersonalData(responseData);
+      } catch (error) {
+        setError(true);
+      }
     };
 
     if (storedUserString) {
@@ -76,24 +72,33 @@ const Checkout = () => {
   }, []);
 
   const fetchCartId = async (cartId) => {
-    const options = {
-      method: "GET",
-      url: `http://127.0.0.1/temp_carts/id?id=${cartId}`,
-    };
-
-    axios
-      .request(options)
-      .then(function (response) {
-        if (response.data.results != undefined) {
-          fetchCartProducts(response.data.results[0].id);
-        } else {
-          setLoading(true);
-        }
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
+    try {
+      const response = await fetch(
+        `https://backoffice.petplushies.pt/wp-json/wc/v3/get_temp_cart_by_id?id=${cartId}`
+      );
+      const data = await response.json();
+      console.log(data);
+      if (data.length != 0) {
+        fetchCartProducts(data[0].id);
+      } else {
+        setLoading(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
+
+  /**
+   *
+   *
+   *
+   *
+   * CONTINUE HERE
+   *
+   *
+   *
+   *
+   */
 
   const fetchCartProducts = async (cartId) => {
     const options = {

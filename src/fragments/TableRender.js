@@ -19,19 +19,20 @@ const Image = ({ image }) => {
 const tableColumns = (onQuantityChange, onDelete) => [
   {
     title: "Imagem",
-    dataIndex: "product",
+    dataIndex: "main_image_url",
     key: "image",
     render: (record, _, recordIndex) => {
-      return <Image image={record.images[0].src} recordIndex={recordIndex} />;
+      return <Image image={record} recordIndex={recordIndex} />;
     },
   },
   {
     title: "Nome",
-    dataIndex: "product",
     key: "name",
-    render: (record, _, recordIndex) => (
-      <Text text={record.name} slug={record.slug} recordIndex={recordIndex} />
-    ),
+    render: (record, _, recordIndex) => {
+      return (
+        <Text text={record.name} slug={record.slug} recordIndex={recordIndex} />
+      );
+    },
   },
   {
     title: "Extras",
@@ -43,16 +44,15 @@ const tableColumns = (onQuantityChange, onDelete) => [
   },
   {
     title: "Quantidade",
-    dataIndex: "product_qty",
     key: "qty",
     render: (record, _, recordIndex) => {
       return (
         <InputNumber
           min={1}
           max={10}
-          defaultValue={record}
+          defaultValue={record.product_qty}
           onChange={(value) =>
-            onQuantityChange(value, recordIndex, _.product_id, _.product.price)
+            onQuantityChange(value, recordIndex, record.id, record.price)
           }
         />
       );

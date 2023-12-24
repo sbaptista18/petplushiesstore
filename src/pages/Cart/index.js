@@ -3,7 +3,6 @@ import { Row, Col, Table, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
 
 import { Button, ModalMessage, PageHeader } from "components";
 import { tableColumns } from "fragments";
@@ -29,25 +28,6 @@ const Cart = () => {
 
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
-
-  const axiosRequest = async (method, url, data = null) => {
-    const options = {
-      method,
-      url,
-      data: data ? JSON.stringify(data) : null,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    try {
-      const response = await axios.request(options);
-      return response.data;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  };
 
   const calculateTotalNetRevenue = (items) => {
     return items.reduce(
@@ -86,50 +66,32 @@ const Cart = () => {
   }, [productsCart]);
 
   const fetchCartProducts = async (cartId) => {
-    const url = `http://127.0.0.1/temp_cart_products_id?cartId=${cartId}`;
-
-    const response = await axiosRequest("GET", url);
-
-    if (response && response.length !== 0) {
-      const updatedProducts = await fetchProducts(response.results);
-
-      const initialTotal = calculateTotalNetRevenue(updatedProducts);
-
-      setProductsCart(response.results);
-      setProducts(updatedProducts);
-      setTotalProductNetRevenue(initialTotal);
-      setLoading(false);
-    } else {
-      setLoading(false);
-      setProductsCart([]);
-      setProducts([]);
-      setTotalProductNetRevenue(0);
-    }
-  };
-
-  const fetchProducts = async (data) => {
-    const promises = data.map((cartItem) => {
-      const url = `http://127.0.0.1/products/id?id=${cartItem.product_id}`;
-      return axiosRequest("GET", url)
-        .then((response) => ({ cartItem, product: response }))
-        .catch((error) => ({ error: error.response.data }));
-    });
-
     try {
-      const responses = await Promise.all(promises);
-      const combinedProducts = responses.map(({ cartItem, product }) => ({
-        ...cartItem,
-        product,
-      }));
-      return combinedProducts;
+      const response = await fetch(
+        `https://backoffice.petplushies.pt/wp-json/wc/v3/temp_cart_products_id?cartId=${cartId}`
+      );
+      const data = await response.json();
+
+      if (data && data.length !== 0) {
+        const initialTotal = calculateTotalNetRevenue(data);
+
+        setProductsCart(data);
+        setProducts(data);
+        setTotalProductNetRevenue(initialTotal);
+        setLoading(false);
+      } else {
+        setLoading(false);
+        setProductsCart([]);
+        setProducts([]);
+        setTotalProductNetRevenue(0);
+      }
     } catch (error) {
       setError(true);
-      setProducts([]);
-      return [];
+      console.error(error);
     }
   };
 
-  const updateCartProducts = (cartId, product_id, qty, product_price) => {
+  const updateCartProducts = async (cartId, product_id, qty, product_price) => {
     const dataProduct = {
       temp_cart_id: cartId,
       product_id: product_id,
@@ -138,41 +100,46 @@ const Cart = () => {
       product_net_revenue: product_price * qty,
     };
 
-    const url = `http://127.0.0.1/temp_cart_products_id`;
-
-    axiosRequest("POST", url, { dataProduct })
-      .then(function (response) {
-        setMessage("Produto actualizado!");
-        setStatus("success");
-        setIsModalOpen(true);
-      })
-      .catch(function (error) {
-        setMessage("Houve um erro ao actualizar o produto. (" + error + ".)");
-        setStatus("error");
-        setIsModalOpen(true);
-      });
+    try {
+      const response = await fetch(
+        "https://backoffice.petplushies.pt/wp-json/wc/v3/update_cart_product",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ dataProduct }),
+        }
+      );
+      const responseData = await response.json();
+      setMessage(responseData.success);
+      setStatus("success");
+      setIsModalOpen(true);
+    } catch (error) {
+      setMessage(`${responseData.error} (" + ${error} + ".)`);
+      setStatus("error");
+      setIsModalOpen(true);
+    }
   };
 
-  const deleteCartProducts = (cartId, product_id) => {
-    const options = {
-      method: "DELETE",
-      url: `http://127.0.0.1/temp_cart_products_delete?cartId=${cartId}&prodId=${product_id}`,
-    };
+  const deleteCartProducts = async (cartId, product_id) => {
+    try {
+      const response = await fetch(
+        `https://backoffice.petplushies.pt/wp-json/wc/v3/delete_cart_product?cartId=${cartId}&prodId=${product_id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
-    axios
-      .request(options)
-      .then(function (response) {
-        setMessage("Produto apagado do carrinho!");
-        setStatus("success");
-        setIsModalOpen(true);
-      })
-      .catch(function (error) {
-        setMessage(
-          "Houve um erro ao apagar o produto do carrinho. (" + error + ".)"
-        );
-        setStatus("error");
-        setIsModalOpen(true);
-      });
+      const responseData = await response.json();
+      setMessage(responseData.success);
+      setStatus("success");
+      setIsModalOpen(true);
+    } catch (error) {
+      setMessage(`${responseData.error} (" + ${error} + ".)`);
+      setStatus("error");
+      setIsModalOpen(true);
+    }
   };
 
   const handleQuantityChange = (
@@ -268,7 +235,7 @@ const Cart = () => {
                     columns={tableColumns(handleQuantityChange, handleDelete)}
                     dataSource={products}
                     pagination={false}
-                    rowKey="product_id"
+                    rowKey="id"
                     locale={{ emptyText: <CustomNoData /> }}
                   />
                 )}
