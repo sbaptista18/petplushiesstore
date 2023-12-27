@@ -126,7 +126,6 @@ const StyledFooter = styled(Footer)`
   padding: 20px 65px;
   padding-top: 100px;
   background-color: var(--dark-gray);
-  margin-top: 35px;
   position: relative;
   color: var(--white);
 

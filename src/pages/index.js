@@ -1,5 +1,6 @@
 import AboutUs from "./AboutUs";
 import Blog from "./Blog";
+import BlogPost from "./Blog/BlogPost";
 import Cart from "./Cart";
 import ContactUs from "./ContactUs";
 import FAQ from "./FAQ";
@@ -20,6 +21,7 @@ import Orders from "./MyAccount/Orders";
 export default [
   AboutUs,
   Blog,
+  BlogPost,
   Cart,
   ContactUs,
   FAQ,

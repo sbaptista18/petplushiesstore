@@ -1,24 +1,42 @@
 import styled from "styled-components";
-import { Row } from "antd";
+import { Row, Col, Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 
-import { PageHeader } from "components";
+import { PageHeader, TilePosts } from "components";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
 const Blog = () => {
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [noResults, setNoResults] = useState(false);
+  const [message, setMessage] = useState("");
 
   const fetchBlogPosts = async () => {
     try {
       const response = await fetch(
-        "https://backoffice.petplushies.pt/wp-json/custom/v1/blog-posts"
+        "https://backoffice.petplushies.pt/wp-json/custom/v1/get_blog_posts"
       );
-      const blogPosts = await response.json();
+      const data = await response.json();
 
-      console.log(blogPosts);
+      if (data.success) {
+        if (data.data.length > 0) {
+          setPosts(data.data);
+        } else {
+          setNoResults(true);
+        }
+        setLoading(false);
+      } else {
+        setError(true);
+        setLoading(false);
+        setMessage(data.message);
+      }
     } catch (error) {
-      console.error("Error fetching the blog posts:", error);
+      setErrorPosts(true);
+      setLoadingPosts(false);
+      setMessagePosts(data.message);
     }
   };
 
@@ -30,11 +48,49 @@ const Blog = () => {
     <>
       <PageHeader title="Blog" img={DummyImg} alt="Blog - Pet Plusies" />
       <Container>
-        <ContentLocked></ContentLocked>
+        <ContentLocked>
+          <div>
+            <VerticalContent>
+              <FeaturedContainer>
+                {loading && !error && (
+                  <Spinner
+                    indicator={
+                      <LoadingOutlined style={{ fontSize: 50 }} spin />
+                    }
+                  />
+                )}
+                {error && !loading && !noResults && <>{message}</>}
+                {!error && !loading && noResults && <>{message}</>}
+                {!error &&
+                  !loading &&
+                  !noResults &&
+                  posts.map((p) => (
+                    <TilePosts
+                      key={p.ID}
+                      id={p.ID}
+                      name={p.post_title}
+                      picture={p.post_image_url}
+                      url={p.post_name}
+                      category={p.categories[0]}
+                      excerpt={p.post_excerpt}
+                      size="large"
+                    />
+                  ))}
+              </FeaturedContainer>
+            </VerticalContent>
+          </div>
+        </ContentLocked>
       </Container>
     </>
   );
 };
+
+const Spinner = styled(Spin)`
+  background-color: var(--white);
+  width: 100%;
+  height: 100%;
+  position: relative;
+`;
 
 const Container = styled.div`
   width: 100%;
@@ -51,6 +107,20 @@ const ContentLocked = styled(Content)`
   max-width: 1440px;
   margin: auto;
   min-height: 500px;
+`;
+
+const VerticalContent = styled(Row)`
+  padding: 30px 0;
+  display: flex;
+  flex-direction: column;
+`;
+
+const FeaturedContainer = styled(Row)`
+  min-height: 500px;
+  display: flex;
+  position: relative;
+  align-items: center;
+  flex-wrap: wrap;
 `;
 
 export default {

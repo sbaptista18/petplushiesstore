@@ -4,7 +4,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import { Slideshow, TileNoInput, Button } from "components";
+import { Slideshow, TileNoInput, Button, TilePosts } from "components";
 import { LazyImage } from "fragments";
 
 import { data } from "./slideshow_data";
@@ -13,14 +13,21 @@ import Img from "assets/images/batcat-1.jpg";
 import BottomBar from "assets/images/bottom-bar.svg";
 
 const Homepage = () => {
+  const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [noResults, setNoResults] = useState(false);
+  const [message, setMessage] = useState("");
 
-  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [posts, setPosts] = useState([]);
+  const [loadingPosts, setLoadingPosts] = useState(true);
+  const [errorPosts, setErrorPosts] = useState(false);
+  const [noResultsPosts, setNoResultsPosts] = useState(false);
+  const [messagePosts, setMessagePosts] = useState("");
 
   useEffect(() => {
     fetchFeaturedProducts();
+    fetchBlogPosts();
   }, []);
 
   const flagText = (stock, status) => {
@@ -43,26 +50,58 @@ const Homepage = () => {
       );
       const data = await response.json();
 
-      if (data.length === 0) {
-        setNoResults(true);
-      } else {
-        const mappedFeaturedProducts = data.map((item) => ({
-          id: item.id,
-          name: item.name,
-          price: _.toNumber(item.price),
-          stock: item.stock_quantity,
-          stock_status: item.stock_status,
-          picture: item.main_image_url,
-          url: item.slug,
-          category: item.categories,
-        }));
+      if (data.success) {
+        if (data.data === 0) {
+          setNoResults(true);
+          setMessage(data.message);
+        } else {
+          const mappedFeaturedProducts = data.data.map((item) => ({
+            id: item.id,
+            name: item.name,
+            price: _.toNumber(item.price),
+            stock: item.stock_quantity,
+            stock_status: item.stock_status,
+            picture: item.main_image_url,
+            url: item.slug,
+            category: item.categories,
+          }));
 
-        setFeaturedProducts(mappedFeaturedProducts);
+          setFeaturedProducts(mappedFeaturedProducts);
+        }
+      } else {
+        setNoResults(true);
+        setMessage(data.message);
       }
     } catch (error) {
       setError(true);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchBlogPosts = async () => {
+    try {
+      const response = await fetch(
+        "https://backoffice.petplushies.pt/wp-json/custom/v1/get_featured_blog_posts"
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        if (data.data.length > 0) {
+          setPosts(data.data);
+        } else {
+          setNoResultsPosts(true);
+        }
+        setLoadingPosts(false);
+      } else {
+        setErrorPosts(true);
+        setLoadingPosts(false);
+        setMessagePosts(data.message);
+      }
+    } catch (error) {
+      setErrorPosts(true);
+      setLoadingPosts(false);
+      setMessagePosts(data.message);
     }
   };
 
@@ -87,7 +126,7 @@ const Homepage = () => {
               <Row>
                 <StyledH2Center>As nossas sugestões</StyledH2Center>
               </Row>
-              <FeaturedProductsContainer>
+              <FeaturedContainer>
                 {loading && !error && (
                   <Spinner
                     indicator={
@@ -95,12 +134,8 @@ const Homepage = () => {
                     }
                   />
                 )}
-                {error && !loading && !noResults && (
-                  <>Erro ao carregar a lista de produtos.</>
-                )}
-                {!error && !loading && noResults && (
-                  <>Não há resultados para o filtro seleccionado.</>
-                )}
+                {error && !loading && !noResults && <>{message}</>}
+                {!error && !loading && noResults && <>{message}</>}
                 {!error && !loading && !noResults && (
                   <>
                     {featuredProducts.map((p) => (
@@ -117,7 +152,7 @@ const Homepage = () => {
                     ))}
                   </>
                 )}
-              </FeaturedProductsContainer>
+              </FeaturedContainer>
             </VerticalContent>
           </div>
         </ContentLocked>
@@ -163,9 +198,37 @@ const Homepage = () => {
           <div>
             <VerticalContent>
               <Row>
-                <StyledH2Center>Últimas notícias</StyledH2Center>
+                <StyledH2Center>Últimas novidades!</StyledH2Center>
               </Row>
-              <Row>Últimos posts do blog</Row>
+              <FeaturedContainer>
+                {loadingPosts && !errorPosts && (
+                  <Spinner
+                    indicator={
+                      <LoadingOutlined style={{ fontSize: 50 }} spin />
+                    }
+                  />
+                )}
+                {errorPosts && !loadingPosts && !noResultsPosts && (
+                  <>{messagePosts}</>
+                )}
+                {!errorPosts && !loadingPosts && noResultsPosts && (
+                  <>{messagePosts}</>
+                )}
+                {!errorPosts &&
+                  !loadingPosts &&
+                  !noResultsPosts &&
+                  posts.map((p) => (
+                    <TilePosts
+                      key={p.ID}
+                      id={p.ID}
+                      name={p.post_title}
+                      picture={p.post_image_url}
+                      url={p.post_name}
+                      category={p.categories[0]}
+                      excerpt={p.post_excerpt}
+                    />
+                  ))}
+              </FeaturedContainer>
             </VerticalContent>
           </div>
         </ContentLocked>
@@ -254,7 +317,7 @@ const VerticalContent = styled(Row)`
   flex-direction: column;
 `;
 
-const FeaturedProductsContainer = styled(Row)`
+const FeaturedContainer = styled(Row)`
   min-height: 500px;
   display: flex;
   justify-content: space-between;
