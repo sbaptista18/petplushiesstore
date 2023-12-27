@@ -3,7 +3,6 @@ import { Row, Col, Spin, Form, Input, InputNumber } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import moment from "moment";
 
 import { useCart } from "reducers";
@@ -24,6 +23,8 @@ import {
   Button,
   PageHeaderProduct,
 } from "components";
+
+moment.locale("pt");
 
 const flagText = (stock, status) => {
   let text;
@@ -66,6 +67,8 @@ const Product = () => {
   const [reviewerEmail, setReviewerEmail] = useState("");
   const [errorRating, setErrorRating] = useState("");
   const [reviews, setReviews] = useState([]);
+  const [avgRating, setAvgRating] = useState(0);
+  const [totalReviews, setTotalReviews] = useState(0);
 
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
@@ -99,96 +102,105 @@ const Product = () => {
 
   useEffect(() => {
     const fetchProduct = async () => {
-      const options = {
-        method: "GET",
-        url: `http://127.0.0.1/product/product_slug?product_slug=${productUrl}`,
-      };
+      try {
+        const response = await fetch(
+          `https://backoffice.petplushies.pt/wp-json/wc/v3/get_product_by_slug?slug=${productUrl}`
+        );
+        const data = await response.json();
 
-      axios
-        .request(options)
-        .then((response) => {
-          const productMainDetails = response.data.results.product_main_details;
-          const productDetails = response.data.results.product_details;
-          const productImages = response.data.results.product_images;
-          const productVariations = response.data.results.product_variations;
+        const productMainDetails = data.results.product_main_details[0];
+        const productDetails = data.results.product_details;
+        const productImages = data.results.product_images;
+        const productVariations = data.results.product_variations;
 
-          if (productVariations === undefined) {
-            setVariations(null);
-          } else {
-            setVariations(productVariations);
-          }
+        if (productVariations === undefined) {
+          setVariations(null);
+        } else {
+          setVariations(productVariations);
+        }
 
-          // Define the gallery array
-          const urls = productImages.map((image) => image.guid);
+        // Define the gallery array
+        const urls = productImages.map((image) => image.guid);
 
-          // price
-          const productPrice = productDetails.find(
-            (meta) => meta.meta_key === "_price"
+        // price
+        const productPrice = productDetails.find(
+          (meta) => meta.meta_key === "_price"
+        );
+
+        // stock
+        const productStock = productDetails.find(
+          (meta) => meta.meta_key === "_stock"
+        );
+        const productStockStatus = productDetails.find(
+          (meta) => meta.meta_key === "_stock_status"
+        );
+
+        // sku
+        const productSKU = productDetails.find(
+          (meta) => meta.meta_key === "_sku"
+        );
+
+        // weight
+        const productWeight = productDetails.find(
+          (meta) => meta.meta_key === "_weight"
+        );
+
+        const productData = {
+          id: productMainDetails.ID,
+          name: productMainDetails.post_title,
+          price: _.toNumber(productPrice.meta_value),
+          picture: urls[0],
+          slideshow: urls,
+          stock: productStock.meta_value,
+          stock_status: productStockStatus.meta_value,
+          flag: flagText(
+            productStock.meta_value,
+            productStockStatus.meta_value
+          ),
+          url: productMainDetails.post_name,
+          desc: productMainDetails.post_content,
+          desc_short: productMainDetails.post_excerpt,
+          sku: productSKU.meta_value.toString(),
+          weight: productWeight.meta_value,
+        };
+
+        setProduct(productData);
+
+        try {
+          const response = await fetch(
+            `https://backoffice.petplushies.pt/wp-json/wc/v3/get_reviews?prodId=${productMainDetails.ID}`
           );
+          const data = await response.json();
+          if (data.success) {
+            setReviews(data.results.product_reviews);
+            setLoadingReviews(false);
 
-          // stock
-          const productStock = productDetails.find(
-            (meta) => meta.meta_key === "_stock"
-          );
-          const productStockStatus = productDetails.find(
-            (meta) => meta.meta_key === "_stock_status"
-          );
-
-          // sku
-          const productSKU = productDetails.find(
-            (meta) => meta.meta_key === "_sku"
-          );
-
-          // weight
-          const productWeight = productDetails.find(
-            (meta) => meta.meta_key === "_weight"
-          );
-
-          const productData = {
-            id: productMainDetails[0].ID,
-            name: productMainDetails[0].post_title,
-            price: _.toNumber(productPrice.meta_value),
-            picture: urls[0],
-            slideshow: urls,
-            stock: productStock.meta_value,
-            stock_status: productStockStatus.meta_value,
-            flag: flagText(
-              productStock.meta_value,
-              productStockStatus.meta_value
-            ),
-            url: productMainDetails[0].post_name,
-            desc: productMainDetails[0].post_content,
-            desc_short: productMainDetails[0].post_excerpt,
-            sku: productSKU.meta_value.toString(),
-            weight: productWeight.meta_value,
-          };
-
-          setProduct(productData);
-
-          const options_reviews = {
-            method: "GET",
-            url: `http://127.0.0.1/get_reviews?prodId=${productMainDetails[0].ID}`,
-          };
-
-          axios
-            .request(options_reviews)
-            .then(function (response) {
-              setReviews(response.data);
-              setLoadingReviews(false);
-              setErrorReviews(false);
-            })
-            .catch(function (error) {
-              console.log(error);
-              setErrorReviews(true);
+            let sum = 0;
+            const reviewsCount = data.results.product_reviews.length;
+            setTotalReviews(reviewsCount);
+            data.results.product_reviews.forEach((review) => {
+              const rating = parseFloat(review.rating.rating[0]);
+              if (!isNaN(rating)) {
+                sum += rating;
+              }
             });
+            const averageRating = reviewsCount > 0 ? sum / reviewsCount : 0;
+            setAvgRating(averageRating.toFixed(1));
+
+            setErrorReviews(false);
+          } else {
+            setErrorReviews(true);
+          }
 
           setTimeout(() => {
             setLoading(false);
           }, 1000);
-        })
-        .catch((error) => {
+        } catch (error) {
           setError(true);
-        });
+        }
+      } catch (error) {
+        setError(true);
+      }
     };
 
     fetchProduct();
@@ -210,29 +222,26 @@ const Product = () => {
     }
   };
 
-  const updateCartHeader = (cartId, qty) => {
+  const updateCartHeader = async (cartId, qty) => {
     if (cartId !== null || cartId === 0) {
-      const optionsProds = {
-        method: "GET",
-        url: `http://127.0.0.1/temp_cart_products_id?cartId=${cartId}`,
-      };
+      try {
+        const response = await fetch(
+          `https://backoffice.petplushies.pt/wp-json/wc/v3/temp_cart_products_id?cartId=${cartId}`
+        );
+        const data = await response.json();
 
-      axios
-        .request(optionsProds)
-        .then(function (response) {
-          updateProductsNr(0);
+        updateProductsNr(0);
 
-          const orderItems = response.data.results || [];
-          const totalProductQty = orderItems.reduce(
-            (total, orderItem) => total + parseInt(orderItem.product_qty, 10),
-            0
-          );
+        const orderItems = data || [];
+        const totalProductQty = orderItems.reduce(
+          (total, orderItem) => total + parseInt(orderItem.product_qty, 10),
+          0
+        );
 
-          updateProductsNr(totalProductQty + qty);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+        updateProductsNr(totalProductQty);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -247,43 +256,80 @@ const Product = () => {
     );
     productExtras = variationsString;
 
-    if (cartId !== null || cartId === 0) {
-      updateCartHeader(cartId, qty);
+    let tax_rate = 0.23;
+    let unit_gross_revenue = parseFloat(product.price).toFixed(2);
+    let unit_tax_amount = parseFloat(unit_gross_revenue * tax_rate).toFixed(2);
+    let unit_net_revenue = parseFloat(unit_gross_revenue - unit_tax_amount);
 
+    let product_gross_revenue = parseFloat(totalPrice).toFixed(2);
+    let tax_amount = parseFloat(product_gross_revenue * tax_rate).toFixed(2);
+    let net_revenue = parseFloat(product_gross_revenue - tax_amount).toFixed(2);
+
+    //When cart exists
+    if (cartId !== null || cartId === 0) {
       const dataProduct = {
         temp_cart_id: cartId,
         product_id: product.id,
         date_created: new Date().toISOString().slice(0, 19).replace("T", " "),
         product_qty: qty,
-        product_net_revenue: totalPrice * qty,
+        product_net_revenue: net_revenue * qty,
+        product_gross_revenue: product_gross_revenue * qty,
+        tax_amount: tax_amount * qty,
+        unit_gross_revenue: unit_gross_revenue,
+        unit_net_revenue: unit_net_revenue,
+        unit_tax_amount: unit_tax_amount,
         product_extras: productExtras,
       };
 
-      const options1 = {
-        method: "POST",
-        url: "http://127.0.0.1/temp_cart_products",
-        data: JSON.stringify({ dataProduct }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-
       try {
-        const response = await axios.request(options1);
-        setMessage("O produto foi adicionado ao carrinho!");
-        setStatus("success");
-        setIsModalOpen(true);
-        setLoadingAddToCart(false);
-      } catch (error) {
-        setMessage(
-          `Houve um erro ao adicionar o produto ao carrinho. (${error}.)`
+        const response = await fetch(
+          `https://backoffice.petplushies.pt/wp-json/wc/v3/add_to_cart`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ dataProduct }),
+          }
         );
+
+        const data = await response.json();
+
+        if (data.success) {
+          updateCartHeader(cartId, qty);
+          setMessage(data.message);
+          setStatus("success");
+          setIsModalOpen(true);
+          setLoadingAddToCart(false);
+
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }
+      } catch (error) {
+        setMessage(data.message);
         setStatus("error");
         setIsModalOpen(true);
         setLoadingAddToCart(false);
       }
     } else {
+      //when cart doesn't exist
       const storedUserData = localStorage.getItem("user");
+
+      const qty_input = document.querySelector(".ant-input-number-input").value;
+
+      const dataProduct = {
+        product_id: product.id,
+        date_created: new Date().toISOString().slice(0, 19).replace("T", " "),
+        product_qty: qty_input,
+        product_net_revenue: net_revenue * qty_input,
+        product_gross_revenue: product_gross_revenue * qty_input,
+        tax_amount: tax_amount * qty_input,
+        unit_gross_revenue: unit_gross_revenue,
+        unit_net_revenue: unit_net_revenue,
+        unit_tax_amount: unit_tax_amount,
+        product_extras: productExtras,
+      };
 
       const dataCart = {
         status: "active",
@@ -300,73 +346,40 @@ const Product = () => {
         ip_address: "",
         user_agent: navigator.userAgent,
         is_user_cart: storedUserData ? 1 : 0,
+        product: dataProduct,
       };
 
-      const qty_input = document.querySelector(".ant-input-number-input").value;
-
-      updateProductsNr(qty_input);
-
-      const options1 = {
-        method: "POST",
-        url: `http://127.0.0.1/temp_carts`,
-        data: JSON.stringify({ dataCart }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-
-      axios
-        .request(options1)
-        .then(function (response) {
-          const dataProduct = {
-            temp_cart_id: response.data.success.id,
-            product_id: product.id,
-            date_created: new Date()
-              .toISOString()
-              .slice(0, 19)
-              .replace("T", " "),
-            product_qty: qty_input,
-            product_net_revenue: qty_input * totalPrice,
-            product_extras: productExtras,
-          };
-
-          const options1 = {
+      try {
+        const response = await fetch(
+          `https://backoffice.petplushies.pt/wp-json/wc/v3/add_to_cart`,
+          {
             method: "POST",
-            url: `http://127.0.0.1/temp_cart_products`,
-            data: JSON.stringify({ dataProduct }),
             headers: {
               "Content-Type": "application/json",
             },
-          };
+            body: JSON.stringify({ dataCart }),
+          }
+        );
 
-          axios
-            .request(options1)
-            .then(function (response) {
-              setMessage("O produto foi adicionado ao carrinho!");
-              setStatus("success");
-              setIsModalOpen(true);
-              setLoadingAddToCart(false);
-            })
-            .catch(function (error) {
-              setMessage(
-                "Houve um erro ao adicionar um produto ao carrinho. (" +
-                  error.response +
-                  ".)"
-              );
-              setStatus("error");
-              setIsModalOpen(true);
-              setLoadingAddToCart(false);
-            });
-        })
-        .catch(function (error) {
-          console.log(error);
-          setMessage(
-            "Houve um erro ao criar o carrinho. (" + error.response + ".)"
-          );
-          setStatus("error");
+        const data = await response.json();
+
+        if (data.success) {
+          updateProductsNr(qty_input);
+          setMessage(data.message);
+          setStatus("success");
           setIsModalOpen(true);
           setLoadingAddToCart(false);
-        });
+
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }
+      } catch (error) {
+        setMessage(data.message);
+        setStatus("error");
+        setIsModalOpen(true);
+        setLoadingAddToCart(false);
+      }
     }
   };
 
@@ -407,7 +420,7 @@ const Product = () => {
     else {
       form
         .validateFields()
-        .then(() => {
+        .then(async () => {
           const reviewData = {
             product_id: product.id,
             review: review,
@@ -415,43 +428,31 @@ const Product = () => {
               reviewerName == "" ? "Anónimo" : reviewerName.target.value,
             reviewer_email: reviewerEmail.target.value,
             rating: rating,
-            status: "hold",
           };
 
-          const options = {
-            method: "POST",
-            url: `http://127.0.0.1/reviews`,
-            data: JSON.stringify({ reviewData }),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          };
+          try {
+            const response = await fetch(
+              `https://backoffice.petplushies.pt/wp-json/wc/v3/add_review`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ reviewData }),
+              }
+            );
+            const data = await response.json();
 
-          axios
-            .request(options)
-            .then(function (response) {
-              setMessage(
-                "Avaliação de produto submetida com sucesso! A nossa equipa aprovará assim que possível."
-              );
-              setStatus("success");
-              setIsModalOpen(true);
-
-              setTimeout(() => {
-                window.location.reload();
-              }, 3000);
-            })
-            .catch(function (error) {
-              setMessage(
-                "Houve um erro ao submeter a avaliação do produto. (" +
-                  error +
-                  ".)"
-              );
-              setStatus("error");
-              setIsModalOpen(true);
-            });
+            setMessage(data.message);
+            setStatus("success");
+            setIsModalOpen(true);
+          } catch (error) {
+            setMessage(data.message);
+            setStatus("error");
+            setIsModalOpen(true);
+          }
         })
         .catch((error) => {
-          console.log(error);
           console.error("Erro na validação de campos:", error);
         });
     }
@@ -499,6 +500,18 @@ const Product = () => {
                   />
                 </Col>
                 <Col span={11}>
+                  <AvgRatingContainer>
+                    <div>{avgRating} </div>
+                    <StarRatingContainer>
+                      {[1, 2, 3, 4, 5].map((index) => (
+                        <StyledStarRating
+                          key={index}
+                          filled={index <= avgRating ? "true" : "false"}
+                        />
+                      ))}
+                    </StarRatingContainer>
+                    <div> (de um total de {totalReviews} avaliações.)</div>
+                  </AvgRatingContainer>
                   <AddToCart
                     onClick={() => addToCart(product)}
                     loading={loadingAddToCart}
@@ -651,10 +664,11 @@ const Product = () => {
                         return (
                           <Review key={r.id}>
                             <div>
-                              Avaliado em:{" "}
+                              <b>{r.name}</b>
+                              {" a "}
                               <b>
                                 {moment(r.date_created_gmt).format(
-                                  "MMMM Do YYYY"
+                                  "DD [de] MMMM [de] YYYY[, às] HH:mm"
                                 )}
                               </b>
                             </div>
@@ -662,19 +676,12 @@ const Product = () => {
                               {[1, 2, 3, 4, 5].map((index) => (
                                 <StyledStarRating
                                   key={index}
-                                  filled={index <= r.rating ? "true" : "false"}
+                                  filled={
+                                    index <= r.rating.rating ? "true" : "false"
+                                  }
                                 />
                               ))}
                             </StarRatingContainer>
-                            <div>
-                              {r.name == "Anónimo" ? (
-                                <b>{r.name}</b>
-                              ) : (
-                                <>
-                                  <b>{r.name}</b> ({r.email})
-                                </>
-                              )}
-                            </div>
                             <ReviewText>{r.review}</ReviewText>
                           </Review>
                         );
@@ -696,8 +703,27 @@ const Product = () => {
   );
 };
 
+const AvgRatingContainer = styled.div`
+  display: flex;
+  align-items: center;
+
+  & > div {
+    line-height: 1;
+    margin-right: 5px;
+    font-size: 20px;
+    &:last-child {
+      font-size: 10px;
+      margin: 0;
+      margin-left: 5px;
+    }
+  }
+`;
+
 const ReviewsContainer = styled(Col)`
   position: relative;
+  height: 100%;
+  overflow: auto;
+  max-height: 520px;
 `;
 
 const Review = styled.div`

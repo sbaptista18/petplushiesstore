@@ -43,11 +43,7 @@ const AddToCart = ({
 
   let variationsArray;
   if (variations != null) {
-    let variationsArrayAux = Object.keys(variations).map(
-      (key) => variations[key]
-    );
-
-    const updatedData = variationsArrayAux.map((item) => {
+    const updatedData = variations.map((item) => {
       const parts = item.value.split("|");
       const values = parts
         .map((part) => {
@@ -213,7 +209,7 @@ AddToCart.propTypes = {
   stock: PropTypes.string,
   onClick: PropTypes.func,
   onDataFromChild: PropTypes.func,
-  variations: PropTypes.object,
+  variations: PropTypes.array,
   onUpdateTotalPrice: PropTypes.func,
   onPetName: PropTypes.func,
   onShelter: PropTypes.func,

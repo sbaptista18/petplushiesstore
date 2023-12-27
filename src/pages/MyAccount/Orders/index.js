@@ -4,33 +4,36 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import moment from "moment";
-import axios from "axios";
 
 import { PageHeader } from "components";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
+moment.locale("pt");
+
 const tableColumns = () => [
   {
     title: "No.",
-    dataIndex: "id",
-    key: "id",
+    dataIndex: "order_id",
+    key: "order_id",
     render: (record) => {
       return <div>{record}</div>;
     },
   },
   {
     title: "Data",
-    dataIndex: "date_created",
-    key: "date_created",
+    dataIndex: "order_date",
+    key: "order_date",
     render: (record) => {
-      return <div>{moment(record).format("MMMM Do YYYY")}</div>;
+      return (
+        <div>{moment(record).format("DD [de] MMMM [de] YYYY[, às] HH:mm")}</div>
+      );
     },
   },
   {
     title: "Estado",
-    dataIndex: "status",
-    key: "status",
+    dataIndex: "order_status",
+    key: "order_status",
     render: (record) => {
       let status;
       switch (record) {
@@ -49,33 +52,38 @@ const tableColumns = () => [
   },
   {
     title: "Morada",
-    dataIndex: "order",
     key: "address",
-    render: (record, _, recordIndex) => {
+    render: (record, _) => {
       return (
         <div>
-          {_.shipping.address_1 != ""
-            ? _.shipping.address_1
-            : _.billing.address_1}
+          {_.shipping_data.shipping_address_1 != ""
+            ? _.shipping_data.shipping_address_1
+            : _.billing_data.billing_address_1}
           {`, `}
-          {_.shipping.postcode != "" ? _.shipping.postcode : _.billing.postcode}
+          {_.shipping_data.shipping_postcode != ""
+            ? _.shipping_data.shipping_postcode
+            : _.billing_data.billing_postcode}
           {`, `}
-          {_.shipping.state != "" ? _.shipping.state : _.billing.state}
+          {_.shipping_data.shipping_state != ""
+            ? _.shipping_data.shipping_state
+            : _.billing_data.billing_state}
           {`, `}
-          {_.shipping.country != "" ? _.shipping.country : _.billing.country}
+          {_.shipping_data.shipping_country != ""
+            ? _.shipping_data.shipping_country
+            : _.billing_data.billing_country}
         </div>
       );
     },
   },
   {
     title: "Total",
-    dataIndex: "order",
-    key: "order",
-    render: (record, _, recordIndex) => {
+    dataIndex: "total",
+    key: "total",
+    render: (record) => {
       return (
         <div>
-          {_.total}
-          {_.currency_symbol}
+          {record}
+          &euro;
         </div>
       );
     },
@@ -89,54 +97,20 @@ const Order = () => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    const fetchOrder = (orderId) => {
-      const options = {
-        method: "GET",
-        url: `http://127.0.0.1/orders?id=${orderId}`,
-      };
+    const fetchOrder = async (orderId) => {
+      try {
+        const response = await fetch(
+          `https://backoffice.petplushies.pt/wp-json/wc/v3/get_order_by_id?id=${orderId}`
+        );
+        const data = await response.json();
 
-      return axios
-        .request(options)
-        .then((response) => {
-          const productPromises = response.data.line_items.map((item) => {
-            const prodId = item.product_id;
-
-            const options = {
-              method: "GET",
-              url: `http://127.0.0.1/products/id?id=${prodId}`,
-            };
-
-            return axios
-              .request(options)
-              .then((productResponse) => productResponse.data.slug)
-              .catch((error) => {
-                return null;
-              });
-          });
-
-          Promise.all(productPromises)
-            .then((productSlugs) => {
-              const updatedOrder = {
-                ...response.data,
-                slugs: productSlugs,
-                line_items: response.data.line_items.map((item, index) => {
-                  return {
-                    ...item,
-                    slug: productSlugs[index],
-                  };
-                }),
-              };
-              setOrder([updatedOrder]);
-              setLoading(false);
-            })
-            .catch((error) => {
-              setLoading(false);
-            });
-        })
-        .catch(function (error) {
-          setError(true);
-          setLoading(false);
-        });
+        setOrder([data.result]);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+        setError(true);
+        setLoading(false);
+      }
     };
 
     fetchOrder(orderId);
@@ -164,7 +138,7 @@ const Order = () => {
                   columns={tableColumns()}
                   dataSource={order}
                   pagination={false}
-                  rowKey="id"
+                  rowKey="order_id"
                 />
                 <div>
                   <TableTitle>
@@ -176,12 +150,12 @@ const Order = () => {
                     <StyledCol span={6}>Quantidade</StyledCol>
                     <StyledCol span={6}>Preço</StyledCol>
                   </TableHeader>
-                  {order[0].line_items.map((i) => {
+                  {order[0].products.map((i) => {
                     return (
                       <StyledRow key={i.id}>
                         <StyledCol span={3}>
                           <img
-                            src={i.image.src}
+                            src={i.images.main.src}
                             style={{ width: "100%", height: "auto" }}
                             alt={`${i.name} - Pet Plushies`}
                           />
@@ -193,8 +167,8 @@ const Order = () => {
                         </StyledCol>
                         <StyledCol span={6}>{i.quantity}</StyledCol>
                         <StyledCol span={6}>
-                          {i.price}
-                          {order[0].currency_symbol}
+                          {i.total_price}
+                          &euro;
                         </StyledCol>
                       </StyledRow>
                     );

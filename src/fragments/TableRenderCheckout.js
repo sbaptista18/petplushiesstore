@@ -21,13 +21,12 @@ const Image = ({ image }) => {
 const tableColumnsCheckout = [
   {
     title: "Imagem",
-    dataIndex: "product",
+    dataIndex: "main_image_url",
     key: "image",
-    render: (record) => <Image image={record.images[0].src} />,
+    render: (record) => <Image image={record} />,
   },
   {
     title: "Nome",
-    dataIndex: "product",
     key: "name",
     render: (record) => <Text text={record.name} slug={record.slug} />,
   },
@@ -47,9 +46,9 @@ const tableColumnsCheckout = [
   },
   {
     title: "Preco",
-    dataIndex: "product_net_revenue",
+    dataIndex: "product_gross_revenue",
     key: "price",
-    render: (record) => <Price text={`${parseFloat(record)}€`} />,
+    render: (record) => <Price text={`${parseFloat(record).toFixed(2)}€`} />,
   },
 ];
 

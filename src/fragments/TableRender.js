@@ -52,7 +52,14 @@ const tableColumns = (onQuantityChange, onDelete) => [
           max={10}
           defaultValue={record.product_qty}
           onChange={(value) =>
-            onQuantityChange(value, recordIndex, record.id, record.price)
+            onQuantityChange(
+              value,
+              recordIndex,
+              record.id,
+              record.unit_gross_revenue,
+              record.unit_net_revenue,
+              record.unit_tax_amount
+            )
           }
         />
       );
@@ -60,9 +67,10 @@ const tableColumns = (onQuantityChange, onDelete) => [
   },
   {
     title: "Preco",
-    dataIndex: "product_net_revenue",
     key: "price",
-    render: (record) => <Price text={`${parseFloat(record)}€`} />,
+    render: (record) => {
+      return <Price text={`${parseFloat(record.product_gross_revenue)}€`} />;
+    },
   },
   {
     key: "close",

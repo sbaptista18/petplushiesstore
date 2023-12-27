@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import { Row, Col, Collapse, Slider, Select, Spin, Pagination } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import axios from "axios";
 import _ from "lodash";
 
 import { Breadcrumbs, TileNoInput, PageHeader } from "components";
@@ -168,30 +167,28 @@ const Products = () => {
       return;
     }
     try {
-      const options = {
-        method: "GET",
-        url: "http://127.0.0.1/products",
-      };
-
-      const response = await axios.request(options);
-      const originalData = response.data;
-
-      const result = filterByCategory(originalData).sort(sortProductsById);
+      const response = await fetch(
+        `https://backoffice.petplushies.pt/wp-json/wc/v3/get_products`
+      );
+      const data = await response.json();
+      const result = filterByCategory(data.products).sort(sortProductsById);
 
       if (result.length === 0) {
         setNoResults(true);
       } else {
-        const mappedProducts = result.map((item) => ({
-          id: item.id,
-          name: item.name,
-          price: _.toNumber(item.price),
-          stock: item.stock_quantity,
-          stock_status: item.stock_status,
-          picture: item.images[0].src,
-          url: item.slug,
-          category: item.categories[0].slug,
-          post_modified: item.date_modified.split("T").join(" "),
-        }));
+        const mappedProducts = result.map((item) => {
+          return {
+            id: item.id,
+            name: item.name,
+            price: _.toNumber(item.price),
+            stock: item.stock,
+            stock_status: item.stock_status,
+            picture: item.picture,
+            url: item.url,
+            category: item.categories,
+            post_modified: item.post_modified,
+          };
+        });
 
         setProducts(mappedProducts);
         setCachedProducts(mappedProducts);
@@ -234,23 +231,21 @@ const Products = () => {
    * CATEGORIES CODEBLOCK
    */
   const fetchCategories = async () => {
+    if (cachedCategories) {
+      setCategories(cachedCategories);
+      return;
+    }
+
     try {
-      if (cachedCategories) {
-        setCategories(cachedCategories);
-        return;
-      }
+      const response = await fetch(
+        `https://backoffice.petplushies.pt/wp-json/wc/v3/get_product_categories`
+      );
+      const data = await response.json();
 
-      const options = {
-        method: "GET",
-        url: "http://127.0.0.1/products/categories",
-      };
-
-      const response = await axios.request(options);
-
-      if (response.data.length === 0) {
+      if (data.categories === 0) {
         setNoResults(true);
       } else {
-        const mappedCategories = response.data.map((item) => ({
+        const mappedCategories = data.categories.map((item) => ({
           id: item.id,
           name: item.name,
           slug: item.slug,
@@ -262,8 +257,6 @@ const Products = () => {
       }
     } catch (error) {
       setError(true);
-    } finally {
-      // setLoading(false);
     }
   };
 
@@ -275,10 +268,7 @@ const Products = () => {
       setCategories(parsedData.data);
       setError(false);
     } else {
-      // if (!isUpToDate) {
-      // Fetch data only if it's not up to date
       fetchCategories();
-      // }
     }
   }, [isUpToDate]);
 
@@ -298,24 +288,22 @@ const Products = () => {
    * PRICE RANGE CODEBLOCK
    */
   const fetchPriceRange = async () => {
+    if (cachedMinPrice && cachedMaxPrice) {
+      setCachedMinPrice(cachedMinPrice);
+      setCachedMaxPrice(cachedMaxPrice);
+      setLoading(false);
+      return;
+    }
+
     try {
-      if (cachedMinPrice && cachedMaxPrice) {
-        setCachedMinPrice(cachedMinPrice);
-        setCachedMaxPrice(cachedMaxPrice);
-        setLoading(false);
-        return;
-      }
-
-      const options = {
-        method: "GET",
-        url: "http://127.0.0.1/products",
-      };
-
-      const response = await axios.request(options);
+      const response = await fetch(
+        `https://backoffice.petplushies.pt/wp-json/wc/v3/get_products`
+      );
+      const data = await response.json();
       let minPrice = Number.MAX_VALUE;
       let maxPrice = 0;
 
-      response.data.forEach((product) => {
+      data.products.forEach((product) => {
         let price = parseFloat(product.price);
         minPrice = Math.min(minPrice, price);
         maxPrice = Math.max(maxPrice, price);
@@ -331,9 +319,7 @@ const Products = () => {
       setCachedData(minPrice, "cachedMinPrice");
       setCachedData(maxPrice, "cachedMaxPrice");
 
-      // if (!isUpToDate) {
       fetchProducts();
-      // }
     } catch (error) {
       setError(true);
     }

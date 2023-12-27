@@ -4,7 +4,6 @@ import { Row, Col, Table, Form, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import { PayPalButton } from "react-paypal-button-v2";
-import axios from "axios";
 
 import { Button, ModalMessage, PageHeader } from "components";
 import { tableColumnsCheckout } from "fragments";
@@ -77,7 +76,6 @@ const Checkout = () => {
         `https://backoffice.petplushies.pt/wp-json/wc/v3/get_temp_cart_by_id?id=${cartId}`
       );
       const data = await response.json();
-      console.log(data);
       if (data.length != 0) {
         fetchCartProducts(data[0].id);
       } else {
@@ -88,74 +86,27 @@ const Checkout = () => {
     }
   };
 
-  /**
-   *
-   *
-   *
-   *
-   * CONTINUE HERE
-   *
-   *
-   *
-   *
-   */
-
   const fetchCartProducts = async (cartId) => {
-    const options = {
-      method: "GET",
-      url: `http://127.0.0.1/temp_cart_products_id?cartId=${cartId}`,
-    };
+    try {
+      const response = await fetch(
+        `https://backoffice.petplushies.pt/wp-json/wc/v3/temp_cart_products_id?cartId=${cartId}`
+      );
+      const data = await response.json();
 
-    axios
-      .request(options)
-      .then(function (response) {
-        if (response.data.results.length > 0) {
-          setProductsCart(response.data.results);
-          fetchProducts(response.data.results);
-        } else {
-          setProductsCart([]);
-          setProducts([]);
-        }
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
-  };
-
-  const fetchProducts = (data) => {
-    const promises = data.map((cartItem) => {
-      const options = {
-        method: "GET",
-        url: `http://127.0.0.1/products/id?id=${cartItem.product_id}`,
-      };
-
-      return axios
-        .request(options)
-        .then((response) => {
-          let product = response.data;
-          setLockForm(false);
-          return { cartItem, product };
-        })
-        .catch(function (error) {
-          return { error: error.response.data };
-        });
-    });
-
-    Promise.all(promises)
-      .then((responses) => {
-        const combinedProducts = responses.map(({ cartItem, product }) => ({
-          ...cartItem,
-          product,
-        }));
-
+      if (data && data.length !== 0) {
         setProductsCart(data);
-        setProducts(combinedProducts);
+        setProducts(data);
         setLoading(false);
-      })
-      .catch((error) => {
-        setError(true);
+        setLockForm(false);
+      } else {
+        setLoading(false);
+        setProductsCart([]);
         setProducts([]);
-      });
+      }
+    } catch (error) {
+      setError(true);
+      console.error(error);
+    }
   };
 
   const calculateShippingCost = (data, weight, subtotal) => {
@@ -164,58 +115,57 @@ const Checkout = () => {
       return 0;
     }
 
-    const method = data.find((shippingMethod) => {
-      const title = shippingMethod.title.toLowerCase();
-      const match = title.match(/(\d+)\s*g\s*a\s*(\d+)?/);
+    for (const shippingMethod of data) {
+      const zoneMethods = shippingMethod.zone_methods[0];
 
-      setShippingTitle(shippingMethod.title);
+      const method = Object.values(zoneMethods).find((method) => {
+        const title = method.title.toLowerCase();
+        const match = title.match(/(\d+)\s*g\s*a\s*(\d+)?/);
 
-      if (match) {
-        const minWeight = parseInt(match[1]);
-        const maxWeight = match[2] ? parseInt(match[2]) : undefined;
+        setShippingTitle(title);
 
-        return (
-          weight >= minWeight &&
-          (maxWeight === undefined || weight <= maxWeight)
-        );
+        if (match) {
+          const minWeight = parseInt(match[1]);
+          const maxWeight = match[2] ? parseInt(match[2]) : undefined;
+
+          return (
+            weight >= minWeight &&
+            (maxWeight === undefined || weight <= maxWeight)
+          );
+        }
+      });
+
+      if (method) {
+        const cost = parseFloat(method.cost);
+        return cost;
       }
-
-      return false;
-    });
-
-    if (method) {
-      const cost = parseFloat(method.settings.cost.value);
-      return cost;
-    } else {
-      return null;
     }
+
+    return null;
   };
 
   const fetchShippingZonesDetails = async (area) => {
-    const options = {
-      method: "GET",
-      url: `http://127.0.0.1/shipping?area=${area}`,
-    };
+    try {
+      const response = await fetch(
+        `https://backoffice.petplushies.pt/wp-json/wc/v3/get_shipping_zones_by_area_id?id=${area}`
+      );
+      const data = await response.json();
 
-    return axios
-      .request(options)
-      .then((response) => {
-        const weightGrs = totalWeight * 1000;
-        const shippingCost = calculateShippingCost(
-          response.data,
-          weightGrs,
-          totalProductNetRevenue
-        );
+      const weightGrs = totalWeight * 1000;
+      const shippingCost = calculateShippingCost(
+        data,
+        weightGrs,
+        totalProductNetRevenue
+      );
 
-        setShippingCost(shippingCost);
-      })
-      .catch(function (error) {
-        setError(true);
-      });
+      setShippingCost(shippingCost);
+    } catch (error) {
+      setError(true);
+    }
   };
 
   const totalProductNetRevenue = productsCart.reduce((sum, item) => {
-    return sum + parseFloat(item.product_net_revenue, 10);
+    return sum + parseFloat(item.product_gross_revenue);
   }, 0);
 
   const handleCheckCreateAccount = () => {
@@ -227,7 +177,7 @@ const Checkout = () => {
   };
 
   const formatMetaFromExtras = (productExtras) => {
-    if (!productExtras) return [];
+    if (!productExtras) return "";
 
     const cleanedString = productExtras.replace(/<\/?b>/gi, "");
     const keyValuePairs = cleanedString.split(";").map((pair) => pair.trim());
@@ -273,14 +223,9 @@ const Checkout = () => {
     country: formValues.country_other == 2 ? "PT" : "",
   });
 
-  const buildOrderData = (
-    formValues,
-    userId,
-    orderId,
-    meta_data,
-    createAccount
-  ) => {
+  const buildOrderData = (cartId, formValues, userId, orderId) => {
     const commonOrderData = {
+      cart_id: cartId,
       payment_method: paymentMethod.value,
       payment_method_title: paymentMethod.label,
       set_paid: paymentMethod.label == "PayPal" ? true : false,
@@ -290,13 +235,16 @@ const Checkout = () => {
       prices_include_tax: true,
       billing: buildBillingDetails(formValues),
       shipping: buildShippingDetails(formValues),
-      line_items: products.map((p) => ({
-        product_id: p.product_id,
-        quantity: p.product_qty,
-        total: p.product_net_revenue,
-        meta_data: meta_data,
-        tax_class: "",
-      })),
+      line_items: products.map((p) => {
+        return {
+          product_id: p.product_id,
+          quantity: p.product_qty,
+          total: p.product_net_revenue + p.tax_amount,
+          total_tax: p.tax_amount,
+          meta_data: formatMetaFromExtras(p.product_extras),
+          tax_class: "",
+        };
+      }),
       shipping_lines: [
         {
           method_id:
@@ -312,7 +260,7 @@ const Checkout = () => {
       : commonOrderData;
   };
 
-  const createCustomer = (formValues) => {
+  const createCustomer = async (formValues) => {
     const dataCustomer = {
       email: formValues.email,
       first_name: formValues.first_name,
@@ -323,29 +271,39 @@ const Checkout = () => {
       is_paying_customer: true,
     };
 
-    const options = {
-      method: "POST",
-      url: "http://127.0.0.1/customers",
-      data: JSON.stringify({ dataCustomer }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    return axios.request(options);
+    try {
+      const response = await fetch(
+        "https://backoffice.petplushies.pt/wp-json/wc/v3/create_customer",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ dataCustomer }),
+        }
+      );
+      const responseData = await response.json();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const createOrder = (dataOrder) => {
-    const options = {
-      method: "POST",
-      url: "http://127.0.0.1/orders",
-      data: JSON.stringify({ dataOrder }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    return axios.request(options);
+  const createOrder = async (dataOrder) => {
+    try {
+      const response = await fetch(
+        "https://backoffice.petplushies.pt/wp-json/wc/v3/create_order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ dataOrder }),
+        }
+      );
+      await response.json();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handlePlaceOrder = (orderId) => {
@@ -356,64 +314,24 @@ const Checkout = () => {
         const userId = localStorage.getItem("user")
           ? parseInt(JSON.parse(localStorage.getItem("user")).ID)
           : 0;
-        const meta_data = products
-          .map((p) =>
-            p.product_extras !== ""
-              ? formatMetaFromExtras(p.product_extras)
-              : ""
-          )
-          .pop();
-        const dataOrder = buildOrderData(
-          formValues,
-          userId,
-          orderId,
-          meta_data,
-          createAccount
-        );
+
+        const dataOrder = buildOrderData(cartId, formValues, userId, orderId);
 
         createOrder(dataOrder)
           .then(function (response) {
-            const deleteCartOptions = {
-              method: "DELETE",
-              url: `http://127.0.0.1/temp_cart_delete_on_order?cartId=${cartId}`,
-            };
+            updateProductsNr(0);
+            setProductsCart([]);
+            setProducts([]);
 
-            axios
-              .request(deleteCartOptions)
-              .then(function () {
-                updateProductsNr(0);
-                setProductsCart([]);
-                setProducts([]);
-
-                if (createAccount) {
-                  createCustomer(formValues)
-                    .then(function (response) {
-                      setMessage(
-                        "A sua conta foi criada com sucesso! Pode efetuar o login com o seu nome de utilizador gerado (" +
-                          formValues.first_name.toLowerCase() +
-                          "." +
-                          formValues.surname.toLowerCase() +
-                          "). Receberá instruções para definir a sua password."
-                      );
-                      setStatus("success");
-                      setIsModalOpen(true);
-
-                      setTimeout(() => {
-                        history.replace("/");
-                      }, 5000);
-                    })
-                    .catch(function (error) {
-                      setMessage(
-                        "Houve um erro na criação da conta. Por favor envie e-mail para geral@petplushies.pt para notificar do sucedido. (" +
-                          error.response.data +
-                          ")."
-                      );
-                      setStatus("error");
-                      setIsModalOpen(true);
-                    });
-                } else {
+            if (createAccount) {
+              createCustomer(formValues)
+                .then(function (response) {
                   setMessage(
-                    "Encomenda efetuada com sucesso! Vai receber um e-mail com os detalhes da encomenda e do seu pagamento."
+                    "A sua conta foi criada com sucesso! Pode efetuar o login com o seu nome de utilizador gerado (" +
+                      formValues.first_name.toLowerCase() +
+                      "." +
+                      formValues.surname.toLowerCase() +
+                      "). Receberá instruções para definir a sua password."
                   );
                   setStatus("success");
                   setIsModalOpen(true);
@@ -421,21 +339,38 @@ const Checkout = () => {
                   setTimeout(() => {
                     history.replace("/");
                   }, 5000);
-                }
-              })
-              .catch(function (error) {
-                setMessage(
-                  "Houve um erro ao efetuar a encomenda. (" + error + ")."
-                );
+                })
+                .catch(function (error) {
+                  setMessage(
+                    "Houve um erro na criação da conta. Por favor envie e-mail para geral@petplushies.pt para notificar do sucedido. (" +
+                      error.response.data +
+                      ")."
+                  );
+                  setStatus("error");
+                  setIsModalOpen(true);
+                });
+            } else {
+              if (response.success) {
+                setMessage(response.message);
+                setStatus("success");
+                setIsModalOpen(true);
+
+                setTimeout(() => {
+                  history.replace("/");
+                }, 5000);
+              } else {
+                setMessage(response.message);
                 setStatus("error");
                 setIsModalOpen(true);
-              });
+              }
+            }
           })
           .catch(function (error) {
             setError(true);
           });
       })
       .catch((errorInfo) => {
+        console.log(errorInfo);
         setMessage("Tem de preencher todos os campos obrigatórios.");
         setStatus("error");
         setIsModalOpen(true);
@@ -444,7 +379,7 @@ const Checkout = () => {
 
   const totalWeight = products.reduce((total, item) => {
     const productQty = parseInt(item.product_qty, 10);
-    const productWeight = parseFloat(item.product.weight);
+    const productWeight = parseFloat(item.weight);
     const itemWeight = productQty * productWeight;
 
     return total + itemWeight;
@@ -559,16 +494,19 @@ const Checkout = () => {
               <Border />
               <Subtotal>
                 <div>Subtotal</div>
-                <div>{totalProductNetRevenue}&euro;</div>
+                <div>{totalProductNetRevenue.toFixed(2)}&euro;</div>
               </Subtotal>
               <Shipping>
                 <div>Estimativa de portes</div>
-                <div>{shippingCost}&euro;</div>
+                <div>{shippingCost.toFixed(2)}&euro;</div>
               </Shipping>
               <Border />
               <Total>
                 <div>Subtotal</div>
-                <div>{totalProductNetRevenue + shippingCost}&euro;</div>
+                <div>
+                  {(totalProductNetRevenue + shippingCost).toFixed(2)}
+                  &euro;
+                </div>
               </Total>
               {paymentMethod.label == "PayPal" ? (
                 <PayPalButton

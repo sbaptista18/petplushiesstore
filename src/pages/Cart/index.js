@@ -31,7 +31,7 @@ const Cart = () => {
 
   const calculateTotalNetRevenue = (items) => {
     return items.reduce(
-      (sum, item) => sum + parseFloat(item.product_net_revenue, 10),
+      (sum, item) => sum + parseFloat(item.product_gross_revenue, 10),
       0
     );
   };
@@ -91,13 +91,22 @@ const Cart = () => {
     }
   };
 
-  const updateCartProducts = async (cartId, product_id, qty, product_price) => {
+  const updateCartProducts = async (
+    cartId,
+    product_id,
+    qty,
+    product_gross_revenue,
+    product_net_revenue,
+    tax_amount
+  ) => {
     const dataProduct = {
       temp_cart_id: cartId,
       product_id: product_id,
       date_created: new Date().toISOString().slice(0, 19).replace("T", " "),
       product_qty: qty,
-      product_net_revenue: product_price * qty,
+      product_net_revenue: product_net_revenue,
+      product_gross_revenue: product_gross_revenue,
+      tax_amount: tax_amount,
     };
 
     try {
@@ -112,11 +121,11 @@ const Cart = () => {
         }
       );
       const responseData = await response.json();
-      setMessage(responseData.success);
+      setMessage(responseData.message);
       setStatus("success");
       setIsModalOpen(true);
     } catch (error) {
-      setMessage(`${responseData.error} (" + ${error} + ".)`);
+      setMessage(responseData.message);
       setStatus("error");
       setIsModalOpen(true);
     }
@@ -132,11 +141,11 @@ const Cart = () => {
       );
 
       const responseData = await response.json();
-      setMessage(responseData.success);
+      setMessage(responseData.message);
       setStatus("success");
       setIsModalOpen(true);
     } catch (error) {
-      setMessage(`${responseData.error} (" + ${error} + ".)`);
+      setMessage(responseData.message);
       setStatus("error");
       setIsModalOpen(true);
     }
@@ -146,11 +155,16 @@ const Cart = () => {
     value,
     recordIndex,
     product_id,
-    product_price
+    unit_gross_revenue,
+    unit_net_revenue,
+    unit_tax_amount
   ) => {
     const updatedProducts = [...products];
     updatedProducts[recordIndex].product_qty = value;
-    updatedProducts[recordIndex].product_net_revenue = value * product_price;
+    updatedProducts[recordIndex].product_gross_revenue =
+      value * unit_gross_revenue;
+    updatedProducts[recordIndex].product_net_revenue = value * unit_net_revenue;
+    updatedProducts[recordIndex].tax_amount = value * unit_tax_amount;
 
     let totalProductQty = 0;
 
@@ -160,7 +174,14 @@ const Cart = () => {
 
     setProducts(updatedProducts);
 
-    updateCartProducts(cartId, product_id, value, product_price);
+    updateCartProducts(
+      cartId,
+      product_id,
+      value,
+      value * unit_gross_revenue,
+      value * unit_net_revenue,
+      value * unit_tax_amount
+    );
 
     updateProductsNr(totalProductQty);
 

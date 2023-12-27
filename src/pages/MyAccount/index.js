@@ -21,34 +21,38 @@ const CustomNoData = () => (
   </div>
 );
 
-const tableColumns = () => [
+const tableColumns = [
   {
     title: "N.º",
-    dataIndex: "id",
     key: "number",
-    render: (record) => <div>{record}</div>,
+    render: (record) => {
+      return <div key={record.order_id}>{record.order_id}</div>;
+    },
   },
   {
     title: "Total",
-    dataIndex: "total",
     key: "total",
-    render: (record) => <div>{record}</div>,
+    render: (record) => {
+      return <div key={record.order_total}>{record.order_total}</div>;
+    },
   },
   {
     title: "Detalhes",
-    dataIndex: "id",
-    key: "order_id",
-    render: (record) => (
-      <Link to={`/encomendas/${record}`}>
-        <StyledButton size="large" text="Ver detalhes" type="primary" />
-      </Link>
-    ),
+    key: "order",
+    render: (record) => {
+      return (
+        <Link key={record.order_id} to={`/encomendas/${record.order_id}`}>
+          <StyledButton size="large" text="Ver detalhes" type="primary" />
+        </Link>
+      );
+    },
   },
 ];
 
 const MyAccount = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadingTable, setLoadingTable] = useState(true);
   const [disabled, setDisabled] = useState(false);
   const [userPersonalData, setUserPersonalData] = useState({});
   const [country, setCountry] = useState("");
@@ -76,43 +80,32 @@ const MyAccount = () => {
 
   useEffect(() => {
     const fetchCustomerData = async (userId) => {
-      const options = {
-        method: "GET",
-        url: `http://127.0.0.1/customers?userId=${userId}`,
-      };
-
-      axios
-        .request(options)
-        .then(function (response) {
-          setUserPersonalData(response.data);
-          setLoading(false);
-        })
-        .catch(function (error) {
-          setLoading(true);
-        });
+      try {
+        const response = await fetch(
+          `https://backoffice.petplushies.pt/wp-json/wc/v3/get_customer_data?userId=${userId}`
+        );
+        const responseData = await response.json();
+        setUserPersonalData(responseData);
+        setLoading(false);
+      } catch (error) {
+        setLoading(true);
+      }
     };
 
     fetchCustomerData(user.ID);
-    fetchOrders(user.ID);
   }, []);
 
-  const fetchOrders = (userId) => {
-    const options = {
-      method: "GET",
-      url: `http://127.0.0.1/orders/userid`,
-    };
-
-    axios
-      .request(options)
-      .then(function (response) {
-        const clientOrders = response.data.filter(
-          (order) => order.customer_id === parseInt(userId)
-        );
-        setOrders(clientOrders);
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
+  const fetchOrders = async (userId) => {
+    try {
+      const response = await fetch(
+        `https://backoffice.petplushies.pt/wp-json/wc/v3/get_orders?userId=${userId}`
+      );
+      const responseData = await response.json();
+      setOrders(responseData);
+      setLoadingTable(false);
+    } catch (error) {
+      setLoading(true);
+    }
   };
 
   const handleLogOut = async () => {
@@ -139,65 +132,52 @@ const MyAccount = () => {
   };
 
   const handleSubmitAccountData = () => {
-    form.validateFields().then(() => {
+    form.validateFields().then(async () => {
       const formValues = form.getFieldsValue();
-      const data = {
+      const userData = {
         ID: user.ID,
         user_email: formValues.email,
       };
 
-      const storedUserString = localStorage.getItem("user");
-
-      const currentUser = JSON.parse(storedUserString);
-
-      currentUser.user_email = data.user_email;
-
-      const updatedUserString = JSON.stringify(currentUser);
-
-      localStorage.setItem("user", updatedUserString);
-
-      const options = {
-        method: "PUT",
-        url: `http://127.0.0.1/users/id?userId=${user.ID}`,
-        data: JSON.stringify({ data }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-
-      axios
-        .request(options)
-        .then(function (response) {
-          if (response.error) {
-            setMessage(
-              "Houve um erro na actualizaºão do seu e-mail. (" +
-                response.error +
-                ".)"
-            );
-            setStatus("error");
-            setIsModalOpen(true);
-          } else {
-            setMessage("O seu e-mail foi actualizado com sucesso.");
-            setStatus("success");
-            setIsModalOpen(true);
+      try {
+        const response = await fetch(
+          "https://backoffice.petplushies.pt/wp-json/wc/v3/update_account_data",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userData }),
           }
-        })
-        .catch(function (error) {
-          setMessage(
-            "Houve um erro na actualização do seu e-mail. (" +
-              error.error +
-              ".)"
-          );
+        );
+        const responseData = await response.json();
+        if (responseData.success) {
+          const storedUserString = localStorage.getItem("user");
+
+          const currentUser = JSON.parse(storedUserString);
+          currentUser.user_email = userData.user_email;
+
+          const updatedUserString = JSON.stringify(currentUser);
+          localStorage.setItem("user", updatedUserString);
+
+          setMessage(responseData.message);
+          setStatus("success");
+          setIsModalOpen(true);
+        } else {
+          setMessage(responseData.message);
           setStatus("error");
           setIsModalOpen(true);
-        });
+        }
+      } catch (error) {
+        console.error(error);
+      }
     });
   };
 
   const handleSubmitPersonalData = () => {
-    form1.validateFields().then(() => {
+    form1.validateFields().then(async () => {
       const formValues = form1.getFieldsValue();
-      const dataUser = {
+      const userData = {
         id: user.ID,
         billing: {
           first_name: formValues.first_name,
@@ -226,41 +206,31 @@ const MyAccount = () => {
         },
       };
 
-      const options = {
-        method: "PUT",
-        url: `http://127.0.0.1/customers/id?userId=${user.ID}`,
-        data: JSON.stringify({ dataUser }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-
-      axios
-        .request(options)
-        .then(function (response) {
-          if (response.error) {
-            setMessage(
-              "Houve um erro na actualização dos seus dados. (" +
-                response.error +
-                ".)"
-            );
-            setStatus("error");
-            setIsModalOpen(true);
-          } else {
-            setMessage("Os seus dados foram actualizados com sucesso.");
-            setStatus("success");
-            setIsModalOpen(true);
+      try {
+        const response = await fetch(
+          "https://backoffice.petplushies.pt/wp-json/wc/v3/update_personal_data",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userData }),
           }
-        })
-        .catch(function (error) {
-          setMessage(
-            "Houve um erro na actualização dos seus dados. (" +
-              error.error +
-              ".)"
-          );
+        );
+        const responseData = await response.json();
+        console.log(responseData);
+        if (responseData.success) {
+          setMessage(responseData.message);
+          setStatus("success");
+          setIsModalOpen(true);
+        } else {
+          setMessage(responseData.message);
           setStatus("error");
           setIsModalOpen(true);
-        });
+        }
+      } catch (error) {
+        console.error(error);
+      }
     });
   };
 
@@ -320,15 +290,24 @@ const MyAccount = () => {
       key: "orders",
       children: (
         <StyledTable
-          columns={tableColumns()}
+          columns={tableColumns}
           dataSource={orders}
           pagination={false}
-          rowKey="id"
+          rowKey="order_id"
           locale={{ emptyText: <CustomNoData /> }}
+          loading={loadingTable}
         />
       ),
     },
   ];
+
+  const handleTabChange = (key) => {
+    if (key == "orders") {
+      //get a spinner to load inside the tab element
+      setLoadingTable(true);
+      fetchOrders(user.ID);
+    }
+  };
 
   return (
     <>
@@ -354,7 +333,11 @@ const MyAccount = () => {
 
             {!loading && !error && (
               <div>
-                <Tabs tabPosition={"left"} items={tabs} />
+                <Tabs
+                  tabPosition={"left"}
+                  items={tabs}
+                  onChange={handleTabChange}
+                />
                 <StyledButton
                   size="large"
                   text="Sair da conta"
