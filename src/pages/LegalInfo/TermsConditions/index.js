@@ -1,28 +1,83 @@
 import styled from "styled-components";
-import { Row } from "antd";
+import { Row, Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
+import { useState, useEffect } from "react";
 
 import { PageHeader } from "components";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
 const TermsConditions = () => {
+  const [post, setPost] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const fetchTermsConditions = async () => {
+      try {
+        const response = await fetch(
+          `https://backoffice.petplushies.pt/wp-json/wc/v3/get_terms_conditions`
+        );
+        const data = await response.json();
+
+        if (data.success) {
+          setPost(data.post[0]);
+          setLoading(false);
+        } else {
+          setLoading(false);
+          setMessage(data.message);
+        }
+      } catch (error) {
+        setError(true);
+        setMessage(error);
+      }
+    };
+
+    fetchTermsConditions();
+  }, []);
+
   return (
     <>
       <PageHeader
-        title="Termos & Condições"
+        title="Termos e Condições"
         img={DummyImg}
-        alt="Termos & Condições - Pet Plusies"
+        alt="Termos e Condições - Pet Plushies"
       />
       <Container>
-        <ContentLocked></ContentLocked>
+        {loading && !error && (
+          <Spinner
+            indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
+          />
+        )}
+        {error && !loading && <>{message}</>}
+        {post != undefined && (
+          <ContentLocked
+            dangerouslySetInnerHTML={{ __html: post.post_content }}
+          />
+        )}
       </Container>
     </>
   );
 };
 
+const Spinner = styled(Spin)`
+  position: absolute;
+  background-color: var(--white);
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const Container = styled.div`
   width: 100%;
   background-color: var(--white);
+  position: relative;
 `;
 
 const Content = styled(Row)`
@@ -35,6 +90,11 @@ const ContentLocked = styled(Content)`
   max-width: 1440px;
   margin: auto;
   min-height: 500px;
+  padding-top: 30px;
+
+  & h2 {
+    margin-top: 30px;
+  }
 `;
 
 export default {

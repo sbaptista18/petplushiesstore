@@ -46,7 +46,7 @@ const Blog = () => {
 
   return (
     <>
-      <PageHeader title="Blog" img={DummyImg} alt="Blog - Pet Plusies" />
+      <PageHeader title="Blog" img={DummyImg} alt="Blog - Pet Plushies" />
       <Container>
         <ContentLocked>
           <div>

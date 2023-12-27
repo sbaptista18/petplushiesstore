@@ -18,7 +18,7 @@ const AboutUs = () => {
       <PageHeader
         title="Sobre Nós"
         img={DummyImg}
-        alt="Sobre Nós - Pet Plusies"
+        alt="Sobre Nós - Pet Plushies"
       />
       <Container>
         <ContentLocked>
@@ -66,7 +66,7 @@ const AboutUs = () => {
               </Icon>
               <Title>100% Portuguesa</Title>
               <Text>
-                A Pet Plusies é uma marca 100% Portuguesa registada no INPI.
+                A Pet Plushies é uma marca 100% Portuguesa registada no INPI.
                 Preocupamo-nos sempre em utilizar materiais portugueses sempre
                 que possível.
               </Text>

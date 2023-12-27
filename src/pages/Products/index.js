@@ -484,7 +484,7 @@ const Products = () => {
       <PageHeader
         title="Produtos"
         img={DummyImg}
-        alt="Produtos - Pet Plusies"
+        alt="Produtos - Pet Plushies"
       />
       <Container>
         <ContentLocked>

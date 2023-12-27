@@ -36,7 +36,7 @@ const RedefinePassword = () => {
       <PageHeader
         title="Redefinir password"
         img={DummyImg}
-        alt="Redefinir password - Pet Plusies"
+        alt="Redefinir password - Pet Plushies"
       />
       <Container>
         <ContentLocked>

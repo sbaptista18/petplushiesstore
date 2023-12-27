@@ -7,8 +7,6 @@ import moment from "moment";
 
 import { Breadcrumbs, ShareSocials, PageHeader } from "components";
 
-import DummyImg from "assets/images/batcat-1.jpg";
-
 moment.locale("pt");
 
 const BlogPost = () => {
@@ -25,8 +23,6 @@ const BlogPost = () => {
           `https://backoffice.petplushies.pt/wp-json/wc/v3/get_blog_post_by_slug?slug=${postUrl}`
         );
         const data = await response.json();
-
-        console.log("data:", data.post);
 
         if (data.success) {
           setPost(data.post);
@@ -57,7 +53,7 @@ const BlogPost = () => {
           <PageHeader
             title={post.title}
             img={post.featured_image}
-            alt={`${post.title} - Pet Plusies`}
+            alt={`${post.title} - Pet Plushies`}
           />
           <Container>
             <ContentLocked>

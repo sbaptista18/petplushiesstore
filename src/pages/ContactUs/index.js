@@ -11,7 +11,7 @@ const ContactUs = () => {
       <PageHeader
         title="Contactos"
         img={DummyImg}
-        alt="Contactos - Pet Plusies"
+        alt="Contactos - Pet Plushies"
       />
       <Container>
         <ContentLocked></ContentLocked>

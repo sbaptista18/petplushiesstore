@@ -84,7 +84,7 @@ const LogIn = () => {
       <PageHeader
         title="Entrar na conta"
         img={DummyImg}
-        alt="Entrar na conta - Pet Plusies"
+        alt="Entrar na conta - Pet Plushies"
       />
       <Container>
         <ContentLocked>

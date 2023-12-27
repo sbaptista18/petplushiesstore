@@ -73,7 +73,7 @@ const SignIn = () => {
       <PageHeader
         title="Registar conta"
         img={DummyImg}
-        alt="Registar conta - Pet Plusies"
+        alt="Registar conta - Pet Plushies"
       />
       <Container>
         <ModalMessage

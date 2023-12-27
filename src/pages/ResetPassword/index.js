@@ -33,7 +33,7 @@ const ResetPassword = () => {
       <PageHeader
         title="Recuperar password"
         img={DummyImg}
-        alt="Recuperar password - Pet Plusies"
+        alt="Recuperar password - Pet Plushies"
       />
       <Container>
         <ContentLocked>

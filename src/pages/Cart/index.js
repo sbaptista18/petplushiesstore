@@ -231,7 +231,7 @@ const Cart = () => {
       <PageHeader
         title="Carrinho"
         img={DummyImg}
-        alt="Carrinho - Pet Plusies"
+        alt="Carrinho - Pet Plushies"
       />
       <Container>
         <ModalMessage

@@ -29,12 +29,12 @@ export const LegalMenuItems = [
   },
   {
     key: 2,
-    label: "Termos & Condições",
+    label: "Termos e Condições",
     path: "termos-e-condicoes",
   },
   {
     key: 3,
-    label: "Envios & Devoluções",
+    label: "Envios e Devoluções",
     path: "envios-e-devolucoes",
   },
   {

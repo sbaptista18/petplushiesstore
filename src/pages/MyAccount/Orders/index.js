@@ -121,7 +121,7 @@ const Order = () => {
       <PageHeader
         title={`Encomenda #${orderId}`}
         img={DummyImg}
-        alt={`Encomenda #${orderId} - Pet Plusies`}
+        alt={`Encomenda #${orderId} - Pet Plushies`}
       />
       <Container>
         <ContentLocked>

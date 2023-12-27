@@ -314,7 +314,7 @@ const MyAccount = () => {
       <PageHeader
         title="A minha conta"
         img={DummyImg}
-        alt="A minha conta - Pet Plusies"
+        alt="A minha conta - Pet Plushies"
       />
       <Container>
         <ModalMessage

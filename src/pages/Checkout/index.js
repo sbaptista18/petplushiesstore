@@ -438,7 +438,7 @@ const Checkout = () => {
       <PageHeader
         title="Finalizar Compra"
         img={DummyImg}
-        alt="Finalizar Compra - Pet Plusies"
+        alt="Finalizar Compra - Pet Plushies"
       />
       <Container>
         <ModalMessage
