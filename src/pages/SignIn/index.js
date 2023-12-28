@@ -213,7 +213,7 @@ const SignIn = () => {
                             ? Promise.resolve()
                             : Promise.reject(
                                 new Error(
-                                  "Tem de aceitar os Termos & Condições"
+                                  "Tem de aceitar os Termos e Condições"
                                 )
                               ),
                       },
@@ -222,7 +222,7 @@ const SignIn = () => {
                     <Checkbox>
                       Declaro que li os{" "}
                       <Link to="/termos-e-condicoes" target="_blank">
-                        Termos & Condições
+                        Termos e Condições
                       </Link>
                     </Checkbox>
                   </Form.Item>
@@ -236,7 +236,8 @@ const SignIn = () => {
                     extra="Só queremos ter a certeza que é um humano."
                   >
                     <ReCAPTCHA
-                      sitekey="6LeeeyEpAAAAAHEmtDr81K8xOhEkbCcM32FGYqtF"
+                      sitekey="6LeHeCEpAAAAAAfZ4YEPORZNPPMY-0ZHr_uldF3H
+                      "
                       onChange={handleVerification}
                     />
                   </Form.Item>
