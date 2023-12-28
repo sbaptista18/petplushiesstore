@@ -17,6 +17,7 @@ import MyAccount from "./MyAccount";
 import ResetPassword from "./ResetPassword";
 import RedefinePassword from "./RedefinePassword";
 import Orders from "./MyAccount/Orders";
+import TrackOrder from "./TrackOrder";
 
 export default [
   AboutUs,
@@ -38,4 +39,5 @@ export default [
   ResetPassword,
   RedefinePassword,
   Orders,
+  TrackOrder,
 ];

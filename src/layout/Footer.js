@@ -8,7 +8,11 @@ import FacebookIcon from "assets/images/fb-icon.svg";
 import InstagramIcon from "assets/images/ig-icon.svg";
 import TiktokIcon from "assets/images/tt-icon.svg";
 
-import { MainMenuItems, LegalMenuItems } from "../data/menuItems";
+import {
+  MainMenuItems,
+  SecondaryMenuItems,
+  LegalMenuItems,
+} from "../data/menuItems";
 
 const { Footer } = Layout;
 
@@ -23,6 +27,7 @@ const onClickSectionRegistry = {
   "termos-e-condicoes": (history) => history.push("/termos-e-condicoes"),
   "envios-e-devolucoes": (history) => history.push("/envios-e-devolucoes"),
   "perguntas-frequentes": (history) => history.push("/perguntas-frequentes"),
+  "seguir-encomenda": (history) => history.push("/seguir-encomenda"),
 };
 
 const buildMenuItemProps = (item) => {
@@ -59,6 +64,14 @@ const PPS_Footer = () => {
           <p>
             <a href="mailto:geral@petplushies.pt">geral@petplushies.pt</a>
           </p>
+          <StyledH3>Links Uteis</StyledH3>
+          <StyledMenu
+            mode="vertical"
+            items={SecondaryMenuItems.map(buildMenuItemProps)}
+            onClick={({ key }) => {
+              onClickSectionRegistry[key](history);
+            }}
+          />
         </Col>
         <Col span={6}>
           <StyledH3>Siga-nos nas Redes Sociais</StyledH3>
@@ -142,7 +155,6 @@ const StyledFooter = styled(Footer)`
   }
 
   & .ant-menu {
-    height: 100%;
     background: transparent;
     border: none;
     font-size: 16px;
@@ -155,6 +167,8 @@ const StyledFooter = styled(Footer)`
 
     & .ant-menu-item {
       background: transparent;
+      height: auto;
+      line-height: 1.2;
     }
   }
 `;

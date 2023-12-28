@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Row, Col, Spin } from "antd";
+import { Row, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 
@@ -34,9 +34,9 @@ const Blog = () => {
         setMessage(data.message);
       }
     } catch (error) {
-      setErrorPosts(true);
-      setLoadingPosts(false);
-      setMessagePosts(data.message);
+      setError(true);
+      setLoading(false);
+      setMessage(data.message);
     }
   };
 

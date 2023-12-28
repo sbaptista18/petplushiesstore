@@ -72,6 +72,7 @@ const Product = () => {
 
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
+  const { isLoggedIn } = useCart();
   const [form] = useForm();
 
   const handleDataFromChild = (data) => {
@@ -384,7 +385,7 @@ const Product = () => {
   };
 
   useEffect(() => {
-    const storedSessionData = getSessionDataFromLocalStorage();
+    const storedSessionData = getSessionDataFromLocalStorage(isLoggedIn);
     setSessionKey(storedSessionData.key);
   }, []);
 

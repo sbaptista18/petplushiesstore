@@ -44,8 +44,9 @@ const Checkout = () => {
   const history = useHistory();
 
   useEffect(() => {
-    if (cartId == null) history.replace("/carrinho");
-    else fetchCartId(cartId);
+    // if (cartId == null) history.replace("/carrinho");
+    // else
+    fetchCartId(cartId);
   }, [cartId]);
 
   useEffect(() => {
@@ -238,7 +239,7 @@ const Checkout = () => {
         return {
           product_id: p.product_id,
           quantity: p.product_qty,
-          total: p.product_net_revenue + p.tax_amount,
+          total: parseFloat(p.product_gross_revenue).toFixed(2),
           total_tax: p.tax_amount,
           meta_data: formatMetaFromExtras(p.product_extras),
           tax_class: "",
@@ -299,7 +300,7 @@ const Checkout = () => {
           body: JSON.stringify({ dataOrder }),
         }
       );
-      await response.json();
+      const data = await response.json();
     } catch (error) {
       console.error(error);
     }
@@ -315,12 +316,13 @@ const Checkout = () => {
           : 0;
 
         const dataOrder = buildOrderData(cartId, formValues, userId, orderId);
+        console.log(dataOrder);
 
         createOrder(dataOrder)
           .then(function (response) {
-            updateProductsNr(0);
-            setProductsCart([]);
-            setProducts([]);
+            // updateProductsNr(0);
+            // setProductsCart([]);
+            // setProducts([]);
 
             if (createAccount) {
               createCustomer(formValues)
@@ -354,9 +356,9 @@ const Checkout = () => {
                 setStatus("success");
                 setIsModalOpen(true);
 
-                setTimeout(() => {
-                  history.replace("/");
-                }, 5000);
+                // setTimeout(() => {
+                //   history.replace("/");
+                // }, 5000);
               } else {
                 setMessage(response.message);
                 setStatus("error");

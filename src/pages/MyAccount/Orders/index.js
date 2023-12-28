@@ -43,6 +43,9 @@ const tableColumns = () => [
         case "processing":
           status = "Em processamento";
           break;
+        case "shipment-sent":
+          status = "Encomenda enviada";
+          break;
         default:
           status = "default";
           break;
@@ -83,6 +86,19 @@ const tableColumns = () => [
       return (
         <div>
           {record}
+          &euro;
+        </div>
+      );
+    },
+  },
+  {
+    title: "IVA",
+    dataIndex: "total",
+    key: "total",
+    render: (record) => {
+      return (
+        <div>
+          {(record * 0.23).toFixed(2)}
           &euro;
         </div>
       );
@@ -146,11 +162,14 @@ const Order = () => {
                   </TableTitle>
                   <TableHeader>
                     <StyledCol span={3}>Imagem</StyledCol>
-                    <StyledCol span={8}>Produto</StyledCol>
-                    <StyledCol span={6}>Quantidade</StyledCol>
-                    <StyledCol span={6}>Preço</StyledCol>
+                    <StyledCol span={6}>Produto</StyledCol>
+                    <StyledCol span={6}>Extras</StyledCol>
+                    <StyledCol span={2}>Quantidade</StyledCol>
+                    <StyledCol span={3}>Preço</StyledCol>
+                    <StyledCol span={3}>IVA</StyledCol>
                   </TableHeader>
                   {order[0].products.map((i) => {
+                    const extras = i.product_extras;
                     return (
                       <StyledRow key={i.id}>
                         <StyledCol span={3}>
@@ -160,14 +179,32 @@ const Order = () => {
                             alt={`${i.name} - Pet Plushies`}
                           />
                         </StyledCol>
-                        <StyledCol span={8}>
+                        <StyledCol span={6}>
                           <Link target="_blank" to={`/produtos/${i.slug}`}>
                             {i.name}
                           </Link>
                         </StyledCol>
-                        <StyledCol span={6}>{i.quantity}</StyledCol>
-                        <StyledCol span={6}>
+                        <StyledCol
+                          span={6}
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          {Object.keys(extras).map((key) => (
+                            <span key={key}>
+                              <strong>{key}:</strong> {extras[key]}
+                            </span>
+                          ))}
+                        </StyledCol>
+                        <StyledCol span={2}>{i.quantity}</StyledCol>
+                        <StyledCol span={3}>
                           {i.total_price}
+                          &euro;
+                        </StyledCol>
+                        <StyledCol span={3}>
+                          {i.tax}
                           &euro;
                         </StyledCol>
                       </StyledRow>

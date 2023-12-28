@@ -21,6 +21,19 @@ export const MainMenuItems = [
   },
 ];
 
+export const SecondaryMenuItems = [
+  {
+    key: 1,
+    label: "Seguir Encomenda",
+    path: "seguir-encomenda",
+  },
+  {
+    key: 2,
+    label: "Perguntas Frequentes",
+    path: "perguntas-frequentes",
+  },
+];
+
 export const LegalMenuItems = [
   {
     key: 1,
@@ -36,10 +49,5 @@ export const LegalMenuItems = [
     key: 3,
     label: "Envios e Devoluções",
     path: "envios-e-devolucoes",
-  },
-  {
-    key: 4,
-    label: "Perguntas Frequentes",
-    path: "perguntas-frequentes",
   },
 ];
