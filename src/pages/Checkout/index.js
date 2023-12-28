@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import { Row, Col, Table, Form, Spin } from "antd";
+import { Row, Col, Table, Form, Spin, Input } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import { PayPalButton } from "react-paypal-button-v2";
@@ -10,7 +10,6 @@ import { tableColumnsCheckout } from "fragments";
 import { useCart } from "reducers";
 
 import CheckoutForm from "./form";
-import { PortugalDistricts } from "./data";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -41,14 +40,15 @@ const Checkout = () => {
   const [shipMethods, setShipMethods] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState({});
   const [form] = Form.useForm();
+  const [form_coupon] = Form.useForm();
   const [userPersonalData, setUserPersonalData] = useState({});
+  const [coupon, setCoupon] = useState("");
 
   const history = useHistory();
 
   useEffect(() => {
-    // if (cartId == null) history.replace("/carrinho");
-    // else
-    fetchCartId(cartId);
+    if (cartId == null) history.replace("/carrinho");
+    else fetchCartId(cartId);
   }, [cartId]);
 
   useEffect(() => {
@@ -172,6 +172,28 @@ const Checkout = () => {
     }
   };
 
+  const fetchCoupon = async () => {
+    const couponCode = form_coupon.getFieldsValue().coupon_code;
+    try {
+      const response = await fetch(
+        `https://backoffice.petplushies.pt/wp-json/wc/v3/get_coupon?coupon_code=${couponCode}`
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        setCoupon(data.coupon);
+      } else {
+        setMessage(data.message);
+        setStatus("error");
+        setIsModalOpen(true);
+      }
+    } catch (error) {
+      setMessage("Houve um erro na verificação do cupão. Tente novamente.");
+      setStatus("error");
+      setIsModalOpen(true);
+    }
+  };
+
   const totalProductNetRevenue = productsCart.reduce((sum, item) => {
     return sum + parseFloat(item.product_gross_revenue);
   }, 0);
@@ -214,7 +236,7 @@ const Checkout = () => {
     city: formValues.local,
     state: formValues.district,
     postcode: formValues.postcode,
-    country: formValues.country == 2 ? "PT" : "",
+    country: formValues.country,
     email: formValues.email,
     phone: formValues.phone,
   });
@@ -228,10 +250,10 @@ const Checkout = () => {
     city: formValues.local_other || formValues.local,
     state: formValues.district_other || formValues.district,
     postcode: formValues.postcode_other || formValues.postcode,
-    country: formValues.country_other == 2 ? "PT" : "",
+    country: formValues.country_other,
   });
 
-  const buildOrderData = (cartId, formValues, userId, orderId) => {
+  const buildOrderData = (cartId, formValues, userId, orderId, coupon_code) => {
     const commonOrderData = {
       cart_id: cartId,
       payment_method: paymentMethod.value,
@@ -261,6 +283,7 @@ const Checkout = () => {
           total: shippingCost.toString(),
         },
       ],
+      coupon_code: coupon_code,
     };
 
     return formValues.first_name_other
@@ -309,6 +332,20 @@ const Checkout = () => {
         }
       );
       const data = await response.json();
+
+      if (data.success) {
+        setMessage(response.message);
+        setStatus("success");
+        setIsModalOpen(true);
+
+        setTimeout(() => {
+          history.replace("/");
+        }, 5000);
+      } else {
+        setMessage(response.message);
+        setStatus("error");
+        setIsModalOpen(true);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -323,8 +360,13 @@ const Checkout = () => {
           ? parseInt(JSON.parse(localStorage.getItem("user")).ID)
           : 0;
 
-        const dataOrder = buildOrderData(cartId, formValues, userId, orderId);
-        console.log(dataOrder);
+        const dataOrder = buildOrderData(
+          cartId,
+          formValues,
+          userId,
+          orderId,
+          coupon.coupon_code
+        );
 
         createOrder(dataOrder)
           .then(function (response) {
@@ -506,12 +548,68 @@ const Checkout = () => {
                   </div>
                 )}
               </Shipping>
+              <Form
+                form={form_coupon}
+                name="coupon"
+                labelCol={{
+                  span: 5,
+                }}
+                wrapperCol={{
+                  span: 19,
+                }}
+              >
+                <Form.Item name="coupon_code" label="Codigo promocional">
+                  <Input />
+                </Form.Item>
+                <Form.Item
+                  style={{ display: "flex", justifyContent: "flex-end" }}
+                >
+                  <Button
+                    size="small"
+                    type="primary"
+                    text="Aplicar cupão"
+                    onClick={() => fetchCoupon()}
+                  />
+                </Form.Item>
+              </Form>
+              {coupon != "" && (
+                <Shipping>
+                  <div>Desconto do cupao</div>
+                  <div>
+                    {coupon.discount_type === "fixed_cart"
+                      ? coupon.amount
+                      : (
+                          (totalProductNetRevenue + shippingCost) *
+                          coupon.amount
+                        ).toFixed(2)}
+                    &euro;
+                  </div>
+                </Shipping>
+              )}
               <Border />
               <Total>
-                <div>Subtotal</div>
+                <div>Total</div>
                 <div>
-                  {(totalProductNetRevenue + shippingCost).toFixed(2)}
-                  &euro;
+                  {coupon !== ""
+                    ? coupon.discount_type === "fixed_cart"
+                      ? (
+                          totalProductNetRevenue +
+                          shippingCost -
+                          coupon.amount
+                        ).toFixed(2)
+                      : // Additional condition for else if
+                      coupon.discount_type === "percent"
+                      ? // Handle else if condition
+                        (
+                          totalProductNetRevenue +
+                          shippingCost -
+                          (totalProductNetRevenue + shippingCost) *
+                            coupon.amount
+                        ).toFixed(2)
+                      : // Default case if none of the conditions are met
+                        (totalProductNetRevenue + shippingCost).toFixed(2)
+                    : // Default case if coupon is an empty string
+                      (totalProductNetRevenue + shippingCost).toFixed(2)}
                 </div>
               </Total>
               {paymentMethod.label == "PayPal" ? (

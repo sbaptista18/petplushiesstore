@@ -21,7 +21,6 @@ const CheckoutForm = ({
   data,
 }) => {
   const [countries, setCountries] = useState([]);
-  // const [selectedCountry, setSelectedCountry] = useState();
 
   useEffect(() => {
     const fetchCountries = async () => {

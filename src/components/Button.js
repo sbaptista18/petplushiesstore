@@ -33,11 +33,20 @@ const StyledButton = styled(Button)`
   box-shadow: none;
   transition: 0.25s;
   cursor: pointer;
+  background-color: var(--light-blue);
+  color: var(--black);
 
   &.ant-btn-lg {
     font-size: 14px;
     font-weight: 500;
     height: unset;
+    background-color: var(--light-blue);
+    color: var(--black);
+  }
+
+  &.ant-btn-sm {
+    height: 30px;
+    padding: 0 20px;
     background-color: var(--light-blue);
     color: var(--black);
   }
