@@ -92,7 +92,10 @@ const PPS_Footer = () => {
             onClickSectionRegistry[key](history);
           }}
         />
-        <span>© 2023 Pet Plushies. Todos os direitos reservados.</span>
+        <span>
+          © {new Date().getFullYear()} Pet Plushies. Todos os direitos
+          reservados.
+        </span>
       </SubFooter>
     </StyledFooter>
   );

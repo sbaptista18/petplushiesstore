@@ -44,9 +44,8 @@ const Checkout = () => {
   const history = useHistory();
 
   useEffect(() => {
-    // if (cartId == null) history.replace("/carrinho");
-    // else
-    fetchCartId(cartId);
+    if (cartId == null) history.replace("/carrinho");
+    else fetchCartId(cartId);
   }, [cartId]);
 
   useEffect(() => {
