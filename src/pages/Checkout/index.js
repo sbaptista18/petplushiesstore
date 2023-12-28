@@ -121,10 +121,9 @@ const Checkout = () => {
       const zoneMethods = shippingMethod.zone_methods[0];
 
       const method = Object.values(zoneMethods).find((method) => {
+        setShippingTitle(method.title);
         const title = method.title.toLowerCase();
         const match = title.match(/(\d+)\s*g\s*a\s*(\d+)?/);
-
-        setShippingTitle(title);
 
         if (match) {
           const minWeight = parseInt(match[1]);
@@ -501,7 +500,10 @@ const Checkout = () => {
                 {shippingMessage != "" ? (
                   <div>{shippingMessage}</div>
                 ) : (
-                  <div>{shippingCost.toFixed(2)}&euro;</div>
+                  <div>
+                    {shippingTitle != "" && <>{`${shippingTitle}: `}</>}
+                    <>{shippingCost.toFixed(2)}&euro;</>
+                  </div>
                 )}
               </Shipping>
               <Border />
