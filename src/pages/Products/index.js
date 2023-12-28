@@ -600,7 +600,7 @@ const CategoryListItem = styled.li`
 `;
 
 const CategoryListSubItem = styled(CategoryListItem)`
-  color: var(--green);
+  color: var(--light-blue);
   margin-left: 20px;
 `;
 

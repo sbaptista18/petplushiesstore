@@ -87,7 +87,7 @@ const StyledSlider = styled(Slider)`
       &.slick-active {
         & button {
           &:before {
-            color: var(--green);
+            color: var(--light-blue);
           }
         }
       }

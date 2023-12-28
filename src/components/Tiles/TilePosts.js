@@ -55,7 +55,7 @@ const Flag = styled.div`
 const Category = styled(Flag)`
   left: unset;
   right: 0;
-  background-color: var(--green);
+  background-color: var(--light-blue);
 `;
 
 const Text = styled.div`

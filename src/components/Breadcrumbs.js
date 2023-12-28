@@ -23,7 +23,7 @@ Breadcrumbs.propTypes = {
 const StyledBreadcrumb = styled(Breadcrumb)`
   margin-bottom: 15px;
   a {
-    color: var(--green);
+    color: var(--light-blue);
 
     &:hover {
       color: var(--navy-blue);
