@@ -5,14 +5,16 @@ import {
   getSessionDataFromLocalStorage,
 } from "helpers";
 
-const CreateCartKey = () => {
+const CreateCartKey = (token) => {
   const [sessionData, setSessionData] = useState(null);
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
   useEffect(() => {
-    const storedSessionData = getSessionDataFromLocalStorage();
+    const storedSessionData = getSessionDataFromLocalStorage(isLoggedIn);
 
-    if (storedSessionData) {
-      if (storedSessionData.timestamp) {
+    if (storedSessionData != null) {
+      //to check if the data retrived is a temp session
+      if (!isLoggedIn) {
         const { key, timestamp } = storedSessionData;
         const currentTime = new Date().getTime();
         const elapsedTime = currentTime - timestamp;
@@ -32,9 +34,9 @@ const CreateCartKey = () => {
     } else {
       const newSessionKey = generateSessionKey();
       setSessionData(newSessionKey);
-      setSessionInLocalStorage(newSessionKey);
+      setSessionInLocalStorage(newSessionKey, isLoggedIn);
     }
-  }, []);
+  }, [token]);
 
   return sessionData;
 };

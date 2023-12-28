@@ -68,6 +68,7 @@ const MyAccount = () => {
   const [form1] = Form.useForm();
 
   const { clearCartState } = useCart();
+  const { setLoggedIn } = useCart();
 
   const data = localStorage.getItem("token");
 
@@ -109,25 +110,29 @@ const MyAccount = () => {
   };
 
   const handleLogOut = async () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("userCart");
+    console.log("logout");
     try {
       await axios.post(
         `https://backoffice.petplushies.pt/?rest_route=/simple-jwt-login/v1/auth/revoke&JWT=${data}`
       );
+      // localStorage.removeItem("token");
+      // localStorage.removeItem("user");
+      // localStorage.removeItem("userCart");
       clearCartState();
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      localStorage.removeItem("userCart");
-      history.replace("/login");
+      setLoggedIn(false);
+      // setTimeout(() => {
+      //   history.replace("/login");
+      // }, 3000);
     } catch (error) {
       setError(error.response.data.message);
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      localStorage.removeItem("userCart");
-      history.replace("/login");
+      // localStorage.removeItem("token");
+      // localStorage.removeItem("user");
+      // localStorage.removeItem("userCart");
+      setLoggedIn(false);
       clearCartState();
+      // setTimeout(() => {
+      //   history.replace("/login");
+      // }, 3000);
     }
   };
 

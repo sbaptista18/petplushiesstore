@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 
 const CartContext = createContext();
 
@@ -6,7 +6,9 @@ export const CartProvider = ({ children }) => {
   const [sessionKey, setSessionKey] = useState(null);
   const [cartId, setCartId] = useState(null);
   const [productsNr, setProductsNr] = useState(0);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // New state
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem("isLoggedIn") === "true" || false
+  );
 
   const setSessionKeyAndCartId = (sessionKey, cartId) => {
     setSessionKey(sessionKey);
@@ -24,11 +26,19 @@ export const CartProvider = ({ children }) => {
     localStorage.removeItem("user");
     localStorage.removeItem("userCart");
     setProductsNr(0);
+    setIsLoggedIn(false); // Set isLoggedIn to false on logout
+    localStorage.removeItem("isLoggedIn");
   };
 
   const setLoggedIn = (loggedIn) => {
+    localStorage.setItem("isLoggedIn", Boolean(loggedIn));
     setIsLoggedIn(loggedIn);
   };
+
+  // Use useEffect to update the state from localStorage on component mount
+  useEffect(() => {
+    setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true");
+  }, []);
 
   return (
     <CartContext.Provider

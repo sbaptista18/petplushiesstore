@@ -47,10 +47,12 @@ const PPS_Header = () => {
   const { setSessionKeyAndCartId } = useCart();
   const { updateProductsNr } = useCart();
   const { productsNr } = useCart();
+  const { isLoggedIn } = useCart();
 
   const [updateHeader, setUpdateHeader] = useState(false);
 
-  CreateCartKey();
+  const token = localStorage.getItem("token");
+  CreateCartKey(token);
 
   const location = useLocation();
 
@@ -104,7 +106,7 @@ const PPS_Header = () => {
     // You can perform any other actions or updates here
     // Make sure to clean up any resources or subscriptions if necessary
 
-    const storedSessionData = getSessionDataFromLocalStorage();
+    const storedSessionData = getSessionDataFromLocalStorage(isLoggedIn);
     let api_call_count = 0;
 
     if (storedSessionData) {
@@ -207,7 +209,7 @@ const PPS_Header = () => {
         <IconLink
           location={location.pathname}
           style={{ color }}
-          to={localStorage.getItem("token") != null ? "/minha-conta" : "/login"}
+          to={token != null ? "/minha-conta" : "/login"}
         >
           <UserOutlined />
         </IconLink>

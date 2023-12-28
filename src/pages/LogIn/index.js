@@ -17,6 +17,11 @@ const LogIn = () => {
   const [form] = Form.useForm();
   const { setLoggedIn } = useCart();
 
+  if (localStorage.getItem("isLoggedIn") === "false") {
+    localStorage.removeItem("user");
+    localStorage.removeItem("userCart");
+  }
+
   const handleAuth = async () => {
     form.validateFields().then(async () => {
       const formValues = form.getFieldsValue();
@@ -57,10 +62,12 @@ const LogIn = () => {
   const handleLogin = async (data) => {
     const jwtToken = data.jwt[0].token;
     const user = data.user;
+    setLoggedIn(true);
     try {
       const response = await axios.get(
         `https://backoffice.petplushies.pt/?rest_route=/simple-jwt-login/v1/autologin&JWT=${jwtToken}`
       );
+      localStorage.removeItem("tempCart");
 
       if (response.data.success) {
         localStorage.setItem("user", JSON.stringify(user));
@@ -70,9 +77,9 @@ const LogIn = () => {
         };
 
         localStorage.setItem("userCart", JSON.stringify(cartData));
-        localStorage.removeItem("tempCart");
-        setLoggedIn(true);
-        history.replace("/minha-conta", { data: jwtToken });
+        setTimeout(() => {
+          history.replace("/minha-conta", { data: jwtToken });
+        }, 1000);
       }
     } catch (error) {
       setError(error.response.data.data.message);
