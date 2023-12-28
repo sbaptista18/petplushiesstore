@@ -185,7 +185,7 @@ const Products = () => {
             stock_status: item.stock_status,
             picture: item.picture,
             url: item.url,
-            category: item.categories,
+            category: item.categories[0],
             post_modified: item.post_modified,
           };
         });
@@ -392,16 +392,19 @@ const Products = () => {
         if (filteredProducts.length === 0) {
           setNoResults(true);
         } else {
-          const mappedProducts = filteredProducts.map((item) => ({
-            id: item.id,
-            name: item.name,
-            price: _.toNumber(item.price),
-            stock: item.stock,
-            stock_status: item.stock_status,
-            picture: item.picture,
-            url: item.url,
-            category: item.category,
-          }));
+          const mappedProducts = filteredProducts.map((item) => {
+            // console.log(item);
+            return {
+              id: item.id,
+              name: item.name,
+              price: _.toNumber(item.price),
+              stock: item.stock,
+              stock_status: item.stock_status,
+              picture: item.picture,
+              url: item.url,
+              category: item.category,
+            };
+          });
 
           // Update the local state
           setProducts(mappedProducts);

@@ -1,7 +1,7 @@
 import { Col, Row, Checkbox, Form, Input, Select, Radio } from "antd";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { paymentMethods } from "./data";
 
@@ -20,6 +20,25 @@ const CheckoutForm = ({
   form,
   data,
 }) => {
+  const [countries, setCountries] = useState([]);
+  // const [selectedCountry, setSelectedCountry] = useState();
+
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await fetch(
+          `https://backoffice.petplushies.pt/wp-json/wc/v3/get_selling_countries`
+        );
+        const data = await response.json();
+        setCountries(data.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchCountries();
+  }, []);
+
   useEffect(() => {
     if (Object.keys(data).length > 0) {
       form.setFieldsValue({
@@ -105,7 +124,16 @@ const CheckoutForm = ({
             name="country"
           >
             <Select value={country} onChange={handleCountry}>
-              <Select.Option value="2">Portugal</Select.Option>
+              {countries.map((c) => {
+                const country = c.name;
+                const code = c.code;
+
+                return (
+                  <Select.Option key={code} value={code}>
+                    {country}
+                  </Select.Option>
+                );
+              })}
             </Select>
           </Form.Item>
         </Col>
@@ -156,11 +184,18 @@ const CheckoutForm = ({
             name="district"
           >
             <Select>
-              {secondSelectOptions.map((option) => (
-                <Select.Option key={option} value={option}>
-                  {option}
-                </Select.Option>
-              ))}
+              {countries.map((c) => {
+                if (c.code === secondSelectOptions) {
+                  const states = c.states;
+                  const statesArray = Object.entries(states);
+                  return statesArray.map((s) => (
+                    <Select.Option key={s[0]} value={s[1]}>
+                      {s[1]}
+                    </Select.Option>
+                  ));
+                }
+                return null; // Add this to handle the case where the condition is not met
+              })}
             </Select>
           </Form.Item>
         </Col>

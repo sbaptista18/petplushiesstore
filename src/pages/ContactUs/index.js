@@ -1,11 +1,34 @@
 import styled from "styled-components";
 import { Row } from "antd";
+import { useState, useEffect } from "react";
 
 import { PageHeader } from "components";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
 const ContactUs = () => {
+  const [countries, setCountries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const fetcCountries = async () => {
+      try {
+        const response = await fetch(
+          `https://backoffice.petplushies.pt/wp-json/wc/v3/get_selling_countries`
+        );
+        const data = await response.json();
+
+        console.log(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetcCountries();
+  }, []);
+
   return (
     <>
       <PageHeader

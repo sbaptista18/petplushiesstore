@@ -37,6 +37,8 @@ const Checkout = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState();
   const [message, setMessage] = useState("");
+  const [shippingMessage, setShippingMessage] = useState("");
+  const [shipMethods, setShipMethods] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState({});
   const [form] = Form.useForm();
   const [userPersonalData, setUserPersonalData] = useState({});
@@ -147,18 +149,25 @@ const Checkout = () => {
   const fetchShippingZonesDetails = async (area) => {
     try {
       const response = await fetch(
-        `https://backoffice.petplushies.pt/wp-json/wc/v3/get_shipping_zones_by_area_id?id=${area}`
+        `https://backoffice.petplushies.pt/wp-json/wc/v3/get_shipping_zones_by_country_code?country_code=${area}`
       );
       const data = await response.json();
 
-      const weightGrs = totalWeight * 1000;
-      const shippingCost = calculateShippingCost(
-        data,
-        weightGrs,
-        totalProductNetRevenue
-      );
+      if (data.length > 0) {
+        const weightGrs = totalWeight * 1000;
+        const shippingCost = calculateShippingCost(
+          data,
+          weightGrs,
+          totalProductNetRevenue
+        );
 
-      setShippingCost(shippingCost);
+        setShippingMessage("");
+        setShipMethods(true);
+        setShippingCost(shippingCost);
+      } else {
+        setShippingMessage("Não há métodos de envio associados a este país.");
+        setShipMethods(false);
+      }
     } catch (error) {
       setError(true);
     }
@@ -320,9 +329,9 @@ const Checkout = () => {
 
         createOrder(dataOrder)
           .then(function (response) {
-            // updateProductsNr(0);
-            // setProductsCart([]);
-            // setProducts([]);
+            updateProductsNr(0);
+            setProductsCart([]);
+            setProducts([]);
 
             if (createAccount) {
               createCustomer(formValues)
@@ -356,9 +365,9 @@ const Checkout = () => {
                 setStatus("success");
                 setIsModalOpen(true);
 
-                // setTimeout(() => {
-                //   history.replace("/");
-                // }, 5000);
+                setTimeout(() => {
+                  history.replace("/");
+                }, 5000);
               } else {
                 setMessage(response.message);
                 setStatus("error");
@@ -389,23 +398,13 @@ const Checkout = () => {
   const handleCountry = (value) => {
     fetchShippingZonesDetails(value);
     setCountry(value);
-
-    if (value === "2") {
-      setSecondSelectOptions(PortugalDistricts);
-    } else {
-      setSecondSelectOptions([]);
-    }
+    setSecondSelectOptions(value);
   };
 
   const handleCountryShipping = (value) => {
     fetchShippingZonesDetails(value);
     setCountry(value);
-
-    if (value === "2") {
-      setSecondSelectOptions(PortugalDistricts);
-    } else {
-      setSecondSelectOptions([]);
-    }
+    setSecondSelectOptions(value);
   };
 
   const handlePaymentMethod = (paymentMethod) => {
@@ -499,7 +498,11 @@ const Checkout = () => {
               </Subtotal>
               <Shipping>
                 <div>Estimativa de portes</div>
-                <div>{shippingCost.toFixed(2)}&euro;</div>
+                {shippingMessage != "" ? (
+                  <div>{shippingMessage}</div>
+                ) : (
+                  <div>{shippingCost.toFixed(2)}&euro;</div>
+                )}
               </Shipping>
               <Border />
               <Total>
@@ -526,6 +529,7 @@ const Checkout = () => {
                   size="large"
                   type="primary"
                   text="Finalizar encomenda"
+                  disabled={!shipMethods}
                   onClick={() => handlePlaceOrder()}
                 />
               )}
