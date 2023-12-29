@@ -3,9 +3,9 @@ import styled from "styled-components";
 import { HelmetProvider } from "react-helmet-async";
 import { CartProvider } from "reducers";
 
-import Content from "layout/Content";
-import Header from "layout/Header";
-import Footer from "layout/Footer";
+import Content from "./layout/Content";
+import Header from "./layout/Header";
+import Footer from "./layout/Footer";
 
 import "./App.scss";
 
