@@ -112,7 +112,7 @@ const Homepage = () => {
         description="Procura o presente perfeito para aquele pet lover? Não procure mais! A Pet Plushies tem a mais variada selecção de artigos artesanais para satisfazer até os mais exigentes!"
         name="PetPlushies"
         type="website"
-        image={DummyImg}
+        image={Img}
       />
       <Slideshow
         slides={data}
