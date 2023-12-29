@@ -180,7 +180,7 @@ const Order = () => {
                           />
                         </StyledCol>
                         <StyledCol span={6}>
-                          <Link target="_blank" to={`/produtos/${i.slug}`}>
+                          <Link target="_blank" to={`/loja/${i.slug}`}>
                             {i.name}
                           </Link>
                         </StyledCol>

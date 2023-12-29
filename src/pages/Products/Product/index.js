@@ -498,7 +498,7 @@ const Product = () => {
               onClose={() => setIsModalOpen(false)}
             />
             <ContentLocked>
-              <Breadcrumbs page="/produtos" item={product.name} />
+              <Breadcrumbs page="/loja" item={product.name} />
               <StyledRow>
                 <Col span={11}>
                   <ImageCarousel
@@ -555,7 +555,7 @@ const Product = () => {
                       picture: product.picture,
                       desc: product.desc_short,
                     }}
-                    page="produtos"
+                    page="loja"
                   />
                 </Col>
               </StyledRow>

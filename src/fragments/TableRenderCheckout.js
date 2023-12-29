@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
 const Text = ({ text, slug }) => {
-  return <Link to={`/produtos/${slug}`}>{text}</Link>;
+  return <Link to={`/loja/${slug}`}>{text}</Link>;
 };
 
 const Price = ({ text }) => {
