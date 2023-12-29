@@ -79,7 +79,7 @@ const Products = () => {
   const checkForUpdates = async () => {
     try {
       const response = await fetch(
-        "https://backoffice.petplushies.pt/wp-json/custom/v1/posts-with-timestamp"
+        "https://backoffice.petplushies.pt/wp-json/wc/v3/products_with_timestamp"
       );
       const latestDataWithTimestamp = await response.json();
 

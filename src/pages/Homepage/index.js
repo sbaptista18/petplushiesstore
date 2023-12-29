@@ -82,7 +82,7 @@ const Homepage = () => {
   const fetchBlogPosts = async () => {
     try {
       const response = await fetch(
-        "https://backoffice.petplushies.pt/wp-json/custom/v1/get_featured_blog_posts"
+        "https://backoffice.petplushies.pt/wp-json/wc/v3/get_featured_blog_posts"
       );
       const data = await response.json();
 
