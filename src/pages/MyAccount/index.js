@@ -58,6 +58,7 @@ const MyAccount = () => {
   const [status, setStatus] = useState();
   const [message, setMessage] = useState("");
   const [orders, setOrders] = useState([]);
+  const [loadingButton, setLoadingButton] = useState(false);
 
   const history = useHistory();
 
@@ -102,6 +103,7 @@ const MyAccount = () => {
   };
 
   const handleSubmitAccountData = () => {
+    setLoadingButton(true);
     form.validateFields().then(async () => {
       const formValues = form.getFieldsValue();
       const userData = {
@@ -133,10 +135,12 @@ const MyAccount = () => {
           setMessage(responseData.message);
           setStatus("success");
           setIsModalOpen(true);
+          setLoadingButton(false);
         } else {
           setMessage(responseData.message);
           setStatus("error");
           setIsModalOpen(true);
+          setLoadingButton(false);
         }
       } catch (error) {
         console.error(error);
@@ -145,6 +149,7 @@ const MyAccount = () => {
   };
 
   const handleSubmitPersonalData = () => {
+    setLoadingButton(true);
     form1.validateFields().then(async () => {
       const formValues = form1.getFieldsValue();
       const userData = {
@@ -193,10 +198,12 @@ const MyAccount = () => {
           setMessage(responseData.message);
           setStatus("success");
           setIsModalOpen(true);
+          setLoadingButton(false);
         } else {
           setMessage(responseData.message);
           setStatus("error");
           setIsModalOpen(true);
+          setLoadingButton(false);
         }
       } catch (error) {
         console.error(error);
@@ -235,6 +242,7 @@ const MyAccount = () => {
           handleSubmitAccountData={handleSubmitAccountData}
           disabled={disabled}
           setDisabled={setDisabled}
+          loadingButton={loadingButton}
         />
       ),
     },
@@ -252,6 +260,7 @@ const MyAccount = () => {
           handleSubmitPersonalData={handleSubmitPersonalData}
           disabled={disabled}
           setDisabled={setDisabled}
+          loadingButton={loadingButton}
         />
       ),
     },

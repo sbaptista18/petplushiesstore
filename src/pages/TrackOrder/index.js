@@ -17,7 +17,10 @@ const TrackOrder = () => {
   const [message, setMessage] = useState("");
   const [form] = Form.useForm();
 
+  const [loadingButton, setLoadingButton] = useState(false);
+
   const fetchOrder = async (values) => {
+    setLoadingButton(true);
     const email = values.email;
     const order_id = values.order_id;
     setLoading(true);
@@ -32,15 +35,18 @@ const TrackOrder = () => {
         serOrder(data.data);
         setLoading(false);
         setError(false);
+        setLoadingButton(false);
       } else {
         setError(true);
         setLoading(false);
         setMessage(data.message);
+        setLoadingButton(false);
       }
     } catch (error) {
       setError(true);
       setLoading(false);
       setMessage(data.message);
+      setLoadingButton(false);
     }
   };
 
@@ -130,6 +136,8 @@ const TrackOrder = () => {
                   text="Seguir encomenda"
                   type="primary"
                   htmlType="submit"
+                  loading={loadingButton}
+                  disabled={loadingButton}
                 />
               </Form.Item>
             </Form>

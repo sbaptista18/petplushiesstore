@@ -17,12 +17,15 @@ const LogIn = () => {
   const [form] = Form.useForm();
   const { setLoggedIn } = useCart();
 
+  const [loadingLogin, setLoadingLogin] = useState(false);
+
   if (localStorage.getItem("isLoggedIn") === "false") {
     localStorage.removeItem("user");
     localStorage.removeItem("userCart");
   }
 
   const handleAuth = async () => {
+    setLoadingLogin(true);
     form.validateFields().then(async () => {
       const formValues = form.getFieldsValue();
 
@@ -70,6 +73,7 @@ const LogIn = () => {
       localStorage.removeItem("tempCart");
 
       if (response.data.success) {
+        setLoadingLogin(false);
         localStorage.setItem("user", JSON.stringify(user));
 
         const cartData = {
@@ -156,6 +160,8 @@ const LogIn = () => {
                   text="Entrar"
                   type="primary"
                   htmlType="submit"
+                  loading={loadingLogin}
+                  disabled={loadingLogin}
                 />
               </Form.Item>
 

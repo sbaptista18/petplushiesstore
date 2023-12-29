@@ -14,9 +14,12 @@ const SignIn = () => {
   const [status, setStatus] = useState();
   const [message, setMessage] = useState("");
 
+  const [loadingButton, setLoadingButton] = useState(false);
+
   const [form] = Form.useForm();
 
   const handleSubmit = () => {
+    setLoadingButton(true);
     form.validateFields().then(async () => {
       const formValues = form.getFieldsValue();
       const dataCustomer = {
@@ -53,6 +56,7 @@ const SignIn = () => {
           );
           setStatus("success");
           setIsModalOpen(true);
+          setLoadingButton(false);
         } else {
           setMessage(
             "Houve um erro na criacao da conta. Por favor envie e-mail para geral@petplushies.pt para notificar do sucedido. (" +
@@ -61,6 +65,7 @@ const SignIn = () => {
           );
           setStatus("error");
           setIsModalOpen(true);
+          setLoadingButton(false);
         }
       } catch (error) {
         setMessage(
@@ -68,6 +73,7 @@ const SignIn = () => {
         );
         setStatus("error");
         setIsModalOpen(true);
+        setLoadingButton(false);
       }
     });
   };
@@ -259,7 +265,8 @@ const SignIn = () => {
                       type="primary"
                       htmlType="submit"
                       onClick={handleSubmit}
-                      disabled={!isVerified} // Disable button if reCAPTCHA is not verified
+                      loading={loadingButton}
+                      disabled={!isVerified || loadingButton} // Disable button if reCAPTCHA is not verified
                     />
                   </Form.Item>
                 </Col>

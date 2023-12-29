@@ -10,10 +10,13 @@ import DummyImg from "assets/images/batcat-1.jpg";
 const ResetPassword = () => {
   const [error, setError] = useState("");
 
+  const [loadingButton, setLoadingButton] = useState(false);
+
   const [form] = Form.useForm();
 
   // Function to initiate password reset
   const initiatePasswordReset = async () => {
+    setLoadingButton(true);
     form.validateFields().then(async () => {
       const formValues = form.getFieldsValue();
 
@@ -22,8 +25,10 @@ const ResetPassword = () => {
           `https://backoffice.petplushies.pt/?rest_route=/simple-jwt-login/v1/user/reset_password&email=${formValues.email}`
         );
         setError(response.data.message);
+        setLoadingButton(false);
       } catch (error) {
         setError(error.response.data);
+        setLoadingButton(false);
       }
     });
   };
@@ -81,6 +86,8 @@ const ResetPassword = () => {
                   text="Enviar e-mail de recuperação"
                   type="primary"
                   htmlType="submit"
+                  loading={loadingButton}
+                  disabled={loadingButton}
                 />
               </Form.Item>
 

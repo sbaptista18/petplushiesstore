@@ -11,8 +11,11 @@ const RedefinePassword = () => {
   const [error, setError] = useState("");
   const [form] = Form.useForm();
 
+  const [loadingButton, setLoadingButton] = useState(false);
+
   // Function to reset password
   const resetPassword = async () => {
+    setLoadingButton(true);
     form.validateFields().then(async () => {
       const formValues = form.getFieldsValue();
 
@@ -25,8 +28,10 @@ const RedefinePassword = () => {
           `https://backoffice.petplushies.pt/?rest_route=/simple-jwt-login/v1/user/reset_password&email=${email}&code=${code}&new_password=${formValues.password}`
         );
         setError(response.data.message);
+        setLoadingButton(false);
       } catch (error) {
         setError(error.response.data);
+        setLoadingButton(false);
       }
     });
   };
@@ -114,6 +119,8 @@ const RedefinePassword = () => {
                   text="Redefinir password"
                   type="primary"
                   htmlType="submit"
+                  loading={loadingButton}
+                  disabled={loadingButton}
                 />
               </Form.Item>
 

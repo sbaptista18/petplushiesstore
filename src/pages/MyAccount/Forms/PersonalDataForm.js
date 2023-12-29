@@ -13,6 +13,7 @@ const PersonalDataForm = ({
   secondSelectOptions,
   handleSubmitPersonalData,
   disabled,
+  loadingButton,
 }) => {
   const initialValues = {
     first_name: data?.billing.first_name,
@@ -223,6 +224,8 @@ const PersonalDataForm = ({
                 type="primary"
                 htmlType="submit"
                 onClick={handleSubmitPersonalData}
+                loading={loadingButton}
+                disabled={loadingButton}
               />
             </Form.Item>
           </Col>

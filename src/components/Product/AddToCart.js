@@ -194,7 +194,7 @@ const AddToCart = ({
           text="Adicionar ao carrinho"
           onClick={onClick}
           loading={loading}
-          disabled={stock === "outofstock"}
+          disabled={stock === "outofstock" || loading}
         />
       </InputContainer>
     </Container>

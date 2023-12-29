@@ -20,8 +20,10 @@ const ContactUs = () => {
   const [isVerified, setIsVerified] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState();
+  const [loadingButton, setLoadingButton] = useState(false);
 
   const handleSubmit = () => {
+    setLoadingButton(true);
     form.validateFields().then(async () => {
       const formValues = form.getFieldsValue();
       const dataMessage = {
@@ -49,15 +51,18 @@ const ContactUs = () => {
           setMessage(data.message);
           setStatus("success");
           setIsModalOpen(true);
+          setLoadingButton(false);
         } else {
           setMessage(data.message);
           setStatus("error");
           setIsModalOpen(true);
+          setLoadingButton(false);
         }
       } catch (error) {
         setMessage(data.message);
         setStatus("error");
         setIsModalOpen(true);
+        setLoadingButton(false);
       }
     });
   };
@@ -254,8 +259,9 @@ const ContactUs = () => {
                       text="Enviar mensagem"
                       type="primary"
                       htmlType="submit"
+                      loading={loadingButton}
                       onClick={handleSubmit}
-                      disabled={!isVerified} // Disable button if reCAPTCHA is not verified
+                      disabled={!isVerified || loadingButton}
                     />
                   </Form.Item>
                 </Col>

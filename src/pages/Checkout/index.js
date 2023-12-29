@@ -46,6 +46,8 @@ const Checkout = () => {
   const [coupon, setCoupon] = useState("");
   const [accountError, setAccountError] = useState("");
   const [orderNote, setOrderNote] = useState(undefined);
+  const [loadingButton, setLoadingButton] = useState(false);
+  const [loadingCouponButton, setLoadingCouponButton] = useState(false);
 
   const history = useHistory();
 
@@ -164,6 +166,7 @@ const Checkout = () => {
   };
 
   const fetchCoupon = async () => {
+    setLoadingCouponButton(true);
     const couponCode = form_coupon.getFieldsValue().coupon_code;
     try {
       const response = await fetch(
@@ -173,15 +176,18 @@ const Checkout = () => {
 
       if (data.success) {
         setCoupon(data.coupon);
+        setLoadingCouponButton(false);
       } else {
         setMessage(data.message);
         setStatus("error");
         setIsModalOpen(true);
+        setLoadingCouponButton(false);
       }
     } catch (error) {
       setMessage("Houve um erro na verificação do cupão. Tente novamente.");
       setStatus("error");
       setIsModalOpen(true);
+      setLoadingCouponButton(false);
     }
   };
 
@@ -316,6 +322,7 @@ const Checkout = () => {
   };
 
   const createOrder = async (dataOrder, createAccount, formValues) => {
+    setLoadingButton(true);
     try {
       const response = await fetch(
         "https://backoffice.petplushies.pt/wp-json/wc/v3/create_order",
@@ -367,6 +374,7 @@ const Checkout = () => {
             setMessage(response.message);
             setStatus("success");
             setIsModalOpen(true);
+            setLoadingButton(false);
             setTimeout(() => {
               history.replace("/");
             }, 5000);
@@ -374,12 +382,14 @@ const Checkout = () => {
             setMessage(response.message);
             setStatus("error");
             setIsModalOpen(true);
+            setLoadingButton(false);
           }
         }
       } else {
         setMessage(response.message);
         setStatus("error");
         setIsModalOpen(true);
+        setLoadingButton(false);
       }
     } catch (error) {
       console.error(error);
@@ -579,6 +589,8 @@ const Checkout = () => {
                     size="small"
                     type="primary"
                     text="Aplicar cupão"
+                    loading={loadingCouponButton}
+                    disabled={loadingCouponButton}
                     onClick={() => fetchCoupon()}
                   />
                 </Form.Item>
@@ -619,7 +631,8 @@ const Checkout = () => {
                   size="large"
                   type="primary"
                   text="Finalizar encomenda"
-                  disabled={!shipMethods}
+                  loading={loadingButton}
+                  disabled={!shipMethods || loadingButton}
                   onClick={() => handlePlaceOrder()}
                 />
               )}

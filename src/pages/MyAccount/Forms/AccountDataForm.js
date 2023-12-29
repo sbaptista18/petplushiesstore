@@ -10,6 +10,7 @@ const AccountDataForm = ({
   disabled,
   setDisabled,
   handleSubmitAccountData,
+  loadingButton,
 }) => {
   const initialValues = {
     email: data,
@@ -65,6 +66,8 @@ const AccountDataForm = ({
                 type="primary"
                 htmlType="submit"
                 onClick={handleSubmitAccountData}
+                loading={loadingButton}
+                disabled={loadingButton}
               />
             </Form.Item>
           </Col>
@@ -77,6 +80,8 @@ const AccountDataForm = ({
                   size="large"
                   text="Actualizar password"
                   type="primary"
+                  loading={loadingButton}
+                  disabled={loadingButton}
                 />
               </Link>
             </Form.Item>

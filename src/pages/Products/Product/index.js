@@ -69,6 +69,7 @@ const Product = () => {
   const [reviews, setReviews] = useState([]);
   const [avgRating, setAvgRating] = useState(0);
   const [totalReviews, setTotalReviews] = useState(0);
+  const [loadingButton, setLoadingButton] = useState(false);
 
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
@@ -422,6 +423,7 @@ const Product = () => {
   };
 
   const handleSubmitReview = (review, rating, reviewerName, reviewerEmail) => {
+    setLoadingButton(true);
     if (rating == 0) setErrorRating("Tem de fornecer uma pontuação.");
     else {
       form
@@ -452,14 +454,19 @@ const Product = () => {
             setMessage(data.message);
             setStatus("success");
             setIsModalOpen(true);
+            setLoadingButton(false);
           } catch (error) {
             setMessage(data.message);
             setStatus("error");
             setIsModalOpen(true);
+            setLoadingButton(false);
           }
         })
         .catch((error) => {
-          console.error("Erro na validação de campos:", error);
+          setMessage("Erro na validação de campos:", error);
+          setStatus("error");
+          setIsModalOpen(true);
+          setLoadingButton(false);
         });
     }
   };
@@ -641,6 +648,8 @@ const Product = () => {
                             size="large"
                             type="primary"
                             text="Submeter avaliação"
+                            loading={loadingButton}
+                            disabled={loadingButton}
                             onClick={() =>
                               handleSubmitReview(
                                 review,

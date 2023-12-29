@@ -36,6 +36,8 @@ const BlogPost = () => {
   const [loadingComments, setLoadingComments] = useState(true);
   const [errorComments, setErrorComments] = useState(false);
 
+  const [loadingButton, setLoadingButton] = useState(false);
+
   const [form] = useForm();
 
   useEffect(() => {
@@ -98,6 +100,7 @@ const BlogPost = () => {
   };
 
   const handleSubmitComment = (comment, commenterName, commenterEmail) => {
+    setLoadingButton(true);
     form
       .validateFields()
       .then(async () => {
@@ -125,14 +128,17 @@ const BlogPost = () => {
           setMessage(data.message);
           setStatus("success");
           setIsModalOpen(true);
+          setLoadingButton(false);
         } catch (error) {
           setMessage(data.message);
           setStatus("error");
           setIsModalOpen(true);
+          setLoadingButton(false);
         }
       })
       .catch((error) => {
         console.error("Erro na validação de campos:", error);
+        setLoadingButton(false);
       });
   };
 
@@ -243,6 +249,8 @@ const BlogPost = () => {
                             size="large"
                             type="primary"
                             text="Submeter ccmentário"
+                            loading={loadingButton}
+                            disabled={loadingButton}
                             onClick={() =>
                               handleSubmitComment(
                                 comment,
