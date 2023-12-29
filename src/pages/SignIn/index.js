@@ -17,7 +17,7 @@ const SignIn = () => {
   const [form] = Form.useForm();
 
   const handleSubmit = () => {
-    form.validateFields().then(() => {
+    form.validateFields().then(async () => {
       const formValues = form.getFieldsValue();
       const dataCustomer = {
         email: formValues.email,
@@ -27,21 +27,23 @@ const SignIn = () => {
           formValues.first_name.toLowerCase() +
           "." +
           formValues.surname.toLowerCase(),
-        role: "customer",
+        password: formValues.password,
       };
 
-      const options = {
-        method: "POST",
-        url: `http://127.0.0.1/customers`,
-        data: JSON.stringify({ dataCustomer }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
+      try {
+        const response = await fetch(
+          "https://backoffice.petplushies.pt/wp-json/wc/v3/create_customer",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ dataCustomer }),
+          }
+        );
+        const data = await response.json();
 
-      axios
-        .request(options)
-        .then(function (response) {
+        if (data.success) {
           setMessage(
             "A sua conta foi criada com sucesso! Pode efectuar o login com o seu nome de utilizador gerado (" +
               formValues.first_name.toLowerCase() +
@@ -51,8 +53,7 @@ const SignIn = () => {
           );
           setStatus("success");
           setIsModalOpen(true);
-        })
-        .catch(function (error) {
+        } else {
           setMessage(
             "Houve um erro na criacao da conta. Por favor envie e-mail para geral@petplushies.pt para notificar do sucedido. (" +
               error.response.data +
@@ -60,7 +61,14 @@ const SignIn = () => {
           );
           setStatus("error");
           setIsModalOpen(true);
-        });
+        }
+      } catch (error) {
+        setMessage(
+          "Houve um erro na criacao da conta. Tente novamente dentro de minutos."
+        );
+        setStatus("error");
+        setIsModalOpen(true);
+      }
     });
   };
 
@@ -236,8 +244,7 @@ const SignIn = () => {
                     extra="Só queremos ter a certeza que é um humano."
                   >
                     <ReCAPTCHA
-                      sitekey="6LeHeCEpAAAAAAfZ4YEPORZNPPMY-0ZHr_uldF3H
-                      "
+                      sitekey="6LcGYz8pAAAAAKL8E_B9V_DkFqIXiApSnLnfE4Z0"
                       onChange={handleVerification}
                     />
                   </Form.Item>
