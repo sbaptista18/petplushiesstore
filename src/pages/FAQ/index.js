@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { Row, Collapse } from "antd";
 
 import { PageHeader } from "components";
+import { SEOTags } from "fragments";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -60,6 +61,13 @@ const items = [
 const FAQ = () => {
   return (
     <>
+      <SEOTags
+        title={`Perguntas Frequentes - Pet Plushies`}
+        description="Consulte as respostas às perguntas mais frequentes e tire as suas dúvidas connosco!"
+        name="PetPlushies"
+        type="website"
+        image={DummyImg}
+      />
       <PageHeader
         title="Perguntas Frequentes"
         img={DummyImg}

@@ -1,10 +1,11 @@
 import styled from "styled-components";
 import { Row, Col, Form, Input, Checkbox } from "antd";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 
 import { Button, ModalMessage, PageHeader } from "components";
+import { SEOTags } from "fragments";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 import FacebookIcon from "assets/images/fb-icon.svg";
@@ -14,7 +15,6 @@ import TiktokIcon from "assets/images/tt-icon.svg";
 const { TextArea } = Input;
 
 const ContactUs = () => {
-  const [error, setError] = useState(false);
   const [message, setMessage] = useState("");
   const [form] = Form.useForm();
   const [isVerified, setIsVerified] = useState(false);
@@ -73,6 +73,13 @@ const ContactUs = () => {
 
   return (
     <>
+      <SEOTags
+        title={`Contactos - Pet Plushies`}
+        description="Deixe-nos as suas sugestões e envie as suas questões através do nosso formulário de contactos."
+        name="PetPlushies"
+        type="website"
+        image={DummyImg}
+      />
       <PageHeader
         title="Contactos"
         img={DummyImg}

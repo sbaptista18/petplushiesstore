@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Row, Col } from "antd";
 
 import { PageHeader } from "components";
-import { LazyImage } from "fragments";
+import { LazyImage, SEOTags } from "fragments";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 import BottomBar from "assets/images/bottom-bar.svg";
@@ -15,6 +15,13 @@ import Recycling from "assets/images/about-us/recycling.png";
 const AboutUs = () => {
   return (
     <>
+      <SEOTags
+        title="Sobre Nós - Pet Plushies"
+        description="Venha conhecer a nossa história e o porquê de fazermos o que fazemos."
+        name="PetPlushies"
+        type="website"
+        image={DummyImg}
+      />
       <PageHeader
         title="Sobre Nós"
         img={DummyImg}

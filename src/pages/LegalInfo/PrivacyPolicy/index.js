@@ -4,6 +4,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 
 import { PageHeader } from "components";
+import { SEOTags } from "fragments";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -39,6 +40,13 @@ const PrivacyPolicy = () => {
 
   return (
     <>
+      <SEOTags
+        title={`Política de Privacidade - Pet Plushies`}
+        description="Consulte a nossa Política de Privacidade e esteja a par das actualizações."
+        name="PetPlushies"
+        type="website"
+        image={DummyImg}
+      />
       <PageHeader
         title="Política de Privacidade"
         img={DummyImg}

@@ -12,6 +12,7 @@ import {
   ModalMessage,
   Button,
 } from "components";
+import { SEOTags } from "fragments";
 
 const { TextArea } = Input;
 const { useForm } = Form;
@@ -152,6 +153,13 @@ const BlogPost = () => {
       {error && !loading && <>{message}</>}
       {post != undefined && (
         <>
+          <SEOTags
+            title={`${post.title} - Blog - Pet Plushies`}
+            description={post.excerpt}
+            name="PetPlushies"
+            type="website"
+            image={post.featured_image}
+          />
           <PageHeader
             title={post.title}
             img={post.featured_image}

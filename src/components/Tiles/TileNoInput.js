@@ -29,7 +29,7 @@ const Tile = ({
           <Price flag={flag}>{price}&euro;</Price>
           {flag == "sale" && <Sale>{sale_price}&euro;</Sale>}
         </PriceContainer>
-        <Link to={"/produtos/" + url}>
+        <Link to={"/loja/" + url}>
           <StyledButton
             disabled={stock == 0 ? true : false}
             size="large"

@@ -5,8 +5,8 @@ import axios from "axios";
 import { useHistory, Link } from "react-router-dom";
 
 import { Button, PageHeader } from "components";
-
 import { useCart } from "reducers";
+import { SEOTags } from "fragments";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -92,6 +92,13 @@ const LogIn = () => {
 
   return (
     <>
+      <SEOTags
+        title={`Login - Pet Plushies`}
+        description=""
+        name="PetPlushies"
+        type="website"
+        image={DummyImg}
+      />
       <PageHeader
         title="Entrar na conta"
         img={DummyImg}

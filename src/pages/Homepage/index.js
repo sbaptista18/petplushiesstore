@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import { Slideshow, TileNoInput, Button, TilePosts } from "components";
-import { LazyImage } from "fragments";
+import { LazyImage, SEOTags } from "fragments";
 
 import { data } from "./slideshow_data";
 
@@ -107,6 +107,13 @@ const Homepage = () => {
 
   return (
     <>
+      <SEOTags
+        title={`Peluches Personalizados - Acessórios - 100% Artesaal - Pet Plushies`}
+        description="Procura o presente perfeito para aquele pet lover? Não procure mais! A Pet Plushies tem a mais variada selecção de artigos artesanais para satisfazer até os mais exigentes!"
+        name="PetPlushies"
+        type="website"
+        image={DummyImg}
+      />
       <Slideshow
         slides={data}
         settings={{

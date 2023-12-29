@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import _ from "lodash";
 
 import { PageHeader, TilePosts, Breadcrumbs } from "components";
+import { SEOTags } from "fragments";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -146,6 +147,13 @@ const Blog = () => {
 
   return (
     <>
+      <SEOTags
+        title="Blog - Pet Plushies"
+        description="No nosso Blog pode espreitar as últimas novidades do mundo animal, bem como encontrar o seu melhor amigo para sempre no nosso Cantinho das Adopções!"
+        name="PetPlushies"
+        type="website"
+        image={DummyImg}
+      />
       <PageHeader title="Blog" img={DummyImg} alt="Blog - Pet Plushies" />
       <Container>
         <ContentLocked>

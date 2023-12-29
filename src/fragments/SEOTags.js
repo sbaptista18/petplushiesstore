@@ -2,7 +2,9 @@ import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 
-const SEOTags = ({ title, favicon, description, name, type, image }) => {
+import favicon from "assets/images/favicon.png";
+
+const SEOTags = ({ title, description, name, type, image }) => {
   const location = useLocation();
   return (
     <Helmet>
@@ -30,12 +32,11 @@ const SEOTags = ({ title, favicon, description, name, type, image }) => {
 };
 
 SEOTags.propTypes = {
-  title: PropTypes.string.isRequired,
-  favicon: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
-  image: PropTypes.string.isRequired,
+  title: PropTypes.string,
+  description: PropTypes.string,
+  name: PropTypes.string,
+  type: PropTypes.string,
+  image: PropTypes.string,
 };
 
 export default SEOTags;

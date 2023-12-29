@@ -7,6 +7,7 @@ import moment from "moment";
 
 import { useCart } from "reducers";
 import { getSessionDataFromLocalStorage } from "helpers";
+import { SEOTags } from "fragments";
 
 import Star from "assets/images/star.svg";
 
@@ -481,6 +482,13 @@ const Product = () => {
       {error && !loading && <>Erro ao carregar o produto.</>}
       {product != undefined && (
         <>
+          <SEOTags
+            title={`${product.name} - Pet Plushies`}
+            description={product.desc_short}
+            name="PetPlushies"
+            type="website"
+            image={product.picture}
+          />
           <PageHeaderProduct title={product.name} />
           <Container>
             <ModalMessage
@@ -897,7 +905,7 @@ const Flag = styled.div`
 `;
 
 export default {
-  path: "/produtos/:productUrl",
+  path: "/loja/:productUrl",
   exact: true,
   component: Product,
 };

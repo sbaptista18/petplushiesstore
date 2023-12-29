@@ -27,7 +27,7 @@ const { Header } = Layout;
 const onClickSectionRegistry = {
   home: (history) => history.push(""),
   "sobre-nos": (history) => history.push("/sobre-nos"),
-  produtos: (history) => history.push("/produtos"),
+  loja: (history) => history.push("/loja"),
   blog: (history) => history.push("/blog"),
   contactos: (history) => history.push("/contactos"),
 };

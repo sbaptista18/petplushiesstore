@@ -7,6 +7,7 @@ import _ from "lodash";
 
 import { Breadcrumbs, TileNoInput, PageHeader } from "components";
 import DummyImg from "assets/images/batcat-1.jpg";
+import { SEOTags } from "fragments";
 
 const { Panel } = Collapse;
 
@@ -483,15 +484,18 @@ const Products = () => {
 
   return (
     <>
-      <PageHeader
-        title="Produtos"
-        img={DummyImg}
-        alt="Produtos - Pet Plushies"
+      <SEOTags
+        title={`Loja - Pet Plushies`}
+        description="De peluches personalizados, até ao fandom Pokemon, a Pet Plushies garante sempre qualidade 100% artesanal e sustentável! Visite a nossa loja!"
+        name="PetPlushies"
+        type="website"
+        image={DummyImg}
       />
+      <PageHeader title="Loja" img={DummyImg} alt="Loja - Pet Plushies" />
       <Container>
         <ContentLocked>
           <div>
-            <Breadcrumbs page="/" item="Produtos" />
+            <Breadcrumbs page="/" item="Loja" />
             <StyledRow>
               <Col span={6}>
                 <Span>Filtrar por:</Span>
@@ -658,7 +662,7 @@ const Span = styled.span`
 `;
 
 export default {
-  path: "/produtos",
+  path: "/loja",
   exact: true,
   component: Products,
 };

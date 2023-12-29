@@ -4,6 +4,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 
 import { PageHeader } from "components";
+import { SEOTags } from "fragments";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -39,6 +40,13 @@ const TermsConditions = () => {
 
   return (
     <>
+      <SEOTags
+        title={`Termos e Condições - Pet Plushies`}
+        description="Os nossos Termos e Condições são actualizados com frequência, consulte sempre antes de efectuar uma compra."
+        name="PetPlushies"
+        type="website"
+        image={DummyImg}
+      />
       <PageHeader
         title="Termos e Condições"
         img={DummyImg}

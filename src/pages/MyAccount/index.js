@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useHistory, Link } from "react-router-dom";
 
 import { Button, ModalMessage, PageHeader } from "components";
+import { SEOTags } from "fragments";
 
 import { PortugalDistricts } from "../Checkout/data";
 import PersonalDataForm from "./Forms/PersonalDataForm";
@@ -290,6 +291,13 @@ const MyAccount = () => {
 
   return (
     <>
+      <SEOTags
+        title={`A minha conta - Pet Plushies`}
+        description=""
+        name="PetPlushies"
+        type="website"
+        image={DummyImg}
+      />
       <PageHeader
         title="A minha conta"
         img={DummyImg}

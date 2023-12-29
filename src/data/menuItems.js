@@ -6,8 +6,8 @@ export const MainMenuItems = [
   },
   {
     key: 2,
-    label: "Produtos",
-    path: "produtos",
+    label: "Loja",
+    path: "loja",
   },
   {
     key: 3,

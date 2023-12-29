@@ -4,6 +4,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 
 import { PageHeader } from "components";
+import { SEOTags } from "fragments";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -39,6 +40,13 @@ const ShippingReturns = () => {
 
   return (
     <>
+      <SEOTags
+        title={`Envios e Devoluções - Pet Plushies`}
+        description="Toda a informação sobre a política de Envios e Devoluções da Pet Plushies."
+        name="PetPlushies"
+        type="website"
+        image={DummyImg}
+      />
       <PageHeader
         title="Envios e Devoluções"
         img={DummyImg}
