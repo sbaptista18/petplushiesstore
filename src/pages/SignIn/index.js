@@ -244,7 +244,7 @@ const SignIn = () => {
                     extra="Só queremos ter a certeza que é um humano."
                   >
                     <ReCAPTCHA
-                      sitekey="6LcGYz8pAAAAAKL8E_B9V_DkFqIXiApSnLnfE4Z0"
+                      sitekey="6LeeeyEpAAAAAHEmtDr81K8xOhEkbCcM32FGYqtF"
                       onChange={handleVerification}
                     />
                   </Form.Item>
