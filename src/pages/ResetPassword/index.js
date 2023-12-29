@@ -3,14 +3,15 @@ import { Row, Form, Input } from "antd";
 import { useState } from "react";
 import axios from "axios";
 
-import { Button, PageHeader } from "components";
+import { Button, PageHeader, ModalMessage } from "components";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
 const ResetPassword = () => {
-  const [error, setError] = useState("");
-
   const [loadingButton, setLoadingButton] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [status, setStatus] = useState();
+  const [message, setMessage] = useState("");
 
   const [form] = Form.useForm();
 
@@ -24,10 +25,15 @@ const ResetPassword = () => {
         const response = await axios.post(
           `https://backoffice.petplushies.pt/?rest_route=/simple-jwt-login/v1/user/reset_password&email=${formValues.email}`
         );
-        setError(response.data.message);
+
+        setMessage(response.data.message);
+        setStatus("success");
+        setIsModalOpen(true);
         setLoadingButton(false);
       } catch (error) {
-        setError(error.response.data);
+        setMessage(error.response.data);
+        setStatus("error");
+        setIsModalOpen(true);
         setLoadingButton(false);
       }
     });
@@ -35,6 +41,12 @@ const ResetPassword = () => {
 
   return (
     <>
+      <ModalMessage
+        status={status}
+        message={message}
+        isVisible={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
       <PageHeader
         title="Recuperar password"
         img={DummyImg}
@@ -89,20 +101,6 @@ const ResetPassword = () => {
                   loading={loadingButton}
                   disabled={loadingButton}
                 />
-              </Form.Item>
-
-              <Form.Item
-                wrapperCol={{
-                  offset: 8,
-                  span: 16,
-                }}
-              >
-                {error && (
-                  <div
-                    style={{ color: "red" }}
-                    dangerouslySetInnerHTML={{ __html: error }}
-                  ></div>
-                )}
               </Form.Item>
             </Form>
           </div>
