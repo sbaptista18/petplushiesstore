@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { Row, Form, Tabs, Spin, Table } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useHistory, Link } from "react-router-dom";
 
 import { Button, ModalMessage, PageHeader } from "components";
@@ -10,8 +9,6 @@ import { Button, ModalMessage, PageHeader } from "components";
 import { PortugalDistricts } from "../Checkout/data";
 import PersonalDataForm from "./Forms/PersonalDataForm";
 import AccountDataForm from "./Forms/AccountDataForm";
-
-import { useCart } from "reducers";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -67,11 +64,6 @@ const MyAccount = () => {
   const [form] = Form.useForm();
   const [form1] = Form.useForm();
 
-  const { clearCartState } = useCart();
-  const { setLoggedIn } = useCart();
-
-  const data = localStorage.getItem("token");
-
   const storedUserString = localStorage.getItem("user");
   const user = JSON.parse(storedUserString) || {};
 
@@ -106,20 +98,6 @@ const MyAccount = () => {
       setLoadingTable(false);
     } catch (error) {
       setLoading(true);
-    }
-  };
-
-  const handleLogOut = async () => {
-    try {
-      await axios.post(
-        `https://backoffice.petplushies.pt/?rest_route=/simple-jwt-login/v1/auth/revoke&JWT=${data}`
-      );
-      clearCartState();
-      setLoggedIn(false);
-    } catch (error) {
-      setError(error.response.data.message);
-      setLoggedIn(false);
-      clearCartState();
     }
   };
 
@@ -329,13 +307,6 @@ const MyAccount = () => {
                   tabPosition={"left"}
                   items={tabs}
                   onChange={handleTabChange}
-                />
-                <StyledButton
-                  size="large"
-                  text="Sair da conta"
-                  type="primary"
-                  htmlType="submit"
-                  onClick={() => handleLogOut()}
                 />
               </div>
             )}

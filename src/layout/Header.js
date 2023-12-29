@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { Layout, Menu, Col } from "antd";
 import { useState, useEffect } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
+import axios from "axios";
 
 import { useCart, CreateCartKey } from "reducers";
 import {
@@ -14,6 +15,7 @@ import {
   MenuOutlined,
   ShoppingCartOutlined,
   UserOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
 
 import Logo from "assets/images/logo.png";
@@ -42,12 +44,16 @@ const PPS_Header = () => {
   const [boxShadow, setBoxShadow] = useState("none");
   const [color, setColor] = useState("var(--black)");
   const [sessionKey, setSessionKey] = useState(null);
+  const [error, setError] = useState("");
   const history = useHistory();
 
   const { setSessionKeyAndCartId } = useCart();
   const { updateProductsNr } = useCart();
   const { productsNr } = useCart();
   const { isLoggedIn } = useCart();
+
+  const { clearCartState } = useCart();
+  const { setLoggedIn } = useCart();
 
   const [updateHeader, setUpdateHeader] = useState(false);
 
@@ -176,6 +182,21 @@ const PPS_Header = () => {
     updateHeader,
   ]);
 
+  const handleLogOut = async () => {
+    try {
+      await axios.post(
+        `https://backoffice.petplushies.pt/?rest_route=/simple-jwt-login/v1/auth/revoke&JWT=${token}`
+      );
+
+      clearCartState();
+      setLoggedIn(false);
+    } catch (error) {
+      setError(error.response.data.message);
+      setLoggedIn(false);
+      clearCartState();
+    }
+  };
+
   return (
     <StyledHeader
       key={updateHeader ? "update" : "no-update"}
@@ -211,12 +232,30 @@ const PPS_Header = () => {
           style={{ color }}
           to={token != null ? "/minha-conta" : "/login"}
         >
-          <UserOutlined />
+          {isLoggedIn ? <LoggedUserIcon /> : <UserOutlined />}
         </IconLink>
+        {isLoggedIn && (
+          <LogOutBtn
+            location={location.pathname}
+            style={{ color }}
+            onClick={() => handleLogOut()}
+          />
+        )}
       </MenuContainer>
     </StyledHeader>
   );
 };
+
+const LogOutBtn = styled(LogoutOutlined)`
+  cursor: pointer;
+  color: ${(props) =>
+    props.location == "/" ? "var(--white)" : "var(--black)"};
+  transition: 0.5s;
+
+  &:hover {
+    color: var(--dark-gray) !important;
+  }
+`;
 
 const CartProductsNr = styled.div`
   border-radius: 50%;
@@ -287,6 +326,15 @@ const IconLink = styled(StyledLink)`
     props.location == "/" ? "var(--white)" : "var(--black)"};
   transition: 0.5s;
   position: relative;
+
+  &:hover {
+    color: var(--dark-gray) !important;
+  }
+`;
+
+const LoggedUserIcon = styled(UserOutlined)`
+  transition: 0.5s;
+  color: var(--blue);
 
   &:hover {
     color: var(--dark-gray) !important;
