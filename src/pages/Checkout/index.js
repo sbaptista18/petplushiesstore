@@ -26,6 +26,7 @@ const Checkout = () => {
   const [error, setError] = useState(false);
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
+  const { isLoggedIn } = useCart();
   const [lockForm, setLockForm] = useState(true);
   const [productsCart, setProductsCart] = useState([]);
   const [products, setProducts] = useState([]);
@@ -49,9 +50,8 @@ const Checkout = () => {
   const history = useHistory();
 
   useEffect(() => {
-    // if (cartId == null) history.replace("/carrinho");
-    // else
-    fetchCartId(cartId);
+    if (cartId == null) history.replace("/carrinho");
+    else fetchCartId(cartId);
   }, [cartId]);
 
   useEffect(() => {
@@ -516,6 +516,7 @@ const Checkout = () => {
                   accountError={accountError}
                   handleOrderNote={handleOrderNote}
                   orderNote={orderNote}
+                  isLoggedIn={isLoggedIn}
                 />
               </div>
             </Col>

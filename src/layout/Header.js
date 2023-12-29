@@ -259,7 +259,7 @@ const LogOutBtn = styled(LogoutOutlined)`
 
 const CartProductsNr = styled.div`
   border-radius: 50%;
-  background-color: var(--black);
+  background-color: var(--blue);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -269,7 +269,7 @@ const CartProductsNr = styled.div`
   margin-top: -17px;
 
   & span {
-    color: var(--white);
+    color: var(--black);
     font-size: 10px;
   }
 `;

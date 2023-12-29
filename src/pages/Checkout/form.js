@@ -22,6 +22,7 @@ const CheckoutForm = ({
   accountError,
   handleOrderNote,
   orderNote,
+  isLoggedIn,
 }) => {
   const [countries, setCountries] = useState([]);
 
@@ -245,21 +246,23 @@ const CheckoutForm = ({
           </Form.Item>
         </Col>
       </FormRow>
-      <FormRow>
-        <Col span={24}>
-          <Form.Item
-            name="create_account"
-            valuePropName="checked"
-            onChange={() => {
-              handleCheckCreateAccount();
-            }}
-            wrapperCol={24}
-          >
-            <Checkbox>Criar conta?</Checkbox>
-          </Form.Item>
-          <>{accountError != "" && accountError}</>
-        </Col>
-      </FormRow>
+      {!isLoggedIn && (
+        <FormRow>
+          <Col span={24}>
+            <Form.Item
+              name="create_account"
+              valuePropName="checked"
+              onChange={() => {
+                handleCheckCreateAccount();
+              }}
+              wrapperCol={24}
+            >
+              <Checkbox>Criar conta?</Checkbox>
+            </Form.Item>
+            <>{accountError != "" && accountError}</>
+          </Col>
+        </FormRow>
+      )}
 
       <FormRow>
         <Col span={24}>
