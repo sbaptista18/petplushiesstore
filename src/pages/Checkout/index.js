@@ -117,6 +117,7 @@ const Checkout = () => {
   };
 
   const calculateShippingCost = (data, subtotal) => {
+    console.log(subtotal);
     if (subtotal > 50) {
       setShippingTitle("Portes Gratuitos");
       return 0;
@@ -146,10 +147,8 @@ const Checkout = () => {
       const data = await response.json();
 
       if (data.success) {
-        const weightGrs = totalWeight * 1000;
         const shippingCost = calculateShippingCost(
           data.zones[0],
-          weightGrs,
           totalProductNetRevenue
         );
 
@@ -227,7 +226,7 @@ const Checkout = () => {
   const buildBillingDetails = (formValues) => ({
     first_name: formValues.first_name,
     last_name: formValues.surname,
-    company: formValues.company !== "" ? formValues.company : "",
+    company: formValues.company,
     address_1: formValues.address,
     address_2: "",
     city: formValues.local,
@@ -241,7 +240,7 @@ const Checkout = () => {
   const buildShippingDetails = (formValues) => ({
     first_name: formValues.first_name_other || formValues.first_name,
     last_name: formValues.surname_other || formValues.surname,
-    company: formValues.company !== "" ? formValues.company : "",
+    company: formValues.company,
     address_1: formValues.address_other || formValues.address,
     address_2: "",
     city: formValues.local_other || formValues.local,
@@ -282,6 +281,22 @@ const Checkout = () => {
       ],
       coupon_code: coupon_code,
       customer_note: orderNote,
+      create_account: createAccount,
+      customer_data: createAccount
+        ? {
+            email: formValues.email,
+            first_name: formValues.first_name,
+            last_name: formValues.surname,
+            username: `${formValues.first_name
+              .toLowerCase()
+              .replace(/\s/g, ".")}.${formValues.surname
+              .toLowerCase()
+              .replace(/\s/g, ".")}`,
+            billing: buildBillingDetails(formValues),
+            shipping: buildShippingDetails(formValues),
+            is_paying_customer: true,
+          }
+        : "",
     };
 
     return formValues.first_name_other
@@ -289,39 +304,7 @@ const Checkout = () => {
       : commonOrderData;
   };
 
-  const createCustomer = async (formValues) => {
-    const dataCustomer = {
-      email: formValues.email,
-      first_name: formValues.first_name,
-      last_name: formValues.surname,
-      username: `${formValues.first_name.toLowerCase()}.${formValues.surname.toLowerCase()}`,
-      billing: buildBillingDetails(formValues),
-      shipping: buildShippingDetails(formValues),
-      is_paying_customer: true,
-    };
-
-    try {
-      const response = await fetch(
-        "https://backoffice.petplushies.pt/wp-json/wc/v3/create_customer",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ dataCustomer }),
-        }
-      );
-      const data = await response.json();
-
-      if (data.error) {
-        setAccountError(data.message);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const createOrder = async (dataOrder, createAccount, formValues) => {
+  const createOrder = async (dataOrder) => {
     setLoadingButton(true);
     try {
       const response = await fetch(
@@ -336,57 +319,20 @@ const Checkout = () => {
       );
       const data = await response.json();
       if (data.success) {
-        setMessage(response.message);
+        setMessage(data.message);
         setStatus("success");
         setIsModalOpen(true);
+        setLoadingButton(false);
 
         updateProductsNr(0);
         setProductsCart([]);
         setProducts([]);
 
-        if (createAccount) {
-          createCustomer(formValues)
-            .then(function (response) {
-              setMessage(
-                "A sua conta foi criada com sucesso! Pode efetuar o login com o seu nome de utilizador gerado (" +
-                  formValues.first_name.toLowerCase() +
-                  "." +
-                  formValues.surname.toLowerCase() +
-                  "). Receberá instruções para definir a sua password."
-              );
-              setStatus("success");
-              setIsModalOpen(true);
-              setTimeout(() => {
-                history.replace("/");
-              }, 5000);
-            })
-            .catch(function (error) {
-              setMessage(
-                "Houve um erro na criação da conta. Por favor envie e-mail para geral@petplushies.pt para notificar do sucedido. (" +
-                  error.response.data +
-                  ")."
-              );
-              setStatus("error");
-              setIsModalOpen(true);
-            });
-        } else {
-          if (response.success) {
-            setMessage(response.message);
-            setStatus("success");
-            setIsModalOpen(true);
-            setLoadingButton(false);
-            setTimeout(() => {
-              history.replace("/");
-            }, 5000);
-          } else {
-            setMessage(response.message);
-            setStatus("error");
-            setIsModalOpen(true);
-            setLoadingButton(false);
-          }
-        }
+        setTimeout(() => {
+          history.replace("/");
+        }, 5000);
       } else {
-        setMessage(response.message);
+        setMessage(data.message);
         setStatus("error");
         setIsModalOpen(true);
         setLoadingButton(false);
@@ -413,7 +359,7 @@ const Checkout = () => {
           coupon.coupon_code
         );
 
-        createOrder(dataOrder, createAccount, formValues);
+        createOrder(dataOrder);
       })
       .catch((errorInfo) => {
         console.log(errorInfo);
