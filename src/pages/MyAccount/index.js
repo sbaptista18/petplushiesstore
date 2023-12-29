@@ -85,10 +85,9 @@ const MyAccount = () => {
           setLoading(true);
         }
       };
-
       fetchCustomerData(user.ID);
     }
-  }, [history, user]);
+  }, [history, user.ID]);
 
   const fetchOrders = async (userId) => {
     try {
@@ -110,6 +109,7 @@ const MyAccount = () => {
       const userData = {
         ID: user.ID,
         user_email: formValues.email,
+        password: formValues.password,
       };
 
       try {
@@ -237,14 +237,16 @@ const MyAccount = () => {
       label: `Dados da Conta`,
       key: "account_data",
       children: (
-        <AccountDataForm
-          form={form}
-          data={user.user_email}
-          handleSubmitAccountData={handleSubmitAccountData}
-          disabled={disabled}
-          setDisabled={setDisabled}
-          loadingButton={loadingButton}
-        />
+        <>
+          <AccountDataForm
+            form={form}
+            data={user.user_email}
+            handleSubmitAccountData={handleSubmitAccountData}
+            disabled={disabled}
+            setDisabled={setDisabled}
+            loadingButton={loadingButton}
+          />
+        </>
       ),
     },
     {

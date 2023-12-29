@@ -1,21 +1,15 @@
 import { Row, Col, Form, Checkbox, Input } from "antd";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
 
 import { Button } from "components";
 
 const AccountDataForm = ({
   form,
-  data,
   disabled,
   setDisabled,
   handleSubmitAccountData,
   loadingButton,
 }) => {
-  const initialValues = {
-    email: data,
-  };
-
   return (
     <div>
       <Checkbox
@@ -28,13 +22,12 @@ const AccountDataForm = ({
       <Form
         layout="vertical"
         form={form}
-        name="register"
+        name="change_email"
         style={{
           maxWidth: 600,
         }}
         scrollToFirstError
         disabled={!disabled}
-        initialValues={initialValues}
       >
         <FormRow>
           <Col span={24}>
@@ -47,13 +40,54 @@ const AccountDataForm = ({
                   type: "email",
                   message: "O e-mail inserido não é válido.",
                 },
-                {
-                  required: true,
-                  message: "Por favor insira o seu e-mail.",
-                },
               ]}
             >
               <Input />
+            </Form.Item>
+          </Col>
+        </FormRow>
+        <FormRow>
+          <Col span={11}>
+            <Form.Item
+              wrapperCol={24}
+              name="password"
+              label="Password"
+              rules={[
+                {
+                  min: 8,
+                  message: "A password deve ter pelo menos 8 caracteres.",
+                },
+                {
+                  pattern: /[!@#$%^&*(),.?":{}|<>_]/,
+                  message: "A password deve incluir símbolos.",
+                },
+              ]}
+              hasFeedback
+            >
+              <Input.Password />
+            </Form.Item>
+          </Col>
+          <Col span={11}>
+            <Form.Item
+              wrapperCol={24}
+              name="confirm"
+              label="Confirmar Password"
+              dependencies={["password"]}
+              hasFeedback
+              rules={[
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("password") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("As passwords não correspondem.")
+                    );
+                  },
+                }),
+              ]}
+            >
+              <Input.Password />
             </Form.Item>
           </Col>
         </FormRow>
@@ -62,28 +96,13 @@ const AccountDataForm = ({
             <Form.Item wrapperCol={24}>
               <StyledButton
                 size="large"
-                text="Actualizar e-mail"
+                text="Actualizar dados da conta"
                 type="primary"
                 htmlType="submit"
                 onClick={handleSubmitAccountData}
                 loading={loadingButton}
                 disabled={loadingButton}
               />
-            </Form.Item>
-          </Col>
-        </FormRow>
-        <FormRow>
-          <Col span={24}>
-            <Form.Item wrapperCol={24}>
-              <Link to="/recuperar-password">
-                <StyledButton
-                  size="large"
-                  text="Actualizar password"
-                  type="primary"
-                  loading={loadingButton}
-                  disabled={loadingButton}
-                />
-              </Link>
             </Form.Item>
           </Col>
         </FormRow>
