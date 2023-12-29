@@ -7,7 +7,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
-const distDir = path.join(__dirname, "../dist");
+const distDir = path.join(__dirname, "../build");
 const srcDir = path.join(__dirname, "../src");
 
 module.exports = {

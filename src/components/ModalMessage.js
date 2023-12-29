@@ -7,7 +7,7 @@ const ModalMessage = ({ status, message, isVisible, onClose }) => {
   useEffect(() => {
     // If the modal is open, set confirm loading to true (loading state)
     if (status == "error") {
-      setConfirmLoading(true);
+      // setConfirmLoading(true);
     } else {
       // If the modal is closed, set confirm loading to false after a delay
       setTimeout(() => {
