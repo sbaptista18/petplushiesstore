@@ -43,6 +43,7 @@ const Checkout = () => {
   const [form_coupon] = Form.useForm();
   const [userPersonalData, setUserPersonalData] = useState({});
   const [coupon, setCoupon] = useState("");
+  const [accountError, setAccountError] = useState("");
 
   const history = useHistory();
 
@@ -313,7 +314,11 @@ const Checkout = () => {
           body: JSON.stringify({ dataCustomer }),
         }
       );
-      const responseData = await response.json();
+      const data = await response.json();
+
+      if (data.error) {
+        setAccountError(data.message);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -506,6 +511,7 @@ const Checkout = () => {
                   handlePaymentMethod={handlePaymentMethod}
                   paymentMethod={paymentMethod}
                   data={userPersonalData}
+                  accountError={accountError}
                 />
               </div>
             </Col>

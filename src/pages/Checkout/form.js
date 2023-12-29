@@ -19,6 +19,7 @@ const CheckoutForm = ({
   handlePaymentMethod,
   form,
   data,
+  accountError,
 }) => {
   const [countries, setCountries] = useState([]);
 
@@ -254,6 +255,7 @@ const CheckoutForm = ({
           >
             <Checkbox>Criar conta?</Checkbox>
           </Form.Item>
+          <>{accountError != "" && accountError}</>
         </Col>
       </FormRow>
 
@@ -459,14 +461,14 @@ const CheckoutForm = ({
         rules={[
           {
             required: true,
-            message: "Tem de confirmar a leitura dos Termos & Condições.",
+            message: "Tem de confirmar a leitura dos Termos e Condições.",
           },
         ]}
       >
         <Checkbox>
           Declaro que li e aceito os{" "}
           <Link to="/termos-e-condicoes" target="_blank">
-            Termos & Condições
+            Termos e Condições
           </Link>
         </Checkbox>
       </Form.Item>
