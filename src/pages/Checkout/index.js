@@ -44,12 +44,14 @@ const Checkout = () => {
   const [userPersonalData, setUserPersonalData] = useState({});
   const [coupon, setCoupon] = useState("");
   const [accountError, setAccountError] = useState("");
+  const [orderNote, setOrderNote] = useState(undefined);
 
   const history = useHistory();
 
   useEffect(() => {
-    if (cartId == null) history.replace("/carrinho");
-    else fetchCartId(cartId);
+    // if (cartId == null) history.replace("/carrinho");
+    // else
+    fetchCartId(cartId);
   }, [cartId]);
 
   useEffect(() => {
@@ -112,30 +114,18 @@ const Checkout = () => {
     }
   };
 
-  const calculateShippingCost = (data, weight, subtotal) => {
+  const calculateShippingCost = (data, subtotal) => {
     if (subtotal > 50) {
       setShippingTitle("Portes Gratuitos");
       return 0;
     }
 
-    for (const shippingMethod of data) {
-      const zoneMethods = shippingMethod.zone_methods[0];
+    const zoneMethods = data.zone_methods;
 
-      const method = Object.values(zoneMethods).find((method) => {
-        setShippingTitle(method.title);
-        const title = method.title.toLowerCase();
-        const match = title.match(/(\d+)\s*g\s*a\s*(\d+)?/);
+    for (const methodKey in zoneMethods) {
+      const method = zoneMethods[methodKey];
 
-        if (match) {
-          const minWeight = parseInt(match[1]);
-          const maxWeight = match[2] ? parseInt(match[2]) : undefined;
-
-          return (
-            weight >= minWeight &&
-            (maxWeight === undefined || weight <= maxWeight)
-          );
-        }
-      });
+      setShippingTitle(method.title);
 
       if (method) {
         const cost = parseFloat(method.cost);
@@ -153,10 +143,10 @@ const Checkout = () => {
       );
       const data = await response.json();
 
-      if (data.length > 0) {
+      if (data.success) {
         const weightGrs = totalWeight * 1000;
         const shippingCost = calculateShippingCost(
-          data,
+          data.zones[0],
           weightGrs,
           totalProductNetRevenue
         );
@@ -169,7 +159,7 @@ const Checkout = () => {
         setShipMethods(false);
       }
     } catch (error) {
-      setError(true);
+      // setError(true);
     }
   };
 
@@ -285,6 +275,7 @@ const Checkout = () => {
         },
       ],
       coupon_code: coupon_code,
+      customer_note: orderNote,
     };
 
     return formValues.first_name_other
@@ -324,7 +315,7 @@ const Checkout = () => {
     }
   };
 
-  const createOrder = async (dataOrder) => {
+  const createOrder = async (dataOrder, createAccount, formValues) => {
     try {
       const response = await fetch(
         "https://backoffice.petplushies.pt/wp-json/wc/v3/create_order",
@@ -337,15 +328,54 @@ const Checkout = () => {
         }
       );
       const data = await response.json();
-
       if (data.success) {
         setMessage(response.message);
         setStatus("success");
         setIsModalOpen(true);
 
-        setTimeout(() => {
-          history.replace("/");
-        }, 5000);
+        updateProductsNr(0);
+        setProductsCart([]);
+        setProducts([]);
+
+        if (createAccount) {
+          createCustomer(formValues)
+            .then(function (response) {
+              setMessage(
+                "A sua conta foi criada com sucesso! Pode efetuar o login com o seu nome de utilizador gerado (" +
+                  formValues.first_name.toLowerCase() +
+                  "." +
+                  formValues.surname.toLowerCase() +
+                  "). Receberá instruções para definir a sua password."
+              );
+              setStatus("success");
+              setIsModalOpen(true);
+              setTimeout(() => {
+                history.replace("/");
+              }, 5000);
+            })
+            .catch(function (error) {
+              setMessage(
+                "Houve um erro na criação da conta. Por favor envie e-mail para geral@petplushies.pt para notificar do sucedido. (" +
+                  error.response.data +
+                  ")."
+              );
+              setStatus("error");
+              setIsModalOpen(true);
+            });
+        } else {
+          if (response.success) {
+            setMessage(response.message);
+            setStatus("success");
+            setIsModalOpen(true);
+            setTimeout(() => {
+              history.replace("/");
+            }, 5000);
+          } else {
+            setMessage(response.message);
+            setStatus("error");
+            setIsModalOpen(true);
+          }
+        }
       } else {
         setMessage(response.message);
         setStatus("error");
@@ -373,57 +403,7 @@ const Checkout = () => {
           coupon.coupon_code
         );
 
-        createOrder(dataOrder)
-          .then(function (response) {
-            updateProductsNr(0);
-            setProductsCart([]);
-            setProducts([]);
-
-            if (createAccount) {
-              createCustomer(formValues)
-                .then(function (response) {
-                  setMessage(
-                    "A sua conta foi criada com sucesso! Pode efetuar o login com o seu nome de utilizador gerado (" +
-                      formValues.first_name.toLowerCase() +
-                      "." +
-                      formValues.surname.toLowerCase() +
-                      "). Receberá instruções para definir a sua password."
-                  );
-                  setStatus("success");
-                  setIsModalOpen(true);
-
-                  setTimeout(() => {
-                    history.replace("/");
-                  }, 5000);
-                })
-                .catch(function (error) {
-                  setMessage(
-                    "Houve um erro na criação da conta. Por favor envie e-mail para geral@petplushies.pt para notificar do sucedido. (" +
-                      error.response.data +
-                      ")."
-                  );
-                  setStatus("error");
-                  setIsModalOpen(true);
-                });
-            } else {
-              if (response.success) {
-                setMessage(response.message);
-                setStatus("success");
-                setIsModalOpen(true);
-
-                setTimeout(() => {
-                  history.replace("/");
-                }, 5000);
-              } else {
-                setMessage(response.message);
-                setStatus("error");
-                setIsModalOpen(true);
-              }
-            }
-          })
-          .catch(function (error) {
-            setError(true);
-          });
+        createOrder(dataOrder, createAccount, formValues);
       })
       .catch((errorInfo) => {
         console.log(errorInfo);
@@ -440,6 +420,10 @@ const Checkout = () => {
 
     return total + itemWeight;
   }, 0);
+
+  const handleOrderNote = (e) => {
+    setOrderNote(e.target.value);
+  };
 
   const handleCountry = (value) => {
     fetchShippingZonesDetails(value);
@@ -467,16 +451,34 @@ const Checkout = () => {
 
   const handleOnPayPalError = (err) => {
     console.error("Transaction failed:", err);
-    setMessage("Erro na transacção. (" + err + ")");
+    setMessage("Erro na transacção.");
     setStatus("error");
     setIsModalOpen(true);
   };
 
   const handleOnPayPalCancel = (data) => {
     console.log("Transaction canceled:", data);
-    setMessage("Transacção cancelada. (" + data + ")");
+    setMessage("Transacção cancelada.");
     setStatus("error");
     setIsModalOpen(true);
+  };
+
+  const handleFinalPrice = (coupon) => {
+    if (coupon !== "") {
+      if (coupon.discount_type === "fixed_cart") {
+        return (totalProductNetRevenue + shippingCost - coupon.amount).toFixed(
+          2
+        );
+      } else {
+        return (
+          totalProductNetRevenue +
+          shippingCost -
+          (totalProductNetRevenue + shippingCost) * coupon.amount
+        ).toFixed(2);
+      }
+    } else {
+      return (totalProductNetRevenue + shippingCost).toFixed(2);
+    }
   };
 
   return (
@@ -512,6 +514,8 @@ const Checkout = () => {
                   paymentMethod={paymentMethod}
                   data={userPersonalData}
                   accountError={accountError}
+                  handleOrderNote={handleOrderNote}
+                  orderNote={orderNote}
                 />
               </div>
             </Col>
@@ -595,32 +599,11 @@ const Checkout = () => {
               <Border />
               <Total>
                 <div>Total</div>
-                <div>
-                  {coupon !== ""
-                    ? coupon.discount_type === "fixed_cart"
-                      ? (
-                          totalProductNetRevenue +
-                          shippingCost -
-                          coupon.amount
-                        ).toFixed(2)
-                      : // Additional condition for else if
-                      coupon.discount_type === "percent"
-                      ? // Handle else if condition
-                        (
-                          totalProductNetRevenue +
-                          shippingCost -
-                          (totalProductNetRevenue + shippingCost) *
-                            coupon.amount
-                        ).toFixed(2)
-                      : // Default case if none of the conditions are met
-                        (totalProductNetRevenue + shippingCost).toFixed(2)
-                    : // Default case if coupon is an empty string
-                      (totalProductNetRevenue + shippingCost).toFixed(2)}
-                </div>
+                <div>{handleFinalPrice(coupon)}&euro;</div>
               </Total>
               {paymentMethod.label == "PayPal" ? (
                 <PayPalButton
-                  amount={totalProductNetRevenue + shippingCost} // Set your transaction amount
+                  amount={handleFinalPrice(coupon)} // Set your transaction amount
                   onSuccess={handleOnPayPalSuccess}
                   onError={handleOnPayPalError}
                   onCancel={handleOnPayPalCancel}

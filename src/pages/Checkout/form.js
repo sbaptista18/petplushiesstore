@@ -20,6 +20,8 @@ const CheckoutForm = ({
   form,
   data,
   accountError,
+  handleOrderNote,
+  orderNote,
 }) => {
   const [countries, setCountries] = useState([]);
 
@@ -194,7 +196,7 @@ const CheckoutForm = ({
                     </Select.Option>
                   ));
                 }
-                return null; // Add this to handle the case where the condition is not met
+                return null;
               })}
             </Select>
           </Form.Item>
@@ -333,7 +335,16 @@ const CheckoutForm = ({
                 name="country_other"
               >
                 <Select value={country} onChange={handleCountryShipping}>
-                  <Select.Option value="2">Portugal</Select.Option>
+                  {countries.map((c) => {
+                    const country = c.name;
+                    const code = c.code;
+
+                    return (
+                      <Select.Option key={code} value={code}>
+                        {country}
+                      </Select.Option>
+                    );
+                  })}
                 </Select>
               </Form.Item>
             </Col>
@@ -384,11 +395,18 @@ const CheckoutForm = ({
                 name="district_other"
               >
                 <Select>
-                  {secondSelectOptions.map((option) => (
-                    <Select.Option key={option} value={option}>
-                      {option}
-                    </Select.Option>
-                  ))}
+                  {countries.map((c) => {
+                    if (c.code === secondSelectOptions) {
+                      const states = c.states;
+                      const statesArray = Object.entries(states);
+                      return statesArray.map((s) => (
+                        <Select.Option key={s[0]} value={s[1]}>
+                          {s[1]}
+                        </Select.Option>
+                      ));
+                    }
+                    return null;
+                  })}
                 </Select>
               </Form.Item>
             </Col>
@@ -414,10 +432,15 @@ const CheckoutForm = ({
       )}
       <FormRow>
         <Col span={24}>
-          <Form.Item name="order_notes" wrapperCol={24}>
+          <Form.Item
+            name="order_notes"
+            wrapperCol={24}
+            onChange={handleOrderNote}
+          >
             <>
               <span>Notas para a encomenda</span>
               <TextArea
+                value={orderNote}
                 rows={4}
                 placeholder="Aqui pode deixar instruções especiais como, por exemplo, 'A campaínha não toca.'"
               />
