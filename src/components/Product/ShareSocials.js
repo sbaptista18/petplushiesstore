@@ -77,7 +77,7 @@ ShareSocials.propTypes = {
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
-  width: auto;
+  width: 100%;
   flex-direction: column;
   align-items: center;
 `;
