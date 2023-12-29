@@ -22,47 +22,60 @@ const ContactUs = () => {
   const [status, setStatus] = useState();
   const [loadingButton, setLoadingButton] = useState(false);
 
+  const [textAreaValue, setTextAreaValue] = useState("");
+
+  const handleTextAreaChange = (e) => {
+    setTextAreaValue(e.target.value);
+  };
+
   const handleSubmit = () => {
     setLoadingButton(true);
     form.validateFields().then(async () => {
-      const formValues = form.getFieldsValue();
-      const dataMessage = {
-        email: formValues.email,
-        name: formValues.first_name,
-        surname: formValues.surname,
-        subject: formValues.subject,
-        message: formValues.message,
-      };
+      if (textAreaValue.trim() === "") {
+        setMessage("Tem de preencher o campo da mensagem.");
+        setStatus("error");
+        setIsModalOpen(true);
+        setLoadingButton(false);
+      } else {
+        const formValues = form.getFieldsValue();
+        const dataMessage = {
+          email: formValues.email,
+          name: formValues.first_name,
+          surname: formValues.surname,
+          subject: formValues.subject,
+          message: textAreaValue,
+        };
 
-      try {
-        const response = await fetch(
-          "https://backoffice.petplushies.pt/wp-json/wc/v3/send_email",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ dataMessage }),
+        try {
+          const response = await fetch(
+            "https://backoffice.petplushies.pt/wp-json/wc/v3/send_email",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ dataMessage }),
+            }
+          );
+          const data = await response.json();
+
+          if (data.success) {
+            setMessage(data.message);
+            setStatus("success");
+            setIsModalOpen(true);
+            setLoadingButton(false);
+          } else {
+            setMessage(data.message);
+            setStatus("error");
+            setIsModalOpen(true);
+            setLoadingButton(false);
           }
-        );
-        const data = await response.json();
-
-        if (data.success) {
-          setMessage(data.message);
-          setStatus("success");
-          setIsModalOpen(true);
-          setLoadingButton(false);
-        } else {
+        } catch (error) {
           setMessage(data.message);
           setStatus("error");
           setIsModalOpen(true);
           setLoadingButton(false);
         }
-      } catch (error) {
-        setMessage(data.message);
-        setStatus("error");
-        setIsModalOpen(true);
-        setLoadingButton(false);
       }
     });
   };
@@ -206,12 +219,8 @@ const ContactUs = () => {
                   <Form.Item
                     name="message"
                     wrapperCol={24}
-                    rules={[
-                      {
-                        required: true,
-                        message: "Tem de escrever a mensagem.",
-                      },
-                    ]}
+                    value={textAreaValue}
+                    onChange={handleTextAreaChange}
                   >
                     <>
                       <span>Mensagem</span>
@@ -231,8 +240,8 @@ const ContactUs = () => {
                     extra="Só queremos ter a certeza que é um humano."
                   >
                     <ReCAPTCHA
-                      // sitekey="6LeeeyEpAAAAAHEmtDr81K8xOhEkbCcM32FGYqtF" //localhost
-                      sitekey="6LcGYz8pAAAAAKL8E_B9V_DkFqIXiApSnLnfE4Z0"
+                      sitekey="6LeeeyEpAAAAAHEmtDr81K8xOhEkbCcM32FGYqtF" //localhost
+                      // sitekey="6LcGYz8pAAAAAKL8E_B9V_DkFqIXiApSnLnfE4Z0" //production
                       onChange={handleVerification}
                     />
                   </Form.Item>
