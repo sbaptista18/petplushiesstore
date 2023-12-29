@@ -374,6 +374,11 @@ const Product = () => {
           setTimeout(() => {
             window.location.reload();
           }, 3000);
+        } else {
+          setMessage(data.message);
+          setStatus("error");
+          setIsModalOpen(true);
+          setLoadingAddToCart(false);
         }
       } catch (error) {
         setMessage(data.message);

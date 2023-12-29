@@ -73,28 +73,28 @@ const MyAccount = () => {
   const data = localStorage.getItem("token");
 
   const storedUserString = localStorage.getItem("user");
-  const user = JSON.parse(storedUserString);
-
-  if (localStorage.getItem("token") == null) {
-    history.replace("/login");
-  }
+  const user = JSON.parse(storedUserString) || {};
 
   useEffect(() => {
-    const fetchCustomerData = async (userId) => {
-      try {
-        const response = await fetch(
-          `https://backoffice.petplushies.pt/wp-json/wc/v3/get_customer_data?userId=${userId}`
-        );
-        const responseData = await response.json();
-        setUserPersonalData(responseData);
-        setLoading(false);
-      } catch (error) {
-        setLoading(true);
-      }
-    };
+    if (localStorage.getItem("token") == null) {
+      history.replace("/login");
+    } else {
+      const fetchCustomerData = async (userId) => {
+        try {
+          const response = await fetch(
+            `https://backoffice.petplushies.pt/wp-json/wc/v3/get_customer_data?userId=${userId}`
+          );
+          const responseData = await response.json();
+          setUserPersonalData(responseData);
+          setLoading(false);
+        } catch (error) {
+          setLoading(true);
+        }
+      };
 
-    fetchCustomerData(user.ID);
-  }, []);
+      fetchCustomerData(user.ID);
+    }
+  }, [history, user]);
 
   const fetchOrders = async (userId) => {
     try {
@@ -110,29 +110,16 @@ const MyAccount = () => {
   };
 
   const handleLogOut = async () => {
-    console.log("logout");
     try {
       await axios.post(
         `https://backoffice.petplushies.pt/?rest_route=/simple-jwt-login/v1/auth/revoke&JWT=${data}`
       );
-      // localStorage.removeItem("token");
-      // localStorage.removeItem("user");
-      // localStorage.removeItem("userCart");
       clearCartState();
       setLoggedIn(false);
-      // setTimeout(() => {
-      //   history.replace("/login");
-      // }, 3000);
     } catch (error) {
       setError(error.response.data.message);
-      // localStorage.removeItem("token");
-      // localStorage.removeItem("user");
-      // localStorage.removeItem("userCart");
       setLoggedIn(false);
       clearCartState();
-      // setTimeout(() => {
-      //   history.replace("/login");
-      // }, 3000);
     }
   };
 

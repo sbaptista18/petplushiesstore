@@ -6,14 +6,15 @@ export const generateSessionKey = () => {
 };
 
 export const setSessionInLocalStorage = (key, loggedIn) => {
-  // console.log("is logged in (set):", isLoggedIn);
   if (loggedIn) {
-    const username = JSON.parse(storedUserData).user_login;
-    const sessionData = {
-      key: username,
-    };
-    localStorage.setItem("userCart", JSON.stringify(sessionData));
-    localStorage.removeItem("tempCart");
+    if (JSON.parse(storedUserData) != null) {
+      const username = JSON.parse(storedUserData).user_login;
+      const sessionData = {
+        key: username,
+      };
+      localStorage.setItem("userCart", JSON.stringify(sessionData));
+      localStorage.removeItem("tempCart");
+    }
   } else {
     const currentTime = new Date().getTime();
     const sessionData = {
