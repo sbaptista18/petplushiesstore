@@ -393,7 +393,6 @@ const Products = () => {
           setNoResults(true);
         } else {
           const mappedProducts = filteredProducts.map((item) => {
-            // console.log(item);
             return {
               id: item.id,
               name: item.name,
@@ -585,6 +584,7 @@ const Products = () => {
                     defaultPageSize={pageSize}
                     defaultCurrent={currentPage}
                     onChange={handleOnChangePagination}
+                    style={{ lineHeight: "3" }}
                   />
                 )}
               </ProductListContainer>

@@ -9,7 +9,7 @@ import { LazyImage } from "fragments";
 
 const Tile = ({ picture, name, category, url, excerpt, size }) => {
   return (
-    <Container span={size == "large" ? "7" : "5"}>
+    <Container span={size == "large" ? "10" : "5"}>
       {category && <Category>{category}</Category>}
       <LazyImage src={picture} alt={name + " - Pet Plushies"} />
       <Text>
@@ -36,7 +36,7 @@ const Container = styled(Col)`
   display: flex;
   position: relative;
   flex-direction: column;
-  margin: 28px;
+  margin: 10px 18px;
 `;
 
 const Flag = styled.div`
