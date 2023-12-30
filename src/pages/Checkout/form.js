@@ -126,13 +126,18 @@ const CheckoutForm = ({
             wrapperCol={24}
             name="country"
           >
-            <Select value={country} onChange={handleCountry}>
+            <Select
+              showSearch
+              value={country}
+              onChange={handleCountry}
+              optionFilterProp="children"
+            >
               {countries.map((c) => {
                 const country = c.name;
                 const code = c.code;
 
                 return (
-                  <Select.Option key={code} value={code}>
+                  <Select.Option key={code} value={code} label={country}>
                     {country}
                   </Select.Option>
                 );
@@ -175,24 +180,14 @@ const CheckoutForm = ({
           </Form.Item>
         </Col>
         <Col span={11}>
-          <Form.Item
-            rules={[
-              {
-                required: true,
-                message: "Por favor seleccione o distrito/região.",
-              },
-            ]}
-            label="Distrito/Região"
-            wrapperCol={24}
-            name="district"
-          >
-            <Select>
+          <Form.Item label="Distrito/Região" wrapperCol={24} name="district">
+            <Select showSearch optionFilterProp="children">
               {countries.map((c) => {
                 if (c.code === secondSelectOptions) {
                   const states = c.states;
                   const statesArray = Object.entries(states);
                   return statesArray.map((s) => (
-                    <Select.Option key={s[0]} value={s[1]}>
+                    <Select.Option key={s[0]} value={s[1]} label={s[1]}>
                       {s[1]}
                     </Select.Option>
                   ));
@@ -337,13 +332,18 @@ const CheckoutForm = ({
                 wrapperCol={24}
                 name="country_other"
               >
-                <Select value={country} onChange={handleCountryShipping}>
+                <Select
+                  value={country}
+                  onChange={handleCountryShipping}
+                  showSearch
+                  optionFilterProp="children"
+                >
                   {countries.map((c) => {
                     const country = c.name;
                     const code = c.code;
 
                     return (
-                      <Select.Option key={code} value={code}>
+                      <Select.Option key={code} value={code} label={country}>
                         {country}
                       </Select.Option>
                     );
@@ -387,23 +387,17 @@ const CheckoutForm = ({
             </Col>
             <Col span={11}>
               <Form.Item
-                rules={[
-                  {
-                    required: true,
-                    message: "Por favor seleccione o distrito/região.",
-                  },
-                ]}
                 label="Distrito/Região"
                 wrapperCol={24}
                 name="district_other"
               >
-                <Select>
+                <Select showSearch optionFilterProp="children">
                   {countries.map((c) => {
                     if (c.code === secondSelectOptions) {
                       const states = c.states;
                       const statesArray = Object.entries(states);
                       return statesArray.map((s) => (
-                        <Select.Option key={s[0]} value={s[1]}>
+                        <Select.Option key={s[0]} value={s[1]} label={s[1]}>
                           {s[1]}
                         </Select.Option>
                       ));

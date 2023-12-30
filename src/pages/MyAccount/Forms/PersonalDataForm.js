@@ -112,13 +112,18 @@ const PersonalDataForm = ({
         <FormRow>
           <Col span={24}>
             <Form.Item label="País" wrapperCol={24} name="country">
-              <Select value={country} onChange={handleCountry}>
+              <Select
+                value={country}
+                onChange={handleCountry}
+                showSearch
+                optionFilterProp="children"
+              >
                 {countries.map((c) => {
                   const country = c.name;
                   const code = c.code;
 
                   return (
-                    <Select.Option key={code} value={code}>
+                    <Select.Option key={code} value={code} label={country}>
                       {country}
                     </Select.Option>
                   );
@@ -142,13 +147,13 @@ const PersonalDataForm = ({
           </Col>
           <Col span={11}>
             <Form.Item label="Distrito/Região" wrapperCol={24} name="district">
-              <Select>
+              <Select showSearch optionFilterProp="children">
                 {countries.map((c) => {
                   if (c.code === selectedBillingCountry) {
                     const states = c.states;
                     const statesArray = Object.entries(states);
                     return statesArray.map((s) => (
-                      <Select.Option key={s[0]} value={s[1]}>
+                      <Select.Option key={s[0]} value={s[1]} label={s[1]}>
                         {s[1]}
                       </Select.Option>
                     ));
@@ -217,13 +222,18 @@ const PersonalDataForm = ({
         <FormRow>
           <Col span={24}>
             <Form.Item label="País" wrapperCol={24} name="country_other">
-              <Select value={country} onChange={handleCountryShipping}>
+              <Select
+                value={country}
+                onChange={handleCountryShipping}
+                showSearch
+                optionFilterProp="children"
+              >
                 {countries.map((c) => {
                   const country = c.name;
                   const code = c.code;
 
                   return (
-                    <Select.Option key={code} value={code}>
+                    <Select.Option key={code} value={code} label={country}>
                       {country}
                     </Select.Option>
                   );
@@ -251,13 +261,13 @@ const PersonalDataForm = ({
               wrapperCol={24}
               name="district_other"
             >
-              <Select>
+              <Select showSearch optionFilterProp="children">
                 {countries.map((c) => {
                   if (c.code === selectedShippingCountry) {
                     const states = c.states;
                     const statesArray = Object.entries(states);
                     return statesArray.map((s) => (
-                      <Select.Option key={s[0]} value={s[1]}>
+                      <Select.Option key={s[0]} value={s[1]} label={s[1]}>
                         {s[1]}
                       </Select.Option>
                     ));

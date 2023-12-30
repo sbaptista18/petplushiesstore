@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 
 import { Button, ModalMessage, PageHeader } from "components";
 import { tableColumns } from "fragments";
-import { useCart, useLoading } from "reducers";
+import { useCart } from "reducers";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -28,7 +28,6 @@ const Cart = () => {
 
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
-  const { setLoadingPage } = useLoading();
 
   const calculateTotalNetRevenue = (items) => {
     return items.reduce(
@@ -38,17 +37,14 @@ const Cart = () => {
   };
 
   useEffect(() => {
-    setLoadingPage(true);
     if (cartId !== null) {
       fetchCartProducts(cartId);
       setLoading(true);
-      setLoadingPage(true);
     } else {
       setProductsCart([]);
       setProducts([]);
       setTotalProductNetRevenue(0);
       setLoading(false);
-      setLoadingPage(false);
     }
   }, [cartId]);
 
@@ -65,8 +61,7 @@ const Cart = () => {
 
       updateProductsNr(totalProductQty);
       setTotalProductNetRevenue(updatedTotal);
-      setLoading(false); // Set loading to false after calculating the total
-      setLoadingPage(false);
+      setLoading(false);
     }
   }, [productsCart]);
 
@@ -84,10 +79,8 @@ const Cart = () => {
         setProducts(data);
         setTotalProductNetRevenue(initialTotal);
         setLoading(false);
-        setLoadingPage(false);
       } else {
         setLoading(false);
-        setLoadingPage(false);
         setProductsCart([]);
         setProducts([]);
         setTotalProductNetRevenue(0);
