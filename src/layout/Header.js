@@ -13,6 +13,9 @@ import {
 
 import { PopupCart } from "components";
 
+import { changeLanguage } from "../fragments/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
+
 import {
   MenuOutlined,
   ShoppingCartOutlined,
@@ -21,6 +24,8 @@ import {
 } from "@ant-design/icons";
 
 import Logo from "assets/images/logo.png";
+import EN from "assets/images/en.png";
+import PT from "assets/images/pt.png";
 
 import { MainMenuItems } from "../data/menuItems";
 
@@ -60,6 +65,9 @@ const PPS_Header = () => {
   const [isOpenCart, setIsOpenCart] = useState(false);
 
   const [cartItems, setCartItems] = useState([]);
+  const { i18n } = useTranslation();
+
+  const mainMenuItems = MainMenuItems();
 
   const token = localStorage.getItem("token");
   CreateCartKey(token);
@@ -225,7 +233,7 @@ const PPS_Header = () => {
         <StyledMenu
           mode="horizontal"
           overflowedIndicator={<MenuOutlined />}
-          items={MainMenuItems.map(buildMenuItemProps)}
+          items={mainMenuItems.map(buildMenuItemProps)}
           onClick={({ key }) => {
             onClickSectionRegistry[key](history);
           }}
@@ -258,10 +266,33 @@ const PPS_Header = () => {
             onClick={() => handleLogOut()}
           />
         )}
+        {i18n.language === "en" && (
+          <IconButton
+            location={location.pathname}
+            style={{ color }}
+            onClick={() => changeLanguage("pt")}
+          >
+            <Flag src={PT} />
+          </IconButton>
+        )}
+        {i18n.language === "pt" && (
+          <IconButton
+            location={location.pathname}
+            style={{ color }}
+            onClick={() => changeLanguage("en")}
+          >
+            <Flag src={EN} />
+          </IconButton>
+        )}
       </MenuContainer>
     </StyledHeader>
   );
 };
+
+const Flag = styled.img`
+  width: 30px;
+  height: auto;
+`;
 
 const LogOutBtn = styled(LogoutOutlined)`
   cursor: pointer;

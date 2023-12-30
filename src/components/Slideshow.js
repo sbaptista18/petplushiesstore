@@ -5,10 +5,12 @@ import { Link } from "react-router-dom";
 
 import { Button } from "components";
 import { LazyImage } from "fragments";
+import { useTranslation } from "react-i18next";
 
 import BottomBar from "assets/images/bottom-bar.svg";
 
 const Slideshow = ({ slides, settings }) => {
+  const { t } = useTranslation();
   return (
     <SlideshowContainer>
       <StyledSlider {...settings}>
@@ -22,7 +24,7 @@ const Slideshow = ({ slides, settings }) => {
                   <span>{p.title}</span>
 
                   <Link to={p.url}>
-                    <Button size="large" type="primary" text="Saber mais" />
+                    <Button size="large" type="primary" text={t("saberMais")} />
                   </Link>
                 </Text>
               </Container>

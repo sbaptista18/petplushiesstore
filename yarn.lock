@@ -13782,8 +13782,8 @@ __metadata:
     php-serialize: ^4.1.1
     php-unserialize: ^0.0.1
     postcss-loader: ^6.1.1
-    react: ^18.2.0
-    react-dom: ^18.2.0
+    react: latest
+    react-dom: latest
     react-google-recaptcha: ^3.1.0
     react-gtm-module: ^2.0.11
     react-helmet: ^6.1.0
@@ -15721,7 +15721,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18.2.0":
+"react-dom@npm:latest":
   version: 18.2.0
   resolution: "react-dom@npm:18.2.0"
   dependencies:
@@ -16178,7 +16178,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18.2.0":
+"react@npm:latest":
   version: 18.2.0
   resolution: "react@npm:18.2.0"
   dependencies:

@@ -3,6 +3,7 @@ import { Row, Col } from "antd";
 
 import { PageHeader } from "components";
 import { LazyImage, SEOTags } from "fragments";
+import { useTranslation } from "react-i18next";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 import BottomBar from "assets/images/bottom-bar.svg";
@@ -13,6 +14,7 @@ import Portugal from "assets/images/about-us/portugal.png";
 import Recycling from "assets/images/about-us/recycling.png";
 
 const AboutUs = () => {
+  const { t } = useTranslation();
   return (
     <>
       <SEOTags
@@ -23,7 +25,7 @@ const AboutUs = () => {
         image={DummyImg}
       />
       <PageHeader
-        title="Sobre Nós"
+        title={t("sobreNos")}
         img={DummyImg}
         alt="Sobre Nós - Pet Plushies"
       />

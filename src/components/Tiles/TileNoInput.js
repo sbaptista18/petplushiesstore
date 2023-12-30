@@ -4,6 +4,7 @@ import { Col } from "antd";
 import { Link } from "react-router-dom";
 
 import { Button } from "components";
+import { useTranslation } from "react-i18next";
 
 import { LazyImage } from "fragments";
 
@@ -18,6 +19,8 @@ const Tile = ({
   stock,
   url,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Container span={size == "large" ? "8" : "5"}>
       {flag && <Flag>{flag}</Flag>}
@@ -30,7 +33,7 @@ const Tile = ({
           {flag == "sale" && <Sale>{sale_price}&euro;</Sale>}
         </PriceContainer>
         <Link to={"/loja/" + url}>
-          <StyledButton size="large" type="primary" text="Ver produto" />
+          <StyledButton size="large" type="primary" text={t("verProduto")} />
         </Link>
       </Text>
     </Container>

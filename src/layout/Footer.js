@@ -15,6 +15,7 @@ import {
 } from "../data/menuItems";
 
 const { Footer } = Layout;
+import { useTranslation } from "react-i18next";
 
 const onClickSectionRegistry = {
   home: (history) => history.push(""),
@@ -40,6 +41,11 @@ const buildMenuItemProps = (item) => {
 const PPS_Footer = () => {
   const history = useHistory();
 
+  const mainMenuItems = MainMenuItems();
+  const secondaryMenuItems = SecondaryMenuItems();
+  const legalMenuItems = LegalMenuItems();
+  const { t } = useTranslation();
+
   return (
     <StyledFooter>
       <StyledTopBar />
@@ -53,28 +59,28 @@ const PPS_Footer = () => {
           <StyledH3>Menu</StyledH3>
           <StyledMenu
             mode="vertical"
-            items={MainMenuItems.map(buildMenuItemProps)}
+            items={mainMenuItems.map(buildMenuItemProps)}
             onClick={({ key }) => {
               onClickSectionRegistry[key](history);
             }}
           />
         </Col>
         <Col span={6}>
-          <StyledH3>Contactos</StyledH3>
+          <StyledH3>{t("contactos")}</StyledH3>
           <p>
             <a href="mailto:geral@petplushies.pt">geral@petplushies.pt</a>
           </p>
-          <StyledH3>Links Úteis</StyledH3>
+          <StyledH3>{t("linksUteis")}</StyledH3>
           <StyledMenu
             mode="vertical"
-            items={SecondaryMenuItems.map(buildMenuItemProps)}
+            items={secondaryMenuItems.map(buildMenuItemProps)}
             onClick={({ key }) => {
               onClickSectionRegistry[key](history);
             }}
           />
         </Col>
         <Col span={6}>
-          <StyledH3>Siga-nos nas Redes Sociais</StyledH3>
+          <StyledH3>{t("sigaRedes")}</StyledH3>
           <p>
             <SocialLink
               href="https://www.facebook.com/petplushiesshop"
@@ -100,14 +106,13 @@ const PPS_Footer = () => {
       <SubFooter>
         <LegalMenu
           mode="vertical"
-          items={LegalMenuItems.map(buildMenuItemProps)}
+          items={legalMenuItems.map(buildMenuItemProps)}
           onClick={({ key }) => {
             onClickSectionRegistry[key](history);
           }}
         />
         <span>
-          © {new Date().getFullYear()} Pet Plushies. Todos os direitos
-          reservados.
+          © {new Date().getFullYear()} Pet Plushies. {t("direitosReservados")}.
         </span>
       </SubFooter>
     </StyledFooter>

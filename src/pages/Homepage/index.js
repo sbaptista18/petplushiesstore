@@ -6,8 +6,9 @@ import { Link } from "react-router-dom";
 
 import { Slideshow, TileNoInput, Button, TilePosts } from "components";
 import { LazyImage, SEOTags } from "fragments";
+import { useTranslation } from "react-i18next";
 
-import { data } from "./slideshow_data";
+import SlideshowData from "./slideshow_data";
 
 import Img from "assets/images/batcat-1.jpg";
 import BottomBar from "assets/images/bottom-bar.svg";
@@ -24,6 +25,8 @@ const Homepage = () => {
   const [errorPosts, setErrorPosts] = useState(false);
   const [noResultsPosts, setNoResultsPosts] = useState(false);
   const [messagePosts, setMessagePosts] = useState("");
+  const slideshowData = SlideshowData();
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchFeaturedProducts();
@@ -34,12 +37,12 @@ const Homepage = () => {
     if (status == "instock") {
       if (stock == null) return "";
       if (stock > 0) {
-        if (stock === 1) return "Apenas 1 em stock!";
-        if (stock <= 5) return "Últimas unidades em stock!";
+        if (stock === 1) return t("1InStock");
+        if (stock <= 5) return t("lastUnits");
         return "";
-      } else return "Esgotado";
+      } else return t("outOfStock");
     } else {
-      return "Esgotado";
+      return t("outOfStock");
     }
   };
 
@@ -115,7 +118,7 @@ const Homepage = () => {
         image={Img}
       />
       <Slideshow
-        slides={data}
+        slides={slideshowData}
         settings={{
           dots: true,
           infinite: true,
@@ -131,7 +134,7 @@ const Homepage = () => {
           <div>
             <VerticalContent>
               <Row>
-                <StyledH2Center>As nossas sugestões</StyledH2Center>
+                <StyledH2Center>{t("nossasSugestoes")}</StyledH2Center>
               </Row>
               <FeaturedContainer>
                 {loading && !error && (
@@ -171,29 +174,18 @@ const Homepage = () => {
             </Col>
             <TextContainer span={11}>
               <Row>
-                <StyledH2Left>A Pet Plushies</StyledH2Left>
+                <StyledH2Left>{t("petPlushies")}</StyledH2Left>
               </Row>
               <VerticalContent>
-                <p>
-                  Criada em 2021, é uma marca Portuguesa que se foca em realçar
-                  o que é importante para qualquer pet lover: artigos de
-                  qualidade para eles e os patudos!
-                </p>
-                <p>
-                  Todos os atigos sáo 100% artesanais e sustentáveis para que
-                  possamos todos ser amigos do planeta enquanto nos mimamos com
-                  o que há de melhor!
-                </p>
-                <p>
-                  A nossa principal missão é levar ajuda a vários
-                  abrigos/associações de animais doando 10% de cada compra.
-                </p>
+                <p>{t("homepageIntro1")}</p>
+                <p>{t("homepageIntro2")}</p>
+                <p>{t("homepageIntro3")}</p>
                 <Link to={"/sobre-nos"}>
                   <Button
                     size="large"
                     type="primary"
                     color="white"
-                    text="Ler mais"
+                    text={t("lerMais")}
                   />
                 </Link>
               </VerticalContent>
@@ -205,7 +197,7 @@ const Homepage = () => {
           <div>
             <VerticalContent>
               <Row>
-                <StyledH2Center>Últimas novidades!</StyledH2Center>
+                <StyledH2Center>{t("ultimasNovidades")}</StyledH2Center>
               </Row>
               <FeaturedContainer>
                 {loadingPosts && !errorPosts && (
