@@ -69,7 +69,11 @@ const tableColumns = (onQuantityChange, onDelete) => [
     title: "Preco",
     key: "price",
     render: (record) => {
-      return <Price text={`${parseFloat(record.product_gross_revenue)}€`} />;
+      return (
+        <Price
+          text={`${parseFloat(record.product_gross_revenue).toFixed(2)}€`}
+        />
+      );
     },
   },
   {

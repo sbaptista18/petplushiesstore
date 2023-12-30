@@ -284,7 +284,7 @@ const Cart = () => {
                   <>
                     <Subtotal>
                       <div>Subtotal</div>
-                      <div>{totalProductNetRevenue}&euro;</div>
+                      <div>{totalProductNetRevenue.toFixed(2)}&euro;</div>
                     </Subtotal>
                     <Shipping>
                       <div>
@@ -295,7 +295,7 @@ const Cart = () => {
                     <Border />
                     <Total>
                       <div>Subtotal</div>
-                      <div>{totalProductNetRevenue}&euro;</div>
+                      <div>{totalProductNetRevenue.toFixed(2)}&euro;</div>
                     </Total>
                     <Link to="/finalizar-compra">
                       <StyledButton

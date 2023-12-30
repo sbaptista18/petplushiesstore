@@ -7,7 +7,7 @@ import { PayPalButton } from "react-paypal-button-v2";
 
 import { Button, ModalMessage, PageHeader } from "components";
 import { tableColumnsCheckout } from "fragments";
-import { useCart, useLoading } from "reducers";
+import { useCart } from "reducers";
 
 import CheckoutForm from "./form";
 
@@ -27,6 +27,7 @@ const Checkout = () => {
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
   const { isLoggedIn } = useCart();
+  const { clearCartState } = useCart();
   const [lockForm, setLockForm] = useState(true);
   const [productsCart, setProductsCart] = useState([]);
   const [products, setProducts] = useState([]);
@@ -48,7 +49,6 @@ const Checkout = () => {
   const [orderNote, setOrderNote] = useState(undefined);
   const [loadingButton, setLoadingButton] = useState(false);
   const [loadingCouponButton, setLoadingCouponButton] = useState(false);
-  const { setLoadingPage } = useLoading();
 
   const history = useHistory();
 
@@ -58,7 +58,6 @@ const Checkout = () => {
   }, [cartId]);
 
   useEffect(() => {
-    setLoadingPage(true);
     const storedUserString = localStorage.getItem("user");
     const user = JSON.parse(storedUserString);
 
@@ -89,7 +88,6 @@ const Checkout = () => {
         fetchCartProducts(data[0].id);
       } else {
         setLoading(true);
-        setLoadingPage(true);
       }
     } catch (error) {
       console.error(error);
@@ -107,11 +105,9 @@ const Checkout = () => {
         setProductsCart(data);
         setProducts(data);
         setLoading(false);
-        setLoadingPage(false);
         setLockForm(false);
       } else {
         setLoading(false);
-        setLoadingPage(false);
         setProductsCart([]);
         setProducts([]);
       }
@@ -265,6 +261,7 @@ const Checkout = () => {
       prices_include_tax: true,
       billing: buildBillingDetails(formValues),
       shipping: buildShippingDetails(formValues),
+      total: handleFinalPrice(coupon),
       line_items: products.map((p) => {
         return {
           product_id: p.product_id,
@@ -333,6 +330,7 @@ const Checkout = () => {
         setProducts([]);
 
         setTimeout(() => {
+          clearCartState();
           history.replace("/");
         }, 5000);
       } else {
@@ -363,6 +361,8 @@ const Checkout = () => {
           orderId,
           coupon.coupon_code
         );
+
+        console.log(dataOrder);
 
         createOrder(dataOrder);
       })
