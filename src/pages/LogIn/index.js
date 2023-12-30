@@ -4,20 +4,23 @@ import { useState } from "react";
 import axios from "axios";
 import { useHistory, Link } from "react-router-dom";
 
-import { Button, PageHeader } from "components";
+import { Button, PageHeader, ModalMessage } from "components";
 import { useCart } from "reducers";
 import { SEOTags } from "fragments";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
 const LogIn = () => {
-  const [error, setError] = useState("");
   const history = useHistory();
 
   const [form] = Form.useForm();
   const { setLoggedIn } = useCart();
 
   const [loadingLogin, setLoadingLogin] = useState(false);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [status, setStatus] = useState();
+  const [message, setMessage] = useState("");
 
   if (localStorage.getItem("isLoggedIn") === "false") {
     localStorage.removeItem("user");
@@ -41,11 +44,13 @@ const LogIn = () => {
           handleValidation(responseAuth.data.data.jwt);
         }
       } catch (error) {
-        setError(
+        const errorMessage =
           error.response.data.data.errorCode == 48
             ? "Os dados de login estão incorrectos."
-            : "Erro no login. Por favor contactar geral@petplushies.pt para resolver o problema."
-        );
+            : "Erro no login. Por favor contactar geral@petplushies.pt para resolver o problema.";
+        setMessage(errorMessage);
+        setStatus("error");
+        setIsModalOpen(true);
         setLoadingLogin(false);
       }
     });
@@ -59,7 +64,9 @@ const LogIn = () => {
 
       if (response.data.success) handleLogin(response.data.data);
     } catch (error) {
-      setError(error.response.data.data.message);
+      setMessage(error.response.data.data.message);
+      setStatus("error");
+      setIsModalOpen(true);
     }
   };
 
@@ -87,12 +94,20 @@ const LogIn = () => {
         }, 1000);
       }
     } catch (error) {
-      setError(error.response.data.data.message);
+      setMessage(error.response.data.data.message);
+      setStatus("error");
+      setIsModalOpen(true);
     }
   };
 
   return (
     <>
+      <ModalMessage
+        status={status}
+        message={message}
+        isVisible={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
       <SEOTags
         title={`Login - Pet Plushies`}
         description=""
@@ -189,20 +204,6 @@ const LogIn = () => {
                 }}
               >
                 <Link to="/registar">Não possui conta? Registe-se aqui!</Link>
-              </Form.Item>
-
-              <Form.Item
-                wrapperCol={{
-                  offset: 4,
-                  span: 16,
-                }}
-              >
-                {error && (
-                  <div
-                    style={{ color: "red" }}
-                    dangerouslySetInnerHTML={{ __html: error }}
-                  ></div>
-                )}
               </Form.Item>
             </Form>
           </FormContainer>
