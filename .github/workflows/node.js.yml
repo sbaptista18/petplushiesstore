@@ -12,20 +12,29 @@ on:
 jobs:
   delete_files:
     runs-on: ubuntu-latest
-    name: Delete build folder
+    name: Delete build directory
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04]
+    env:
+      prepo: ${{github.repository}}
     steps:
-      - uses: actions/checkout@master
-      - uses: daniL16/action-clean-old-files@master
+      - uses: actions/checkout@v2
+      - name: Removing unnecessary files
+        run: |
+          rm -r build
+          ls -la
+      - name: Pushing to develop branch
+        uses: actions-js/push@develop
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          dir: './build'
-          base_branch: 'develop'
-          days_old: '60'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: compressed-develop
+          message: Deleted build directory
+          force: true
           
   build:
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [21.x]
