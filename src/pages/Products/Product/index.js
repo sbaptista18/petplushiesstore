@@ -541,7 +541,9 @@ const Product = () => {
                         />
                       ))}
                     </StarRatingContainer>
-                    <div> (de um total de {totalReviews} avaliações.)</div>
+                    {totalReviews > 0 && (
+                      <div> (de um total de {totalReviews} avaliações.)</div>
+                    )}
                   </AvgRatingContainer>
                   <AddToCart
                     onClick={() => addToCart(product)}

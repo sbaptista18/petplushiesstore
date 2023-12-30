@@ -64,7 +64,7 @@ const PPS_Footer = () => {
           <p>
             <a href="mailto:geral@petplushies.pt">geral@petplushies.pt</a>
           </p>
-          <StyledH3>Links Uteis</StyledH3>
+          <StyledH3>Links Úteis</StyledH3>
           <StyledMenu
             mode="vertical"
             items={SecondaryMenuItems.map(buildMenuItemProps)}

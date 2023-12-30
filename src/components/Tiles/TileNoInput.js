@@ -30,12 +30,7 @@ const Tile = ({
           {flag == "sale" && <Sale>{sale_price}&euro;</Sale>}
         </PriceContainer>
         <Link to={"/loja/" + url}>
-          <StyledButton
-            disabled={stock == 0 ? true : false}
-            size="large"
-            type="primary"
-            text="Ver produto"
-          />
+          <StyledButton size="large" type="primary" text="Ver produto" />
         </Link>
       </Text>
     </Container>

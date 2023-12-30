@@ -45,7 +45,7 @@ const tableColumnsCheckout = [
     render: (record) => <Qty text={record} />,
   },
   {
-    title: "Preco",
+    title: "Preço",
     dataIndex: "product_gross_revenue",
     key: "price",
     render: (record) => <Price text={`${parseFloat(record).toFixed(2)}€`} />,

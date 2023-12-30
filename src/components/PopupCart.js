@@ -17,7 +17,7 @@ const PopupCart = ({ handleOpenCart, isOpen, cartItems }) => {
             <HeaderRow>
               <Col span={14}>Produto</Col>
               <Col span={2}>Qtd.</Col>
-              <Col span={4}>Preco</Col>
+              <Col span={4}>Preço</Col>
             </HeaderRow>
             {cartItems.map((i) => {
               return (
@@ -43,7 +43,7 @@ const PopupCart = ({ handleOpenCart, isOpen, cartItems }) => {
             </ButtonRow>
           </Col>
         ) : (
-          "O carrinho esta vazio"
+          "O carrinho está vazio."
         )}
       </Row>
     </Container>

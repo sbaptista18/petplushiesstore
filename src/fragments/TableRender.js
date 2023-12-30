@@ -66,7 +66,7 @@ const tableColumns = (onQuantityChange, onDelete) => [
     },
   },
   {
-    title: "Preco",
+    title: "Preço",
     key: "price",
     render: (record) => {
       return (

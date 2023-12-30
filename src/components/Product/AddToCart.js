@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Col, Row, Form, InputNumber, Radio, Input } from "antd";
 import { useState, useEffect } from "react";
 
-import { Button } from "components";
+import { Button, ModalMessage } from "components";
 
 const { TextArea } = Input;
 
@@ -27,6 +27,11 @@ const AddToCart = ({
   const [qty, setQty] = useState(1);
   const [hasName, setHasName] = useState(false);
   const [form_variations] = Form.useForm();
+  const [form_stock] = Form.useForm();
+  const [loadingButton, setLoadingButton] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [status, setStatus] = useState();
 
   const onChange = (value) => {
     onDataFromChild(value);
@@ -91,8 +96,56 @@ const AddToCart = ({
     onUpdateTotalPrice(parseFloat(price, 10) + totalVariationsPrice);
   }, [price, totalVariationsPrice]);
 
+  const handleSendEmail = () => {
+    setLoadingButton(true);
+    form_stock.validateFields().then(async () => {
+      const formValues = form_stock.getFieldsValue();
+      const dataMessage = {
+        email: formValues.email,
+        product: sku,
+      };
+
+      try {
+        const response = await fetch(
+          "https://backoffice.petplushies.pt/wp-json/wc/v3/send_notification_email",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ dataMessage }),
+          }
+        );
+        const data = await response.json();
+
+        if (data.success) {
+          setMessage(data.message);
+          setStatus("success");
+          setIsModalOpen(true);
+          setLoadingButton(false);
+        } else {
+          setMessage(data.message);
+          setStatus("error");
+          setIsModalOpen(true);
+          setLoadingButton(false);
+        }
+      } catch (error) {
+        setMessage(data.message);
+        setStatus("error");
+        setIsModalOpen(true);
+        setLoadingButton(false);
+      }
+    });
+  };
+
   return (
     <Container>
+      <ModalMessage
+        status={status}
+        message={message}
+        isVisible={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
       <Sku>REF: {sku}</Sku>
       <PriceContainer>
         <Price flag={flag}>
@@ -102,7 +155,7 @@ const AddToCart = ({
         {flag == "sale" && <Sale>{sale_price}</Sale>}
       </PriceContainer>
 
-      {variationsArray != null && (
+      {variationsArray != null && stock != "outofstock" && (
         <Form form={form_variations}>
           {variationsArray?.map((v) => {
             const values = v.values;
@@ -187,9 +240,47 @@ const AddToCart = ({
         </Form>
       )}
 
+      {stock == "outofstock" && (
+        <>
+          <Row>
+            <Col span={24}>
+              <p>
+                Gostaria de saber quando este produto fica em stock? Pode
+                preencher este campo de email que nós trataremos de entrar em
+                contacto consigo!
+              </p>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <Form form={form_stock} name="stock_notification">
+                <Form.Item wrapperCol={24} name="email" label="E-mail">
+                  <Input />
+                </Form.Item>
+                <Form.Item wrapperCol={24}>
+                  <Button
+                    size="large"
+                    type="primary"
+                    text="Notificar-me!"
+                    onClick={handleSendEmail}
+                    loading={loadingButton}
+                    disabled={loadingButton}
+                  />
+                </Form.Item>
+              </Form>
+            </Col>
+          </Row>
+        </>
+      )}
+
       <InputContainer>
-        <InputNumber min={1} max={10} defaultValue={1} onChange={onChange} />
-        <StyledButton
+        <StyledInputNumber
+          min={1}
+          max={10}
+          defaultValue={1}
+          onChange={onChange}
+        />
+        <Button
           size="large"
           type="primary"
           text="Adicionar ao carrinho"
@@ -218,6 +309,10 @@ AddToCart.propTypes = {
   loading: PropTypes.bool,
 };
 
+const StyledInputNumber = styled(InputNumber)`
+  margin-right: 15px;
+`;
+
 const FormRow = styled(Row)`
   justify-content: space-between;
 `;
@@ -243,10 +338,6 @@ const Price = styled.div`
 const Sale = styled(Price)`
   color: var(--black);
   margin-left: 10px;
-`;
-
-const StyledButton = styled(Button)`
-  margin-left: 15px;
 `;
 
 const InputContainer = styled.div`

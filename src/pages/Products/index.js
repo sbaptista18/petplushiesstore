@@ -26,11 +26,11 @@ const SortDropdown = ({ onSelect }) => {
         },
         {
           value: "price_ASC",
-          label: "Preco: Baixo -> Alto",
+          label: "Preço: Baixo -> Alto",
         },
         {
           value: "price_DESC",
-          label: "Preco: Alto -> Baixo",
+          label: "Preço: Alto -> Baixo",
         },
       ]}
     ></SortSelect>
@@ -521,7 +521,7 @@ const Products = () => {
                       })}
                     </ul>
                   </Panel>
-                  <Panel header="Preco" key="2">
+                  <Panel header="Preço" key="2">
                     <Slider
                       range
                       marks={{
