@@ -36,7 +36,9 @@ body {
 
 body,
 html {
-  height: unset !important;
+  &.no-scroll {
+    overflow: hidden;
+  }
 }
 
 .ant-input,

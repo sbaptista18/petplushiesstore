@@ -11,16 +11,13 @@ import DummyImg from "assets/images/batcat-1.jpg";
 moment.locale("pt");
 
 const TrackOrder = () => {
-  const [order, serOrder] = useState({});
+  const [order, setOrder] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [message, setMessage] = useState("");
   const [form] = Form.useForm();
 
-  const [loadingButton, setLoadingButton] = useState(false);
-
   const fetchOrder = async (values) => {
-    setLoadingButton(true);
     const email = values.email;
     const order_id = values.order_id;
     setLoading(true);
@@ -32,21 +29,18 @@ const TrackOrder = () => {
       const data = await response.json();
 
       if (data.success) {
-        serOrder(data.data);
+        setOrder(data.data);
         setLoading(false);
         setError(false);
-        setLoadingButton(false);
       } else {
         setError(true);
         setLoading(false);
         setMessage(data.message);
-        setLoadingButton(false);
       }
     } catch (error) {
       setError(true);
       setLoading(false);
       setMessage(data.message);
-      setLoadingButton(false);
     }
   };
 
@@ -136,8 +130,6 @@ const TrackOrder = () => {
                   text="Seguir encomenda"
                   type="primary"
                   htmlType="submit"
-                  loading={loadingButton}
-                  disabled={loadingButton}
                 />
               </Form.Item>
             </Form>
@@ -201,7 +193,7 @@ const StyledButton = styled(Button)`
 const Spinner = styled(Spin)`
   background-color: var(--white);
   width: 100%;
-  height: 100%;
+  height: 100vh;
   position: relative;
 `;
 

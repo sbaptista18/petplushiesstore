@@ -7,7 +7,7 @@ import { PayPalButton } from "react-paypal-button-v2";
 
 import { Button, ModalMessage, PageHeader } from "components";
 import { tableColumnsCheckout } from "fragments";
-import { useCart } from "reducers";
+import { useCart, useLoading } from "reducers";
 
 import CheckoutForm from "./form";
 
@@ -48,6 +48,7 @@ const Checkout = () => {
   const [orderNote, setOrderNote] = useState(undefined);
   const [loadingButton, setLoadingButton] = useState(false);
   const [loadingCouponButton, setLoadingCouponButton] = useState(false);
+  const { setLoadingPage } = useLoading();
 
   const history = useHistory();
 
@@ -57,6 +58,7 @@ const Checkout = () => {
   }, [cartId]);
 
   useEffect(() => {
+    setLoadingPage(true);
     const storedUserString = localStorage.getItem("user");
     const user = JSON.parse(storedUserString);
 
@@ -87,6 +89,7 @@ const Checkout = () => {
         fetchCartProducts(data[0].id);
       } else {
         setLoading(true);
+        setLoadingPage(true);
       }
     } catch (error) {
       console.error(error);
@@ -104,9 +107,11 @@ const Checkout = () => {
         setProductsCart(data);
         setProducts(data);
         setLoading(false);
+        setLoadingPage(false);
         setLockForm(false);
       } else {
         setLoading(false);
+        setLoadingPage(false);
         setProductsCart([]);
         setProducts([]);
       }

@@ -6,6 +6,7 @@ import _ from "lodash";
 
 import { PageHeader, TilePosts, Breadcrumbs } from "components";
 import { SEOTags } from "fragments";
+import { useLoading } from "reducers";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -20,6 +21,7 @@ const Blog = () => {
   const [noResults, setNoResults] = useState(false);
   const [message, setMessage] = useState("");
   const [categories, setCategories] = useState([]);
+  const { setLoadingPage } = useLoading();
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 12;
@@ -49,14 +51,17 @@ const Blog = () => {
           setNoResults(true);
         }
         setLoading(false);
+        setLoadingPage(false);
       } else {
         setError(true);
         setLoading(false);
+        setLoadingPage(false);
         setMessage(data.message);
       }
     } catch (error) {
       setError(true);
       setLoading(false);
+      setLoadingPage(false);
       setMessage(data.message);
     }
   };
@@ -88,6 +93,7 @@ const Blog = () => {
 
   useEffect(() => {
     fetchCategories();
+    setLoadingPage(true);
   }, []);
 
   const filterByCategory = (array) => {
@@ -273,8 +279,11 @@ const PostListContainer = styled(Col)`
 const Spinner = styled(Spin)`
   background-color: var(--white);
   width: 100%;
-  height: 100%;
+  height: 500px;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Container = styled.div`

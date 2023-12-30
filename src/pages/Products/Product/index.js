@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import moment from "moment";
 
-import { useCart } from "reducers";
+import { useCart, useLoading } from "reducers";
 import { getSessionDataFromLocalStorage } from "helpers";
 import { SEOTags } from "fragments";
 
@@ -75,6 +75,7 @@ const Product = () => {
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
   const { isLoggedIn } = useCart();
+  const { setLoadingPage } = useLoading();
   const [form] = useForm();
 
   const handleDataFromChild = (data) => {
@@ -100,11 +101,13 @@ const Product = () => {
   useEffect(() => {
     if (cartId === null) {
       setLoading(true);
+      setLoadingPage(true);
     }
   }, [cartId]);
 
   useEffect(() => {
     setLoading(true);
+    setLoadingPage(true);
     const fetchProduct = async () => {
       try {
         const response = await fetch(
@@ -198,6 +201,7 @@ const Product = () => {
 
           setTimeout(() => {
             setLoading(false);
+            setLoadingPage(false);
           }, 1000);
         } catch (error) {
           setError(true);
@@ -858,7 +862,7 @@ const Spinner = styled(Spin)`
   position: absolute;
   background-color: var(--white);
   width: 100%;
-  height: 100%;
+  height: 100vh;
   left: 0;
   top: 0;
   z-index: 1;

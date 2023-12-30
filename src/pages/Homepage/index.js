@@ -257,8 +257,11 @@ const Container = styled.div`
 const Spinner = styled(Spin)`
   background-color: var(--white);
   width: 100%;
-  height: 100%;
+  height: 500px;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Content = styled(Row)`

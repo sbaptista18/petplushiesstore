@@ -4,6 +4,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import moment from "moment";
+import { useLoading } from "reducers";
 
 import {
   Breadcrumbs,
@@ -26,6 +27,7 @@ const BlogPost = () => {
   const [error, setError] = useState(false);
   const [message, setMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { setLoadingPage } = useLoading();
 
   const [comment, setComment] = useState("");
   const [commenterName, setCommenterName] = useState("");
@@ -42,6 +44,7 @@ const BlogPost = () => {
   const [form] = useForm();
 
   useEffect(() => {
+    setLoadingPage(true);
     const fetchBlogPost = async () => {
       try {
         const response = await fetch(
@@ -52,6 +55,7 @@ const BlogPost = () => {
         if (data.success) {
           setPost(data.post);
           setLoading(false);
+          setLoadingPage(false);
 
           try {
             const response = await fetch(
@@ -71,12 +75,14 @@ const BlogPost = () => {
 
             setTimeout(() => {
               setLoading(false);
+              setLoadingPage(false);
             }, 1000);
           } catch (error) {
             setError(true);
           }
         } else {
           setLoading(false);
+          setLoadingPage(false);
           setMessage(data.message);
         }
       } catch (error) {
@@ -384,7 +390,7 @@ const Spinner = styled(Spin)`
   position: absolute;
   background-color: var(--white);
   width: 100%;
-  height: 100%;
+  height: 100vh;
   left: 0;
   top: 0;
   z-index: 1;

@@ -96,7 +96,8 @@ const AddToCart = ({
       <Sku>REF: {sku}</Sku>
       <PriceContainer>
         <Price flag={flag}>
-          {(parseFloat(price, 10) + totalVariationsPrice) * qty + "€"}
+          {((parseFloat(price, 10) + totalVariationsPrice) * qty).toFixed(2)}
+          &euro;
         </Price>
         {flag == "sale" && <Sale>{sale_price}</Sale>}
       </PriceContainer>

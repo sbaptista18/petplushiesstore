@@ -26,7 +26,7 @@ const Tile = ({
       <Text>
         <Title size={size}>{name}</Title>
         <PriceContainer>
-          <Price flag={flag}>{price}&euro;</Price>
+          <Price flag={flag}>{price.toFixed(2)}&euro;</Price>
           {flag == "sale" && <Sale>{sale_price}&euro;</Sale>}
         </PriceContainer>
         <Link to={"/loja/" + url}>

@@ -6,7 +6,7 @@ import { useHistory, Link } from "react-router-dom";
 
 import { Button, ModalMessage, PageHeader } from "components";
 import { SEOTags } from "fragments";
-import { useCart } from "reducers";
+import { useCart, useLoading } from "reducers";
 
 import PersonalDataForm from "./Forms/PersonalDataForm";
 import AccountDataForm from "./Forms/AccountDataForm";
@@ -70,8 +70,10 @@ const MyAccount = () => {
   const user = JSON.parse(storedUserString) || {};
 
   const { isLoggedIn } = useCart();
+  const { setLoadingPage } = useLoading();
 
   useEffect(() => {
+    setLoadingPage(true);
     if (!isLoggedIn) {
       history.replace("/login");
     } else {
@@ -83,8 +85,10 @@ const MyAccount = () => {
           const responseData = await response.json();
           setUserPersonalData(responseData);
           setLoading(false);
+          setLoadingPage(false);
         } catch (error) {
           setLoading(true);
+          setLoadingPage(false);
           setError(true);
         }
       };
@@ -102,6 +106,7 @@ const MyAccount = () => {
       setLoadingTable(false);
     } catch (error) {
       setLoading(true);
+      setLoadingPage(false);
       setError(true);
     }
   };

@@ -6,6 +6,7 @@ import { useParams, Link } from "react-router-dom";
 import moment from "moment";
 
 import { PageHeader } from "components";
+import { useLoading } from "reducers";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -111,8 +112,10 @@ const Order = () => {
   const [order, setOrder] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const { setLoadingPage } = useLoading();
 
   useEffect(() => {
+    setLoadingPage(true);
     const fetchOrder = async (orderId) => {
       try {
         const response = await fetch(
@@ -122,10 +125,12 @@ const Order = () => {
 
         setOrder([data.result]);
         setLoading(false);
+        setLoadingPage(false);
       } catch (error) {
         console.log(error);
         setError(true);
         setLoading(false);
+        setLoadingPage(false);
       }
     };
 

@@ -31625,9 +31625,9 @@ body {
   box-sizing: border-box;
 }
 
-body,
-html {
-  height: unset !important;
+body.no-scroll,
+html.no-scroll {
+  overflow: hidden;
 }
 
 .ant-input,

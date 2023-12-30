@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 
 import { PageHeader } from "components";
 import { SEOTags } from "fragments";
+import { useLoading } from "reducers";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -13,8 +14,10 @@ const TermsConditions = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [message, setMessage] = useState("");
+  const { setLoadingPage } = useLoading();
 
   useEffect(() => {
+    setLoadingPage(true);
     const fetchTermsConditions = async () => {
       try {
         const response = await fetch(
@@ -25,8 +28,10 @@ const TermsConditions = () => {
         if (data.success) {
           setPost(data.post[0]);
           setLoading(false);
+          setLoadingPage(false);
         } else {
           setLoading(false);
+          setLoadingPage(false);
           setMessage(data.message);
         }
       } catch (error) {
@@ -73,7 +78,7 @@ const Spinner = styled(Spin)`
   position: absolute;
   background-color: var(--white);
   width: 100%;
-  height: 100%;
+  height: 100vh;
   left: 0;
   top: 0;
   z-index: 1;
