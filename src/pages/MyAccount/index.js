@@ -6,8 +6,8 @@ import { useHistory, Link } from "react-router-dom";
 
 import { Button, ModalMessage, PageHeader } from "components";
 import { SEOTags } from "fragments";
+import { useCart } from "reducers";
 
-import { PortugalDistricts } from "../Checkout/data";
 import PersonalDataForm from "./Forms/PersonalDataForm";
 import AccountDataForm from "./Forms/AccountDataForm";
 
@@ -54,7 +54,7 @@ const MyAccount = () => {
   const [disabled, setDisabled] = useState(false);
   const [userPersonalData, setUserPersonalData] = useState({});
   const [country, setCountry] = useState("");
-  const [secondSelectOptions, setSecondSelectOptions] = useState([""]);
+  const [secondSelectOptions, setSecondSelectOptions] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState();
   const [message, setMessage] = useState("");
@@ -69,8 +69,10 @@ const MyAccount = () => {
   const storedUserString = localStorage.getItem("user");
   const user = JSON.parse(storedUserString) || {};
 
+  const { isLoggedIn } = useCart();
+
   useEffect(() => {
-    if (localStorage.getItem("token") == null) {
+    if (!isLoggedIn) {
       history.replace("/login");
     } else {
       const fetchCustomerData = async (userId) => {
@@ -83,11 +85,12 @@ const MyAccount = () => {
           setLoading(false);
         } catch (error) {
           setLoading(true);
+          setError(true);
         }
       };
       fetchCustomerData(user.ID);
     }
-  }, [history, user.ID]);
+  }, [history, user.ID, isLoggedIn]);
 
   const fetchOrders = async (userId) => {
     try {
@@ -99,6 +102,7 @@ const MyAccount = () => {
       setLoadingTable(false);
     } catch (error) {
       setLoading(true);
+      setError(true);
     }
   };
 
@@ -108,6 +112,7 @@ const MyAccount = () => {
       const formValues = form.getFieldsValue();
       const userData = {
         ID: user.ID,
+        name: formValues.name,
         user_email: formValues.email,
         password: formValues.password,
       };
@@ -124,21 +129,27 @@ const MyAccount = () => {
           }
         );
         const responseData = await response.json();
+        form.resetFields();
         if (responseData.success) {
           const storedUserString = localStorage.getItem("user");
 
           const currentUser = JSON.parse(storedUserString);
-          currentUser.user_email = userData.user_email;
+          if (userData.user_email != undefined)
+            currentUser.user_email = userData.user_email;
+          if (userData.name != undefined)
+            currentUser.display_name = userData.name;
 
           const updatedUserString = JSON.stringify(currentUser);
           localStorage.setItem("user", updatedUserString);
 
           setMessage(responseData.message);
+
           setStatus("success");
           setIsModalOpen(true);
           setLoadingButton(false);
         } else {
           setMessage(responseData.message);
+
           setStatus("error");
           setIsModalOpen(true);
           setLoadingButton(false);
@@ -214,22 +225,12 @@ const MyAccount = () => {
 
   const handleCountry = (value) => {
     setCountry(value);
-
-    if (value === "PT") {
-      setSecondSelectOptions(PortugalDistricts);
-    } else {
-      setSecondSelectOptions([]);
-    }
+    setSecondSelectOptions(value);
   };
 
   const handleCountryShipping = (value) => {
     setCountry(value);
-
-    if (value === "PT") {
-      setSecondSelectOptions(PortugalDistricts);
-    } else {
-      setSecondSelectOptions([]);
-    }
+    setSecondSelectOptions(value);
   };
 
   const tabs = [
@@ -238,6 +239,11 @@ const MyAccount = () => {
       key: "account_data",
       children: (
         <>
+          <div>E-mail: {user.user_email}</div>
+          <div>
+            Nome (este nome é o que será usado para identificação nos
+            comentários e nas avaliações): {user.display_name}
+          </div>
           <AccountDataForm
             form={form}
             data={user.user_email}

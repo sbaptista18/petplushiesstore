@@ -46,6 +46,7 @@ const LogIn = () => {
             ? "Os dados de login estão incorrectos."
             : "Erro no login. Por favor contactar geral@petplushies.pt para resolver o problema."
         );
+        setLoadingLogin(false);
       }
     });
   };

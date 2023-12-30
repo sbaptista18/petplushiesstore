@@ -16,7 +16,7 @@ const AccountDataForm = ({
         checked={disabled}
         onChange={(e) => setDisabled(e.target.checked)}
       >
-        Modo de edicao
+        Modo de edição
       </Checkbox>
 
       <Form
@@ -29,6 +29,23 @@ const AccountDataForm = ({
         scrollToFirstError
         disabled={!disabled}
       >
+        <FormRow>
+          <Col span={24}>
+            <Form.Item
+              wrapperCol={24}
+              name="name"
+              label="Nome"
+              rules={[
+                {
+                  max: 15,
+                  message: "O nome não pode ter mais de 15 caracteres.",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+        </FormRow>
         <FormRow>
           <Col span={24}>
             <Form.Item

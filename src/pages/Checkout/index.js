@@ -117,7 +117,6 @@ const Checkout = () => {
   };
 
   const calculateShippingCost = (data, subtotal) => {
-    console.log(subtotal);
     if (subtotal > 50) {
       setShippingTitle("Portes Gratuitos");
       return 0;
@@ -336,6 +335,7 @@ const Checkout = () => {
         setStatus("error");
         setIsModalOpen(true);
         setLoadingButton(false);
+        setAccountError(true);
       }
     } catch (error) {
       console.error(error);
@@ -369,13 +369,13 @@ const Checkout = () => {
       });
   };
 
-  const totalWeight = products.reduce((total, item) => {
-    const productQty = parseInt(item.product_qty, 10);
-    const productWeight = parseFloat(item.weight);
-    const itemWeight = productQty * productWeight;
+  // const totalWeight = products.reduce((total, item) => {
+  //   const productQty = parseInt(item.product_qty, 10);
+  //   const productWeight = parseFloat(item.weight);
+  //   const itemWeight = productQty * productWeight;
 
-    return total + itemWeight;
-  }, 0);
+  //   return total + itemWeight;
+  // }, 0);
 
   const handleOrderNote = (e) => {
     setOrderNote(e.target.value);
