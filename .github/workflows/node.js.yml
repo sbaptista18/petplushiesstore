@@ -26,10 +26,10 @@ jobs:
           rm -r build
           ls -la
       - name: Pushing to develop branch
-        uses: actions-js/push@develop
+        uses: actions-js/push@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: compressed-develop
+          branch: develop
           message: Deleted build directory
           force: true
           
