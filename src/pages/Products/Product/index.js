@@ -104,6 +104,7 @@ const Product = () => {
   }, [cartId]);
 
   useEffect(() => {
+    setLoading(true);
     const fetchProduct = async () => {
       try {
         const response = await fetch(

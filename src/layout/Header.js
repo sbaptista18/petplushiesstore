@@ -11,6 +11,8 @@ import {
   getSessionDataFromLocalStorage,
 } from "helpers";
 
+import { PopupCart } from "components";
+
 import {
   MenuOutlined,
   ShoppingCartOutlined,
@@ -44,7 +46,6 @@ const PPS_Header = () => {
   const [boxShadow, setBoxShadow] = useState("none");
   const [color, setColor] = useState("var(--black)");
   const [sessionKey, setSessionKey] = useState(null);
-  const [error, setError] = useState("");
   const history = useHistory();
 
   const { setSessionKeyAndCartId } = useCart();
@@ -56,6 +57,9 @@ const PPS_Header = () => {
   const { setLoggedIn } = useCart();
 
   const [updateHeader, setUpdateHeader] = useState(false);
+  const [isOpenCart, setIsOpenCart] = useState(false);
+
+  const [cartItems, setCartItems] = useState([]);
 
   const token = localStorage.getItem("token");
   CreateCartKey(token);
@@ -85,6 +89,7 @@ const PPS_Header = () => {
       const data = await response.json();
 
       if (data != undefined) {
+        setCartItems(data);
         if (data.length == 1) {
           updateProductsNr(data[0].product_qty);
         } else {
@@ -173,6 +178,7 @@ const PPS_Header = () => {
     return () => {
       // console.log("Component unmounted or route changed again");
       // Cleanup code here
+      setIsOpenCart(false);
     };
   }, [
     location,
@@ -191,10 +197,12 @@ const PPS_Header = () => {
       clearCartState();
       setLoggedIn(false);
     } catch (error) {
-      setError(error.response.data.message);
-      setLoggedIn(false);
-      clearCartState();
+      console.log(error);
     }
+  };
+
+  const handleOpenCart = () => {
+    setIsOpenCart((prev) => !prev);
   };
 
   return (
@@ -203,6 +211,11 @@ const PPS_Header = () => {
       location={location.pathname}
       style={{ backgroundColor, boxShadow }}
     >
+      <PopupCart
+        isOpen={isOpenCart}
+        handleOpenCart={handleOpenCart}
+        cartItems={cartItems}
+      />
       <Col span={6}>
         <StyledLink to="/">
           <img src={Logo} alt="Pet Plushies Logo" />
@@ -219,14 +232,18 @@ const PPS_Header = () => {
           location={location.pathname}
           style={{ color }}
         />
-        <IconLink location={location.pathname} style={{ color }} to="/carrinho">
+        <IconButton
+          location={location.pathname}
+          style={{ color }}
+          onClick={() => handleOpenCart()}
+        >
           <ShoppingCartOutlined />
           {productsNr != 0 && (
             <CartProductsNr>
               <span>{productsNr}</span>
             </CartProductsNr>
           )}
-        </IconLink>
+        </IconButton>
         <IconLink
           location={location.pathname}
           style={{ color }}
@@ -319,6 +336,22 @@ const MenuContainer = styled(Col)`
 `;
 
 const IconLink = styled(StyledLink)`
+  width: 70px;
+  align-items: center;
+  justify-content: center;
+  color: ${(props) =>
+    props.location == "/" ? "var(--white)" : "var(--black)"};
+  transition: 0.5s;
+  position: relative;
+
+  &:hover {
+    color: var(--dark-gray) !important;
+  }
+`;
+
+const IconButton = styled.div`
+  cursor: pointer;
+  display: flex;
   width: 70px;
   align-items: center;
   justify-content: center;
