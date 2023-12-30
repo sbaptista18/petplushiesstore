@@ -6,7 +6,6 @@ import _ from "lodash";
 
 import { PageHeader, TilePosts, Breadcrumbs } from "components";
 import { SEOTags } from "fragments";
-import { useLoading } from "reducers";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -14,14 +13,12 @@ const { Panel } = Collapse;
 
 const Blog = () => {
   const [posts, setPosts] = useState([]);
-  const [categoryFilter, setCategoryFilter] = useState("all");
-
+  const [filteredPosts, setFilteredPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const [message, setMessage] = useState("");
   const [categories, setCategories] = useState([]);
-  const { setLoadingPage } = useLoading();
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 12;
@@ -41,27 +38,25 @@ const Blog = () => {
               name: item.post_title,
               picture: item.post_image_url,
               url: item.post_name,
-              category: item.categories,
+              category: item.categories[0],
               post_modified: item.post_modified,
               excerpt: item.post_excerpt,
             };
           });
           setPosts(mappedPosts);
+          setFilteredPosts(mappedPosts);
         } else {
           setNoResults(true);
         }
         setLoading(false);
-        setLoadingPage(false);
       } else {
         setError(true);
         setLoading(false);
-        setLoadingPage(false);
         setMessage(data.message);
       }
     } catch (error) {
       setError(true);
       setLoading(false);
-      setLoadingPage(false);
       setMessage(data.message);
     }
   };
@@ -93,51 +88,40 @@ const Blog = () => {
 
   useEffect(() => {
     fetchCategories();
-    setLoadingPage(true);
   }, []);
 
-  const filterByCategory = (array) => {
-    if (categoryFilter.toLowerCase() === "all") {
+  const filterByCategory = (array, value) => {
+    if (value === "All") {
       return array;
     }
 
     return array.filter((post) => {
-      const postCategories = post.category
-        ? [post.category]
-        : (post.categories || []).map((category) =>
-            category.name.toLowerCase()
-          );
+      const postCategories = post.category;
 
-      return postCategories.includes(categoryFilter.toLowerCase());
+      return postCategories.includes(value);
     });
   };
 
   const handleCategoryChange = (value) => {
-    setCategoryFilter(value);
+    const filterResult = filterByCategory(posts, value);
 
-    let result;
-    if (sortOption === "id_DESC") {
-      result = filterByCategory(posts).sort(sortProductsById);
-    } else if (sortOption === "price_ASC") {
-      result = filterByCategory(posts).sort(sortByPriceLowToHigh);
-    } else {
-      result = filterByCategory(posts).sort(sortByPriceHighToLow);
-    }
-
-    if (result.length === 0) {
+    if (filterResult.length === 0) {
       setNoResults(true);
     } else {
-      const mappedPosts = result.map((item) => ({
-        id: item.ID,
-        name: item.post_title,
-        picture: item.post_image_url,
-        url: item.post_name,
-        category: item.categories,
-        post_modified: item.post_modified,
-        excerpt: item.post_excerpt,
-      }));
+      const mappedPosts = filterResult.map((item) => {
+        return {
+          id: item.id,
+          name: item.name,
+          picture: item.picture,
+          url: item.url,
+          category: item.category,
+          post_modified: item.post_modified,
+          excerpt: item.excerpt,
+        };
+      });
 
-      setPosts(mappedPosts);
+      // setPosts(mappedPosts);
+      setFilteredPosts(mappedPosts);
     }
   };
 
@@ -171,7 +155,7 @@ const Blog = () => {
                 <Panel header="Categoria" key="1">
                   <ul>
                     <CategoryListItem
-                      onClick={() => handleCategoryChange("all")}
+                      onClick={() => handleCategoryChange("All")}
                     >
                       Todas as categorias
                     </CategoryListItem>
@@ -180,7 +164,7 @@ const Blog = () => {
                         return (
                           <CategoryListSubItem
                             key={c.id}
-                            onClick={() => handleCategoryChange(c.slug)}
+                            onClick={() => handleCategoryChange(c.name)}
                           >
                             {c.name}
                           </CategoryListSubItem>
@@ -201,27 +185,29 @@ const Blog = () => {
               {!error && !loading && noResults && <>{message}</>}
               {!error && !loading && !noResults && (
                 <>
-                  {chunkArray(posts, pageSize).map((postGrpup, index) => (
-                    <PostRow
-                      key={index}
-                      style={{
-                        display: currentPage === index + 1 ? "flex" : "none",
-                      }}
-                    >
-                      {postGrpup.map((p) => (
-                        <TilePosts
-                          key={p.id}
-                          id={p.id}
-                          name={p.name}
-                          picture={p.picture}
-                          url={p.url}
-                          category={p.category[0]}
-                          excerpt={p.excerpt}
-                          size="large"
-                        />
-                      ))}
-                    </PostRow>
-                  ))}
+                  {chunkArray(filteredPosts, pageSize).map(
+                    (postGrpup, index) => (
+                      <PostRow
+                        key={index}
+                        style={{
+                          display: currentPage === index + 1 ? "flex" : "none",
+                        }}
+                      >
+                        {postGrpup.map((p) => (
+                          <TilePosts
+                            key={p.id}
+                            id={p.id}
+                            name={p.name}
+                            picture={p.picture}
+                            url={p.url}
+                            category={p.category}
+                            excerpt={p.excerpt}
+                            size="large"
+                          />
+                        ))}
+                      </PostRow>
+                    )
+                  )}
                 </>
               )}
               {posts.length > 0 && (
@@ -246,6 +232,7 @@ const Blog = () => {
 
 const PostRow = styled(Row)`
   flex-wrap: wrap;
+  width: 100%;
   justify-content: space-between;
 `;
 
