@@ -10,29 +10,6 @@ on:
     branches: [ "develop" ]
 
 jobs:
-  delete_files:
-    runs-on: ubuntu-20.04
-    name: Delete build directory
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-20.04]
-    env:
-      prepo: ${{github.repository}}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Removing unnecessary files
-        run: |
-          rm -r build
-          ls -la
-      - name: Pushing to develop branch
-        uses: actions-js/push@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: develop
-          message: Deleted build directory
-          force: true
-          
   build:
     runs-on: ubuntu-20.04
     timeout-minutes: 10
