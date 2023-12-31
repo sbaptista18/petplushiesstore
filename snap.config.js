@@ -23,8 +23,8 @@ module.exports = {
       config.output.path = path.join(__dirname, "../dist");
     }
     return config;
-  },
-  dest: "./dist", // Specify the build directory
+  }, I 
+  dest: "./build", // Specify the build directory
   crawlDelay: 1000, // in milliseconds
   sourceMap: true,
   waitFor: ".ant-spin-spinning",
