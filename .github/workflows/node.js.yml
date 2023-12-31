@@ -1,5 +1,3 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, and build the source code
-
 name: Node.js CI
 
 on:
@@ -14,14 +12,37 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        node-version: [21.x]
+        node-version: [14.x]  # Adjust the Node.js version as needed
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
-      - run: yarn install
-      - run: yarn build
-      - run: node sitemap.js
+
+      - name: Install Dependencies
+        run: |
+          yarn install
+
+      - name: Build
+        run: |
+          yarn build
+
+      - name: Debugging Information
+        run: |
+          echo "Listing files in the current directory:"
+          ls -R
+          echo "Current directory: $PWD"
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: .
+
+      - name: Run sitemap.js
+        run: |
+          node sitemap.js
