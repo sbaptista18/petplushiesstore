@@ -52,6 +52,10 @@ jobs:
           ls -R
           echo "Current directory: $PWD"
 
+      - name: Archive Build Folder
+        run: |
+          zip -r build.zip build
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -71,11 +75,11 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
 
-      - name: Download Build Artifacts
+      - name: Download and Extract Build Archive
         uses: actions/download-artifact@v2
         with:
           name: build
-          path: .
+          path: build
 
       - name: Commit and Push Build Files
         run: |
