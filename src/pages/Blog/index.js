@@ -6,6 +6,7 @@ import _ from "lodash";
 
 import { PageHeader, TilePosts, Breadcrumbs } from "components";
 import { SEOTags } from "fragments";
+import { useTranslation } from "react-i18next";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -22,6 +23,7 @@ const Blog = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 12;
+  const { t } = useTranslation();
 
   const fetchBlogPosts = async () => {
     try {
@@ -120,7 +122,6 @@ const Blog = () => {
         };
       });
 
-      // setPosts(mappedPosts);
       setFilteredPosts(mappedPosts);
     }
   };
@@ -139,7 +140,7 @@ const Blog = () => {
     <>
       <SEOTags
         title="Blog - Pet Plushies"
-        description="No nosso Blog pode espreitar as últimas novidades do mundo animal, bem como encontrar o seu melhor amigo para sempre no nosso Cantinho das Adopções!"
+        description={t("blogSEODesc")}
         name="PetPlushies"
         type="website"
         image={DummyImg}
@@ -150,14 +151,14 @@ const Blog = () => {
           <Breadcrumbs page="/" item="Blog" />
           <StyledRow>
             <Col span={6}>
-              <Span>Filtrar por:</Span>
+              <Span>{t("filtrarPor")}:</Span>
               <Collapse defaultActiveKey={["1"]} accordion>
-                <Panel header="Categoria" key="1">
+                <Panel header={t("categoria")} key="1">
                   <ul>
                     <CategoryListItem
                       onClick={() => handleCategoryChange("All")}
                     >
-                      Todas as categorias
+                      {t("todasCategorias")}
                     </CategoryListItem>
                     {categories?.map((c) => {
                       if (c.count !== 0) {
@@ -214,7 +215,9 @@ const Blog = () => {
                 <Pagination
                   total={posts.length}
                   showTotal={(total, range) =>
-                    `${range[0]}-${range[1]} de ${total} artigos`
+                    `${range[0]}-${range[1]} ${t("de")} ${total} ${t(
+                      "artigos"
+                    )}`
                   }
                   defaultPageSize={pageSize}
                   defaultCurrent={currentPage}

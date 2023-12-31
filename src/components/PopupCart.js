@@ -3,21 +3,23 @@ import styled from "styled-components";
 import { CloseOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { Button } from "components";
+import { useTranslation } from "react-i18next";
 
 const PopupCart = ({ handleOpenCart, isOpen, cartItems }) => {
+  const { t } = useTranslation();
   return (
     <Container className={isOpen ? "open" : ""}>
       <CloseBtn onClick={handleOpenCart} />
       <Row>
-        <Title>O meu carrinho</Title>
+        <Title>{t("meuCarrinho")}</Title>
       </Row>
       <Row>
         {cartItems.length != 0 ? (
           <Col span={24}>
             <HeaderRow>
-              <Col span={14}>Produto</Col>
-              <Col span={2}>Qtd.</Col>
-              <Col span={4}>Preço</Col>
+              <Col span={14}>{t("produto")}</Col>
+              <Col span={2}>{t("qtd")}.</Col>
+              <Col span={4}>{t("preco")}</Col>
             </HeaderRow>
             {cartItems.map((i) => {
               return (
@@ -38,12 +40,12 @@ const PopupCart = ({ handleOpenCart, isOpen, cartItems }) => {
             })}
             <ButtonRow>
               <StyledLink to="/carrinho">
-                <Button size="large" type="primary" text="Ver carrinho" />
+                <Button size="large" type="primary" text={t("verCarrinho")} />
               </StyledLink>
             </ButtonRow>
           </Col>
         ) : (
-          "O carrinho está vazio."
+          t("carrinhoVazio")
         )}
       </Row>
     </Container>

@@ -7,10 +7,12 @@ import { useHistory, Link } from "react-router-dom";
 import { Button, PageHeader, ModalMessage } from "components";
 import { useCart } from "reducers";
 import { SEOTags } from "fragments";
+import { useTranslation } from "react-i18next";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
 const LogIn = () => {
+  const { t } = useTranslation();
   const history = useHistory();
 
   const [form] = Form.useForm();
@@ -46,8 +48,8 @@ const LogIn = () => {
       } catch (error) {
         const errorMessage =
           error.response.data.data.errorCode == 48
-            ? "Os dados de login estão incorrectos."
-            : "Erro no login. Por favor contactar geral@petplushies.pt para resolver o problema.";
+            ? t("dadosLoginIncorrectos")
+            : t("erroLogin");
         setMessage(errorMessage);
         setStatus("error");
         setIsModalOpen(true);
@@ -115,11 +117,7 @@ const LogIn = () => {
         type="website"
         image={DummyImg}
       />
-      <PageHeader
-        title="Entrar na conta"
-        img={DummyImg}
-        alt="Entrar na conta - Pet Plushies"
-      />
+      <PageHeader title="Login" img={DummyImg} alt="Login - Pet Plushies" />
       <Container>
         <ContentLocked>
           <FormContainer>
@@ -144,15 +142,15 @@ const LogIn = () => {
             >
               <Form.Item
                 name="email"
-                label="E-mail"
+                label={t("email")}
                 rules={[
                   {
                     type: "email",
-                    message: "O e-mail inserido não é válido.",
+                    message: t("emailInvalido"),
                   },
                   {
                     required: true,
-                    message: "Por favor insira o seu e-mail.",
+                    message: t("inserirEmail"),
                   },
                 ]}
               >
@@ -165,7 +163,7 @@ const LogIn = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Por favor insira a password!",
+                    message: t("inserirPassword"),
                   },
                 ]}
               >
@@ -180,7 +178,7 @@ const LogIn = () => {
               >
                 <StyledButton
                   size="large"
-                  text="Entrar"
+                  text={t("entrar")}
                   type="primary"
                   htmlType="submit"
                   loading={loadingLogin}
@@ -194,7 +192,7 @@ const LogIn = () => {
                   span: 16,
                 }}
               >
-                <Link to="/recuperar-password">Recuperar password</Link>
+                <Link to="/recuperar-password">{t("recuperarPassword")}</Link>
               </Form.Item>
 
               <Form.Item
@@ -203,7 +201,7 @@ const LogIn = () => {
                   span: 16,
                 }}
               >
-                <Link to="/registar">Não possui conta? Registe-se aqui!</Link>
+                <Link to="/registar">{t("naoTemConta")}</Link>
               </Form.Item>
             </Form>
           </FormContainer>

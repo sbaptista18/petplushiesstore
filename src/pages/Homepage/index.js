@@ -111,8 +111,8 @@ const Homepage = () => {
   return (
     <>
       <SEOTags
-        title={`Peluches Personalizados - Acessórios - 100% Artesaal - Pet Plushies`}
-        description="Procura o presente perfeito para aquele pet lover? Não procure mais! A Pet Plushies tem a mais variada selecção de artigos artesanais para satisfazer até os mais exigentes!"
+        title={`${t("homepageSEOTitle")} - Pet Plushies`}
+        description={t("homepageSEODesc")}
         name="PetPlushies"
         type="website"
         image={Img}
