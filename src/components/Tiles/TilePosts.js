@@ -59,6 +59,7 @@ const Category = styled(Flag)`
   left: unset;
   right: 0;
   background-color: var(--light-blue);
+  color: var(--black);
 `;
 
 const Text = styled.div`

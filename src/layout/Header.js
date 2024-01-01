@@ -272,7 +272,7 @@ const PPS_Header = () => {
             style={{ color }}
             onClick={() => changeLanguage("pt")}
           >
-            <Flag src={PT} />
+            <Flag src={PT} alt="Ícone Bandeira Portuguesa" />
           </IconButton>
         )}
         {i18n.language === "pt" && (
@@ -281,7 +281,7 @@ const PPS_Header = () => {
             style={{ color }}
             onClick={() => changeLanguage("en")}
           >
-            <Flag src={EN} />
+            <Flag src={EN} alt="Ícone Bandeira Inglesa" />
           </IconButton>
         )}
       </MenuContainer>

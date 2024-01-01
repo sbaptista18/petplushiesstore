@@ -25,7 +25,12 @@ const SEOTags = ({ title, description, name, type, image }) => {
       <meta name="twitter:description" content={description} />
       {/* End Twitter tags */}
 
-      <link rel="canonical" href={location.pathname} />
+      <link
+        rel="canonical"
+        href={`https://petplushies.pt${
+          location.pathname != "/" ? location.pathname : ""
+        }`}
+      />
       <meta property="og:image" content={image} />
     </Helmet>
   );

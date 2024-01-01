@@ -51,8 +51,8 @@ const PPS_Footer = () => {
       <StyledTopBar />
       <Container>
         <Col span={6}>
-          <Link to="/">
-            <LogoImg src={Logo} />
+          <Link to="/" name="Pet Plushies">
+            <LogoImg src={Logo} alt="Logo da Pet Plushies" />
           </Link>
         </Col>
         <Col span={6}>
@@ -83,18 +83,21 @@ const PPS_Footer = () => {
           <StyledH3>{t("sigaRedes")}</StyledH3>
           <p>
             <SocialLink
+              name="Link para página do Facebook da Pet Plushies"
               href="https://www.facebook.com/petplushiesshop"
               target="_blank"
             >
               <FacebookIcon />
             </SocialLink>
             <SocialLink
+              name="Link para página do Instagram da Pet Plushies"
               href="https://www.instagram.com/petplushiesstore"
               target="_blank"
             >
               <InstagramIcon />
             </SocialLink>
             <SocialLink
+              name="Link para página do TikTok da Pet Plushies"
               href="https://www.tiktok.com/@petplushiesstore"
               target="_blank"
             >
