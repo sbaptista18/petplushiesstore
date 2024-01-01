@@ -12,7 +12,11 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
+<<<<<<< HEAD
         node-version: [21.x]  # Adjust the Node.js version as needed
+=======
+        node-version: [14.x]  # Adjust the Node.js version as needed
+>>>>>>> d904bed (Update node.js.yml)
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -23,6 +27,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
 
+<<<<<<< HEAD
       - name: Check and Delete Build Folder
         run: |
           if [ -d "build" ]; then
@@ -34,6 +39,8 @@ jobs:
         run: |
           mkdir -p build
 
+=======
+>>>>>>> d904bed (Update node.js.yml)
       - name: Install Dependencies
         run: |
           yarn install
@@ -42,24 +49,31 @@ jobs:
         run: |
           yarn build
 
+<<<<<<< HEAD
       - name: Run sitemap.js
         run: |
           node sitemap.js
 
+=======
+>>>>>>> d904bed (Update node.js.yml)
       - name: Debugging Information
         run: |
           echo "Listing files in the current directory:"
           ls -R
           echo "Current directory: $PWD"
 
+<<<<<<< HEAD
       - name: Archive Build Folder
         run: |
           zip -r build.zip build
 
+=======
+>>>>>>> d904bed (Update node.js.yml)
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: build
+<<<<<<< HEAD
           path: build
 
   deploy:
@@ -90,3 +104,10 @@ jobs:
           git push origin HEAD:develop
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+=======
+          path: .
+
+      - name: Run sitemap.js
+        run: |
+          node sitemap.js
+>>>>>>> d904bed (Update node.js.yml)
