@@ -13,10 +13,14 @@ jobs:
     strategy:
       matrix:
 <<<<<<< HEAD
+<<<<<<< HEAD
         node-version: [21.x]  # Adjust the Node.js version as needed
 =======
         node-version: [14.x]  # Adjust the Node.js version as needed
 >>>>>>> d904bed (Update node.js.yml)
+=======
+        node-version: [21.x]  # Adjust the Node.js version as needed
+>>>>>>> c7df530 (Update node.js.yml)
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
