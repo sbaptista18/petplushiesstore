@@ -240,8 +240,8 @@ const ContactUs = () => {
                     extra={t("captchaHumano")}
                   >
                     <ReCAPTCHA
-                      sitekey="6LeeeyEpAAAAAHEmtDr81K8xOhEkbCcM32FGYqtF" //localhost
-                      // sitekey="6LcGYz8pAAAAAKL8E_B9V_DkFqIXiApSnLnfE4Z0" //production
+                      // sitekey="6LeeeyEpAAAAAHEmtDr81K8xOhEkbCcM32FGYqtF" //localhost
+                      sitekey="6LcGYz8pAAAAAKL8E_B9V_DkFqIXiApSnLnfE4Z0" //production
                       onChange={handleVerification}
                     />
                   </Form.Item>
