@@ -14,6 +14,7 @@ jobs:
       matrix:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         node-version: [21.x]  # Adjust the Node.js version as needed
 =======
         node-version: [14.x]  # Adjust the Node.js version as needed
@@ -21,6 +22,9 @@ jobs:
 =======
         node-version: [21.x]  # Adjust the Node.js version as needed
 >>>>>>> c7df530 (Update node.js.yml)
+=======
+        node-version: [21.x]  # Adjust the Node.js version as needed
+>>>>>>> c480a76ae80009e7f543935faee7f91d7bb186be
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -33,8 +37,11 @@ jobs:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> ca3a222 (Update node.js.yml)
+=======
+>>>>>>> c480a76ae80009e7f543935faee7f91d7bb186be
       - name: Check and Delete Build Folder
         run: |
           if [ -d "build" ]; then
@@ -47,10 +54,13 @@ jobs:
           mkdir -p build
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> d904bed (Update node.js.yml)
 =======
 >>>>>>> ca3a222 (Update node.js.yml)
+=======
+>>>>>>> c480a76ae80009e7f543935faee7f91d7bb186be
       - name: Install Dependencies
         run: |
           yarn install
@@ -61,17 +71,23 @@ jobs:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 79fcdc1 (Update node.js.yml)
+=======
+>>>>>>> c480a76ae80009e7f543935faee7f91d7bb186be
       - name: Run sitemap.js
         run: |
           node sitemap.js
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> d904bed (Update node.js.yml)
 =======
 >>>>>>> 79fcdc1 (Update node.js.yml)
+=======
+>>>>>>> c480a76ae80009e7f543935faee7f91d7bb186be
       - name: Debugging Information
         run: |
           echo "Listing files in the current directory:"
@@ -80,25 +96,34 @@ jobs:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> f6e03a9 (Update node.js.yml)
+=======
+>>>>>>> c480a76ae80009e7f543935faee7f91d7bb186be
       - name: Archive Build Folder
         run: |
           zip -r build.zip build
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> d904bed (Update node.js.yml)
 =======
 >>>>>>> f6e03a9 (Update node.js.yml)
+=======
+>>>>>>> c480a76ae80009e7f543935faee7f91d7bb186be
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: build
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> a0f054e (Update node.js.yml)
+=======
+>>>>>>> c480a76ae80009e7f543935faee7f91d7bb186be
           path: build
 
   deploy:
@@ -129,6 +154,7 @@ jobs:
           git push origin HEAD:develop
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
           path: .
@@ -166,3 +192,5 @@ jobs:
 >>>>>>> 79fcdc1 (Update node.js.yml)
 =======
 >>>>>>> 519d2f5 (Update node.js.yml)
+=======
+>>>>>>> c480a76ae80009e7f543935faee7f91d7bb186be
