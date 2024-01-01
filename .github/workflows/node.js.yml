@@ -79,12 +79,18 @@ jobs:
           echo "Current directory: $PWD"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f6e03a9 (Update node.js.yml)
       - name: Archive Build Folder
         run: |
           zip -r build.zip build
 
+<<<<<<< HEAD
 =======
 >>>>>>> d904bed (Update node.js.yml)
+=======
+>>>>>>> f6e03a9 (Update node.js.yml)
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -136,11 +142,11 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
 
-      - name: Download Build Artifacts
+      - name: Download and Extract Build Archive
         uses: actions/download-artifact@v2
         with:
           name: build
-          path: .
+          path: build
 
       - name: Commit and Push Build Files
         run: |
