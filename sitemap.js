@@ -46,12 +46,11 @@ const generateDynamicRoutes = async (route) => {
     // Map dynamic data to create dynamic routes
     if (route === "loja") {
       dynamicData = await fetchProducts();
-      return dynamicData.map((item) => `/${route}/${item.name}`);
+      return dynamicData.map((item) => `/${route}/${item.url}`);
     } else {
       dynamicData = await fetchBlogPosts();
       return dynamicData.map((item) => `/${route}/${item.post_name}`);
     }
-    // return dynamicData.map((item) => `/${route}/${item.post_name}`);
   } catch (error) {
     console.error(`Error generating dynamic routes for '${route}':`, error);
     return [];
