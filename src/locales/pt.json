@@ -100,5 +100,8 @@
   "passwordSimbolos": "A password deve incluir símbolos.",
   "confirmarPassword": "Confirmar password",
   "confirmarPasswordError": "Por favor confirme a password que escolheu.",
-  "passwordsDiferentes": "As passwords não correspondem."
+  "passwordsDiferentes": "As passwords não correspondem.",
+  "naoEncontrado": "Página não encontrada",
+  "voltarPaginaAnterior": "Voltar à página anterior",
+  "naoEncontradoMsg": "A página que está a tentar aceder não foi encontrada."
 }

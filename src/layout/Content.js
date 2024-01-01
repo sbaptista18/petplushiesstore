@@ -2,6 +2,7 @@ import { Route, Switch, useLocation } from "react-router-dom";
 import pages from "pages";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import NotFound from "../pages/NotFound";
 
 import { ScrollToTop } from "fragments";
 
@@ -15,6 +16,7 @@ const Content = () => {
         {pages.map((props) => (
           <Route {...props} key={props.path} />
         ))}
+        <Route component={NotFound} />
       </Switch>
     </Container>
   );
