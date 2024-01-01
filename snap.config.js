@@ -23,9 +23,15 @@ module.exports = {
       config.output.path = path.join(__dirname, "../dist");
     }
     return config;
+<<<<<<< HEAD
   },
   dest: "./build", // Specify the build directory
   crawlDelay: 3000, // in milliseconds
+=======
+  }, I 
+  dest: "./build", // Specify the build directory
+  crawlDelay: 1000, // in milliseconds
+>>>>>>> 8820339 (Update snap.config.js)
   sourceMap: true,
   waitFor: ".ant-spin-spinning",
   puppeteerArgs: ["--no-sandbox", "--disable-setuid-sandbox"],
