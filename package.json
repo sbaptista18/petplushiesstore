@@ -25,9 +25,7 @@
     "minifyHtml": {
       "collapseWhitespace": false,
       "removeComments": false
-    },
-    "waitFor": ".ant-spin-spinning",
-    "waitForTimeout": 60000
+    }
   },
   "repository": {
     "type": "git"
