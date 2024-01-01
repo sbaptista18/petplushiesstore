@@ -23,6 +23,17 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
 
+      - name: Check and Delete Build Folder
+        run: |
+          if [ -d "build" ]; then
+            echo "Deleting existing build folder."
+            rm -rf build
+          fi
+
+      - name: Create Build Folder
+        run: |
+          mkdir -p build
+
       - name: Install Dependencies
         run: |
           yarn install
