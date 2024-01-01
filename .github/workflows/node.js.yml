@@ -32,6 +32,9 @@ jobs:
           cache: "npm"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ca3a222 (Update node.js.yml)
       - name: Check and Delete Build Folder
         run: |
           if [ -d "build" ]; then
@@ -43,8 +46,11 @@ jobs:
         run: |
           mkdir -p build
 
+<<<<<<< HEAD
 =======
 >>>>>>> d904bed (Update node.js.yml)
+=======
+>>>>>>> ca3a222 (Update node.js.yml)
       - name: Install Dependencies
         run: |
           yarn install
