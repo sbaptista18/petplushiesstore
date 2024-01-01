@@ -10,11 +10,18 @@
     "postbuild": "react-snap"
   },
   "reactSnap": {
+    "include": [
+      "/contactos",
+      "/perguntas-frequentes",
+      "/seguir-encomenda",
+      "/politica-de-privacidade",
+      "/envios-e-devolucoes"
+    ],
     "source": "dist",
     "inlineCss": false,
     "removeBlobs": true,
-    "removeScriptTags": true,
-    "removeStyleTags": true,
+    "removeScriptTags": false,
+    "removeStyleTags": false,
     "minifyHtml": {
       "collapseWhitespace": false,
       "removeComments": false
