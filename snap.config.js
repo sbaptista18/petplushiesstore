@@ -20,7 +20,7 @@ module.exports = {
         helpers: path.resolve(__dirname, `${srcDir}/helpers`),
         // ... other aliases
       };
-      config.output.path = path.join(__dirname, "../dist");
+      config.output.path = path.join(__dirname, "../build");
     }
     return config;
 <<<<<<< HEAD
