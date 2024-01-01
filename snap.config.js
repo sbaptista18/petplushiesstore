@@ -1,3 +1,4 @@
+let path = require("path");
 const srcDir = path.join(__dirname, "../src");
 
 // Example snap.config.js
@@ -20,24 +21,13 @@ module.exports = {
         helpers: path.resolve(__dirname, `${srcDir}/helpers`),
         // ... other aliases
       };
-      config.output.path = path.join(__dirname, "../build");
+      config.output.path = path.join(__dirname, "../dist");
     }
     return config;
-<<<<<<< HEAD
-<<<<<<< HEAD
   },
-  dest: "./build", // Specify the build directory
+  dest: "./dist", // Specify the build directory
+  source: "./dist",
   crawlDelay: 3000, // in milliseconds
-=======
-  }, I 
-  dest: "./build", // Specify the build directory
-  crawlDelay: 1000, // in milliseconds
->>>>>>> 8820339 (Update snap.config.js)
-=======
-  },
-  dest: "./build", // Specify the build directory
-  crawlDelay: 3000, // in milliseconds
->>>>>>> 3e25751 (first static translations)
   sourceMap: true,
   waitFor: ".ant-spin-spinning",
   puppeteerArgs: ["--no-sandbox", "--disable-setuid-sandbox"],

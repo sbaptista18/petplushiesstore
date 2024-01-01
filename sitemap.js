@@ -100,7 +100,7 @@ const staticRoutes = [
   const sitemapString = await streamToPromise(stream);
 
   // Write the sitemap to a file
-  fs.writeFileSync("./build/sitemap.xml", sitemapString.toString());
+  fs.writeFileSync("./dist/sitemap.xml", sitemapString.toString());
 
   console.log("Sitemap generated successfully.");
 })();

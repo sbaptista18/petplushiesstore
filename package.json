@@ -7,7 +7,18 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack serve --progress --config webpack/dev.config.js",
     "build": "webpack --mode production --config webpack/prod.config.js",
-    "postbuild": "react-snap --config snap.config.js"
+    "postbuild": "react-snap"
+  },
+  "reactSnap": {
+    "source": "dist",
+    "inlineCss": false,
+    "removeBlobs": true,
+    "removeScriptTags": true,
+    "removeStyleTags": true,
+    "minifyHtml": {
+      "collapseWhitespace": false,
+      "removeComments": false
+    }
   },
   "repository": {
     "type": "git"
