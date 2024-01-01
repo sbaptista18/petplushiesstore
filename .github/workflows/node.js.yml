@@ -129,6 +129,7 @@ jobs:
           git push origin HEAD:develop
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+<<<<<<< HEAD
 =======
           path: .
 
@@ -163,3 +164,5 @@ jobs:
           git commit -m "Update 'build' files in GitHub Actions workflow"
           git push origin HEAD:develop
 >>>>>>> 79fcdc1 (Update node.js.yml)
+=======
+>>>>>>> 519d2f5 (Update node.js.yml)
