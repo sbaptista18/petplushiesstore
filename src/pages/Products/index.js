@@ -8,29 +8,31 @@ import _ from "lodash";
 import { Breadcrumbs, TileNoInput, PageHeader } from "components";
 import DummyImg from "assets/images/batcat-1.jpg";
 import { SEOTags } from "fragments";
+import { useTranslation } from "react-i18next";
 
 const { Panel } = Collapse;
 
 const SortDropdown = ({ onSelect }) => {
+  const { t } = useTranslation();
   const handleSortChange = (value) => {
     onSelect(value);
   };
   return (
     <SortSelect
-      defaultValue="Ordenar lista por..."
+      defaultValue={`${t("ordenarPor")}`}
       onChange={handleSortChange}
       options={[
         {
           value: "id_DESC",
-          label: "Recentes",
+          label: t("recentes"),
         },
         {
           value: "price_ASC",
-          label: "Preço: Baixo -> Alto",
+          label: t("precoBaixoAlto"),
         },
         {
           value: "price_DESC",
-          label: "Preço: Alto -> Baixo",
+          label: t("precoAltoBaixo"),
         },
       ]}
     ></SortSelect>
@@ -42,6 +44,7 @@ SortDropdown.propTypes = {
 };
 
 const Products = () => {
+  const { t } = useTranslation();
   const [sortOption, setSortOption] = useState("id_DESC");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [loading, setLoading] = useState(true);
@@ -125,12 +128,12 @@ const Products = () => {
     if (status == "instock") {
       if (stock == null) return "";
       if (stock > 0) {
-        if (stock === 1) return "Apenas 1 em stock!";
-        if (stock <= 5) return "Últimas unidades em stock!";
+        if (stock === 1) return t("1InStock");
+        if (stock <= 5) return t("lastUnits");
         return "";
-      } else return "Esgotado";
+      } else return t("outOfStock");
     } else {
-      return "Esgotado";
+      return t("outOfStock");
     }
   };
 
@@ -485,27 +488,31 @@ const Products = () => {
   return (
     <>
       <SEOTags
-        title={`Loja - Pet Plushies`}
-        description="De peluches personalizados, até ao fandom Pokemon, a Pet Plushies garante sempre qualidade 100% artesanal e sustentável! Visite a nossa loja!"
+        title={`${t("loja")} - Pet Plushies`}
+        description={t("lojaSEOTitle")}
         name="PetPlushies"
         type="website"
         image={DummyImg}
       />
-      <PageHeader title="Loja" img={DummyImg} alt="Loja - Pet Plushies" />
+      <PageHeader
+        title={t("loja")}
+        img={DummyImg}
+        alt={`${t("loja")} - Pet Plushies`}
+      />
       <Container>
         <ContentLocked>
           <div>
-            <Breadcrumbs page="/" item="Loja" />
+            <Breadcrumbs page="/" item={t("loja")} />
             <StyledRow>
               <Col span={6}>
-                <Span>Filtrar por:</Span>
+                <Span>{t("filtrarPor")}:</Span>
                 <Collapse defaultActiveKey={["1"]} accordion>
-                  <Panel header="Categoria" key="1">
+                  <Panel header={t("categoria")} key="1">
                     <ul>
                       <CategoryListItem
                         onClick={() => handleCategoryChange("all")}
                       >
-                        Todas as categorias
+                        {t("todasCategorias")}
                       </CategoryListItem>
                       {categories?.map((c) => {
                         if (c.count !== 0) {
@@ -521,7 +528,7 @@ const Products = () => {
                       })}
                     </ul>
                   </Panel>
-                  <Panel header="Preço" key="2">
+                  <Panel header={t("preco")} key="2">
                     <Slider
                       range
                       marks={{
@@ -546,10 +553,10 @@ const Products = () => {
                   />
                 )}
                 {error && !loading && !noResults && (
-                  <>Erro ao carregar a lista de produtos.</>
+                  <>{t("erroCarregarProdutos")}</>
                 )}
                 {!error && !loading && noResults && (
-                  <>Não há resultados para o filtro seleccionado.</>
+                  <>{t("semResultadosProdutos")}</>
                 )}
                 {!error && !loading && !noResults && (
                   <>
@@ -583,7 +590,9 @@ const Products = () => {
                   <Pagination
                     total={products.length}
                     showTotal={(total, range) =>
-                      `${range[0]}-${range[1]} de ${total} produtos`
+                      `${range[0]}-${range[1]} ${t("de")} ${total} ${t(
+                        "produtos"
+                      )}`
                     }
                     defaultPageSize={pageSize}
                     defaultCurrent={currentPage}

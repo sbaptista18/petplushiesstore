@@ -6,6 +6,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 
 import { Button, ModalMessage, PageHeader } from "components";
 import { SEOTags } from "fragments";
+import { useTranslation } from "react-i18next";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 import FacebookIcon from "assets/images/fb-icon.svg";
@@ -23,6 +24,7 @@ const ContactUs = () => {
   const [loadingButton, setLoadingButton] = useState(false);
 
   const [textAreaValue, setTextAreaValue] = useState("");
+  const { t } = useTranslation();
 
   const handleTextAreaChange = (e) => {
     setTextAreaValue(e.target.value);
@@ -32,7 +34,7 @@ const ContactUs = () => {
     setLoadingButton(true);
     form.validateFields().then(async () => {
       if (textAreaValue.trim() === "") {
-        setMessage("Tem de preencher o campo da mensagem.");
+        setMessage(t("preencherCampoMsg"));
         setStatus("error");
         setIsModalOpen(true);
         setLoadingButton(false);
@@ -87,16 +89,16 @@ const ContactUs = () => {
   return (
     <>
       <SEOTags
-        title={`Contactos - Pet Plushies`}
-        description="Deixe-nos as suas sugestões e envie as suas questões através do nosso formulário de contactos."
+        title={`${t("contactos")} - Pet Plushies`}
+        description={t("contactosSEODesc")}
         name="PetPlushies"
         type="website"
         image={DummyImg}
       />
       <PageHeader
-        title="Contactos"
+        title={t("contactos")}
         img={DummyImg}
-        alt="Contactos - Pet Plushies"
+        alt={`${t("contactos")} - Pet Plushies`}
       />
       <Container>
         <ModalMessage
@@ -107,14 +109,12 @@ const ContactUs = () => {
         />
         <ContentLocked>
           <TextContainer span={11}>
-            <p>Procura algo que não encontra no website?</p>
-            <p>Ou então gostaria de sugerir uma Associação do Mês?</p>
-            <p>Pode utilizar este formulário de contacto para o fazer!</p>
-            <p>Iremos responder o mais brevemente possível.</p>
+            <p>{t("contactosP1")}</p>
+            <p>{t("contactosP2")}</p>
+            <p>{t("contactosP3")}</p>
+            <p>{t("contactosP4")}</p>
             <br />
-            <p>
-              Pode tambem visitar as nossas redes sociais para mais novidades!
-            </p>
+            <p>{t("contactosP4")}</p>
             <p>
               <SocialLink
                 href="https://www.facebook.com/petplushiesshop"
@@ -151,11 +151,11 @@ const ContactUs = () => {
                   <Form.Item
                     wrapperCol={24}
                     name="first_name"
-                    label="Nome"
+                    label={t("nome")}
                     rules={[
                       {
                         required: true,
-                        message: "Por favor insira o seu nome.",
+                        message: t("inserirNome"),
                       },
                     ]}
                   >
@@ -166,11 +166,11 @@ const ContactUs = () => {
                   <Form.Item
                     wrapperCol={24}
                     name="surname"
-                    label="Apelido"
+                    label={t("apelido")}
                     rules={[
                       {
                         required: true,
-                        message: "Por favor insira o seu apelido.",
+                        message: t("inserirApelido"),
                       },
                     ]}
                   >
@@ -183,11 +183,11 @@ const ContactUs = () => {
                   <Form.Item
                     wrapperCol={24}
                     name="subject"
-                    label="Assunto"
+                    label={t("assunto")}
                     rules={[
                       {
                         required: true,
-                        message: "Tem de escrever o assunto.",
+                        message: t("inserirAsssunto"),
                       },
                     ]}
                   >
@@ -197,15 +197,15 @@ const ContactUs = () => {
                 <Col span={11}>
                   <Form.Item
                     name="email"
-                    label="E-mail"
+                    label={t("email")}
                     rules={[
                       {
                         type: "email",
-                        message: "O e-mail inserido nao é válido.",
+                        message: t("emailInvalido"),
                       },
                       {
                         required: true,
-                        message: "Por favor insira o seu e-mail.",
+                        message: t("inserirEmail"),
                       },
                     ]}
                     wrapperCol={24}
@@ -223,10 +223,10 @@ const ContactUs = () => {
                     onChange={handleTextAreaChange}
                   >
                     <>
-                      <span>Mensagem</span>
+                      <span>{t("mensagem")}</span>
                       <TextArea
                         rows={4}
-                        placeholder="Escreva aqui a sua mensagem..."
+                        placeholder={t("escrevaAquiMensagem")}
                       />
                     </>
                   </Form.Item>
@@ -237,7 +237,7 @@ const ContactUs = () => {
                   <Form.Item
                     wrapperCol={24}
                     label="Captcha"
-                    extra="Só queremos ter a certeza que é um humano."
+                    extra={t("captchaHumano")}
                   >
                     <ReCAPTCHA
                       sitekey="6LeeeyEpAAAAAHEmtDr81K8xOhEkbCcM32FGYqtF" //localhost
@@ -255,15 +255,14 @@ const ContactUs = () => {
                   rules={[
                     {
                       required: true,
-                      message:
-                        "Tem de confirmar a leitura dos Termos e Condições.",
+                      message: t("confirmarTermos"),
                     },
                   ]}
                 >
                   <Checkbox>
-                    Declaro que li e aceito os{" "}
+                    {t("declararTC")}{" "}
                     <Link to="/termos-e-condicoes" target="_blank">
-                      Termos e Condições
+                      {t("termosCondicoes")}
                     </Link>
                   </Checkbox>
                 </Form.Item>
@@ -273,7 +272,7 @@ const ContactUs = () => {
                   <Form.Item wrapperCol={24}>
                     <StyledButton
                       size="large"
-                      text="Enviar mensagem"
+                      text={t("enviarMsg")}
                       type="primary"
                       htmlType="submit"
                       loading={loadingButton}

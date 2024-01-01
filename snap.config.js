@@ -23,9 +23,9 @@ module.exports = {
       config.output.path = path.join(__dirname, "../dist");
     }
     return config;
-  }, I 
+  },
   dest: "./build", // Specify the build directory
-  crawlDelay: 1000, // in milliseconds
+  crawlDelay: 3000, // in milliseconds
   sourceMap: true,
   waitFor: ".ant-spin-spinning",
   puppeteerArgs: ["--no-sandbox", "--disable-setuid-sandbox"],

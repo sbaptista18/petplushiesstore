@@ -2,12 +2,14 @@ import styled from "styled-components";
 import { Row, Form, Input } from "antd";
 import { useState } from "react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 import { Button, PageHeader, ModalMessage } from "components";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
 const ResetPassword = () => {
+  const { t } = useTranslation();
   const [loadingButton, setLoadingButton] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState();
@@ -48,9 +50,9 @@ const ResetPassword = () => {
         onClose={() => setIsModalOpen(false)}
       />
       <PageHeader
-        title="Recuperar password"
+        title={t("recuperarPassword")}
         img={DummyImg}
-        alt="Recuperar password - Pet Plushies"
+        alt={`${t("recuperarPassword")} - Pet Plushies`}
       />
       <Container>
         <ContentLocked>
@@ -72,15 +74,15 @@ const ResetPassword = () => {
             >
               <Form.Item
                 name="email"
-                label="E-mail"
+                label={t("email")}
                 rules={[
                   {
                     type: "email",
-                    message: "O e-mail inserido não é válido.",
+                    message: t("emailInvalido"),
                   },
                   {
                     required: true,
-                    message: "Por favor insira o seu e-mail.",
+                    message: t("inserirEmail"),
                   },
                 ]}
               >
@@ -95,7 +97,7 @@ const ResetPassword = () => {
               >
                 <StyledButton
                   size="large"
-                  text="Enviar e-mail de recuperação"
+                  text={t("enviarEmailRecuperacao")}
                   type="primary"
                   htmlType="submit"
                   loading={loadingButton}

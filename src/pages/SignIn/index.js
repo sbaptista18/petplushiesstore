@@ -5,10 +5,12 @@ import { useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 
 import { Button, ModalMessage, PageHeader } from "components";
+import { useTranslation } from "react-i18next";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
 const SignIn = () => {
+  const { t } = useTranslation();
   const [isVerified, setIsVerified] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState();
@@ -48,29 +50,25 @@ const SignIn = () => {
 
         if (data.success) {
           setMessage(
-            "A sua conta foi criada com sucesso! Pode efectuar o login com o seu nome de utilizador gerado (" +
+            `${t("contaCriadaSucesso_1")} ` +
               formValues.first_name.toLowerCase() +
               "." +
               formValues.surname.toLowerCase() +
-              "). Receberá instruções para definir a sua password."
+              `). ${t("contaCriadaSucesso_2")}`
           );
           setStatus("success");
           setIsModalOpen(true);
           setLoadingButton(false);
         } else {
           setMessage(
-            "Houve um erro na criacao da conta. Por favor envie e-mail para geral@petplushies.pt para notificar do sucedido. (" +
-              error.response.data +
-              ".)"
+            `${t("erroCriacaoConta_1")} (` + error.response.data + ".)"
           );
           setStatus("error");
           setIsModalOpen(true);
           setLoadingButton(false);
         }
       } catch (error) {
-        setMessage(
-          "Houve um erro na criacao da conta. Tente novamente dentro de minutos."
-        );
+        setMessage(t("erroCriacaoConta_2"));
         setStatus("error");
         setIsModalOpen(true);
         setLoadingButton(false);
@@ -85,9 +83,9 @@ const SignIn = () => {
   return (
     <>
       <PageHeader
-        title="Registar conta"
+        title={t("registarConta")}
         img={DummyImg}
-        alt="Registar conta - Pet Plushies"
+        alt={`${t("registarConta")} - Pet Plushies`}
       />
       <Container>
         <ModalMessage
@@ -113,11 +111,11 @@ const SignIn = () => {
                   <Form.Item
                     wrapperCol={24}
                     name="first_name"
-                    label="Nome"
+                    label={t("nome")}
                     rules={[
                       {
                         required: true,
-                        message: "Por favor insira o seu nome.",
+                        message: t("inserirNome"),
                       },
                     ]}
                   >
@@ -128,11 +126,11 @@ const SignIn = () => {
                   <Form.Item
                     wrapperCol={24}
                     name="surname"
-                    label="Apelido"
+                    label={t("apelido")}
                     rules={[
                       {
                         required: true,
-                        message: "Por favor insira o seu apelido.",
+                        message: t("inserirApelido"),
                       },
                     ]}
                   >
@@ -145,15 +143,15 @@ const SignIn = () => {
                   <Form.Item
                     wrapperCol={24}
                     name="email"
-                    label="E-mail"
+                    label={t("email")}
                     rules={[
                       {
                         type: "email",
-                        message: "O e-mail inserido não é válido.",
+                        message: t("emailInvalido"),
                       },
                       {
                         required: true,
-                        message: "Por favor insira o seu e-mail.",
+                        message: t("inserirEmail"),
                       },
                     ]}
                   >
@@ -170,15 +168,15 @@ const SignIn = () => {
                     rules={[
                       {
                         required: true,
-                        message: "Por favor escolha a sua password.",
+                        message: t("escolherPassword"),
                       },
                       {
                         min: 8,
-                        message: "A password deve ter pelo menos 8 caracteres.",
+                        message: t("password8Caracteres"),
                       },
                       {
                         pattern: /[!@#$%^&*(),.?":{}|<>_]/,
-                        message: "A password deve incluir símbolos.",
+                        message: t("passwordSimbolos"),
                       },
                     ]}
                     hasFeedback
@@ -190,13 +188,13 @@ const SignIn = () => {
                   <Form.Item
                     wrapperCol={24}
                     name="confirm"
-                    label="Confirmar Password"
+                    label={t("confirmarPassword")}
                     dependencies={["password"]}
                     hasFeedback
                     rules={[
                       {
                         required: true,
-                        message: "Por favor confirme a password que escolheu.",
+                        message: t("confirmarPasswordError"),
                       },
                       ({ getFieldValue }) => ({
                         validator(_, value) {
@@ -204,7 +202,7 @@ const SignIn = () => {
                             return Promise.resolve();
                           }
                           return Promise.reject(
-                            new Error("As passwords não correspondem.")
+                            new Error(t("passwordsDiferentes"))
                           );
                         },
                       }),
@@ -225,18 +223,14 @@ const SignIn = () => {
                         validator: (_, value) =>
                           value
                             ? Promise.resolve()
-                            : Promise.reject(
-                                new Error(
-                                  "Tem de aceitar os Termos e Condições"
-                                )
-                              ),
+                            : Promise.reject(new Error(t("confirmarTermos"))),
                       },
                     ]}
                   >
                     <Checkbox>
-                      Declaro que li os{" "}
+                      {t("declararTC")}{" "}
                       <Link to="/termos-e-condicoes" target="_blank">
-                        Termos e Condições
+                        {t("termosCondicoes")}
                       </Link>
                     </Checkbox>
                   </Form.Item>
@@ -247,7 +241,7 @@ const SignIn = () => {
                   <Form.Item
                     wrapperCol={24}
                     label="Captcha"
-                    extra="Só queremos ter a certeza que é um humano."
+                    extra={t("captchaHumano")}
                   >
                     <ReCAPTCHA
                       // sitekey="6LeeeyEpAAAAAHEmtDr81K8xOhEkbCcM32FGYqtF" //localhost
@@ -262,7 +256,7 @@ const SignIn = () => {
                   <Form.Item wrapperCol={24}>
                     <StyledButton
                       size="large"
-                      text="Registar conta"
+                      text={t("registarConta")}
                       type="primary"
                       htmlType="submit"
                       onClick={handleSubmit}
