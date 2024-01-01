@@ -24,6 +24,7 @@ module.exports = {
     }
     return config;
 <<<<<<< HEAD
+<<<<<<< HEAD
   },
   dest: "./build", // Specify the build directory
   crawlDelay: 3000, // in milliseconds
@@ -32,6 +33,11 @@ module.exports = {
   dest: "./build", // Specify the build directory
   crawlDelay: 1000, // in milliseconds
 >>>>>>> 8820339 (Update snap.config.js)
+=======
+  },
+  dest: "./build", // Specify the build directory
+  crawlDelay: 3000, // in milliseconds
+>>>>>>> 3e25751 (first static translations)
   sourceMap: true,
   waitFor: ".ant-spin-spinning",
   puppeteerArgs: ["--no-sandbox", "--disable-setuid-sandbox"],
