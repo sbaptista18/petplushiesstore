@@ -4,6 +4,7 @@
   "description": "Pet Plushies Store",
   "main": "src/index.js",
   "scripts": {
+    "prebuild": "wait-on npm i react-i18next && react-snap",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack serve --progress --config webpack/dev.config.js",
     "build": "webpack --mode production --config webpack/prod.config.js",
@@ -25,7 +26,8 @@
     "minifyHtml": {
       "collapseWhitespace": false,
       "removeComments": false
-    }
+    },
+    "crawlDelay": 5000
   },
   "repository": {
     "type": "git"
@@ -108,6 +110,7 @@
     "style-loader": "^3.2.1",
     "terser-webpack-plugin": "^5.1.4",
     "url-loader": "^4.1.1",
+    "wait-on": "^7.2.0",
     "webpack": "^5.47.0",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.8.0",

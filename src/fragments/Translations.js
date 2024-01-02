@@ -17,7 +17,8 @@ const lang = localStorage.getItem("lang");
 
 i18n.use(initReactI18next).init({
   resources,
-  lng: lang, // Default language
+  lng: lang == null ? "pt" : lang, // Default language
+  fallbackLng: lang == null ? "en" : lang,
   interpolation: {
     escapeValue: false,
   },
