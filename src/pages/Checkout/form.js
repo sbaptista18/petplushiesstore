@@ -2,6 +2,7 @@ import { Col, Row, Checkbox, Form, Input, Select, Radio } from "antd";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { paymentMethods } from "./data";
 
@@ -25,6 +26,7 @@ const CheckoutForm = ({
   isLoggedIn,
 }) => {
   const [countries, setCountries] = useState([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -63,6 +65,20 @@ const CheckoutForm = ({
     }
   }, [data, form]);
 
+  function removeDiacritics(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function toCamelCase(inputString) {
+    const withoutDiacritics = removeDiacritics(inputString);
+
+    return withoutDiacritics
+      .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
+        return index === 0 ? word.toLowerCase() : word.toUpperCase();
+      })
+      .replace(/\s+/g, "");
+  }
+
   return (
     <Form
       disabled={disabled}
@@ -79,11 +95,11 @@ const CheckoutForm = ({
           <Form.Item
             wrapperCol={24}
             name="first_name"
-            label="Nome"
+            label={t("nome")}
             rules={[
               {
                 required: true,
-                message: "Por favor insira o seu nome.",
+                message: t("inserirNome"),
               },
             ]}
           >
@@ -94,11 +110,11 @@ const CheckoutForm = ({
           <Form.Item
             wrapperCol={24}
             name="surname"
-            label="Apelido"
+            label={t("apelido")}
             rules={[
               {
                 required: true,
-                message: "Por favor insira o seu apelido.",
+                message: t("inserirApelido"),
               },
             ]}
           >
@@ -108,7 +124,7 @@ const CheckoutForm = ({
       </FormRow>
       <FormRow>
         <Col span={24}>
-          <Form.Item wrapperCol={24} name="company" label="Empresa (opcional)">
+          <Form.Item wrapperCol={24} name="company" label={t("empresa")}>
             <Input />
           </Form.Item>
         </Col>
@@ -119,10 +135,10 @@ const CheckoutForm = ({
             rules={[
               {
                 required: true,
-                message: "Por favor seleccione o seu país.",
+                message: t("seleccionarPais"),
               },
             ]}
-            label="País"
+            label={t("pais")}
             wrapperCol={24}
             name="country"
           >
@@ -150,11 +166,11 @@ const CheckoutForm = ({
         <Col span={24}>
           <Form.Item
             name="address"
-            label="Morada"
+            label={t("morada")}
             rules={[
               {
                 required: true,
-                message: "Por favor insira a sua morada.",
+                message: t("inserirMorada"),
               },
             ]}
             wrapperCol={24}
@@ -168,11 +184,11 @@ const CheckoutForm = ({
           <Form.Item
             wrapperCol={24}
             name="local"
-            label="Localidade"
+            label={t("localidade")}
             rules={[
               {
                 required: true,
-                message: "Por favor insira a localidade.",
+                message: t("inserirLocalidade"),
               },
             ]}
           >
@@ -180,7 +196,7 @@ const CheckoutForm = ({
           </Form.Item>
         </Col>
         <Col span={11}>
-          <Form.Item label="Distrito/Região" wrapperCol={24} name="district">
+          <Form.Item label={t("distrito")} wrapperCol={24} name="district">
             <Select showSearch optionFilterProp="children">
               {countries.map((c) => {
                 if (c.code === secondSelectOptions) {
@@ -203,11 +219,11 @@ const CheckoutForm = ({
           <Form.Item
             wrapperCol={24}
             name="postcode"
-            label="Código-postal"
+            label={t("codigoPostal")}
             rules={[
               {
                 required: true,
-                message: "Por favor insira o seu código-postal.",
+                message: t("inserirCodigoPostal"),
               },
             ]}
           >
@@ -217,22 +233,22 @@ const CheckoutForm = ({
       </FormRow>
       <FormRow>
         <Col span={11}>
-          <Form.Item wrapperCol={24} name="phone" label="Telefone">
+          <Form.Item wrapperCol={24} name="phone" label={t("telefone")}>
             <Input />
           </Form.Item>
         </Col>
         <Col span={11}>
           <Form.Item
             name="email"
-            label="E-mail"
+            label={t("email")}
             rules={[
               {
                 type: "email",
-                message: "O e-mail inserido nao é válido.",
+                message: t("emailInvalido"),
               },
               {
                 required: true,
-                message: "Por favor insira o seu e-mail.",
+                message: t("inserirEmail"),
               },
             ]}
             wrapperCol={24}
@@ -252,7 +268,7 @@ const CheckoutForm = ({
               }}
               wrapperCol={24}
             >
-              <Checkbox>Criar conta?</Checkbox>
+              <Checkbox>{t("criarConta")}</Checkbox>
             </Form.Item>
             <>{accountError != "" && accountError}</>
           </Col>
@@ -269,7 +285,7 @@ const CheckoutForm = ({
             }}
             wrapperCol={24}
           >
-            <Checkbox>Enviar para uma morada diferente?</Checkbox>
+            <Checkbox>{t("moradaDiferente")}</Checkbox>
           </Form.Item>
         </Col>
       </FormRow>
@@ -281,11 +297,11 @@ const CheckoutForm = ({
               <Form.Item
                 wrapperCol={24}
                 name="first_name_other"
-                label="Nome"
+                label={t("nome")}
                 rules={[
                   {
                     required: true,
-                    message: "Por favor insira o seu nome.",
+                    message: t("inserirNome"),
                   },
                 ]}
               >
@@ -296,11 +312,11 @@ const CheckoutForm = ({
               <Form.Item
                 wrapperCol={24}
                 name="surname_other"
-                label="Apelido"
+                label={t("apelido")}
                 rules={[
                   {
                     required: true,
-                    message: "Por favor insira o seu apelido.",
+                    message: t("apelido"),
                   },
                 ]}
               >
@@ -313,7 +329,7 @@ const CheckoutForm = ({
               <Form.Item
                 wrapperCol={24}
                 name="company_other"
-                label="Empresa (opcional)"
+                label={t("empresa")}
               >
                 <Input />
               </Form.Item>
@@ -325,10 +341,10 @@ const CheckoutForm = ({
                 rules={[
                   {
                     required: true,
-                    message: "Por favor seleccione o seu país.",
+                    message: t("seleccionarPais"),
                   },
                 ]}
-                label="País"
+                label={t("pais")}
                 wrapperCol={24}
                 name="country_other"
               >
@@ -356,11 +372,11 @@ const CheckoutForm = ({
             <Col span={24}>
               <Form.Item
                 name="address_other"
-                label="Morada"
+                label={t("morada")}
                 rules={[
                   {
                     required: true,
-                    message: "Por favor insira a sua morada.",
+                    message: t("inserirMorada"),
                   },
                 ]}
                 wrapperCol={24}
@@ -374,11 +390,11 @@ const CheckoutForm = ({
               <Form.Item
                 wrapperCol={24}
                 name="local_other"
-                label="Localidade"
+                label={t("localidade")}
                 rules={[
                   {
                     required: true,
-                    message: "Por favor insira a localidade.",
+                    message: t("inserirLocalidade"),
                   },
                 ]}
               >
@@ -387,7 +403,7 @@ const CheckoutForm = ({
             </Col>
             <Col span={11}>
               <Form.Item
-                label="Distrito/Região"
+                label={t("distrito")}
                 wrapperCol={24}
                 name="district_other"
               >
@@ -413,11 +429,11 @@ const CheckoutForm = ({
               <Form.Item
                 wrapperCol={24}
                 name="postcode_other"
-                label="Codigo-postal"
+                label={t("codigoPostal")}
                 rules={[
                   {
                     required: true,
-                    message: "Por favor insira o seu código-postal.",
+                    message: t("inserirCodigoPostal"),
                   },
                 ]}
               >
@@ -435,11 +451,11 @@ const CheckoutForm = ({
             onChange={handleOrderNote}
           >
             <>
-              <span>Notas para a encomenda</span>
+              <span>{t("notasEncomenda")}</span>
               <TextArea
                 value={orderNote}
                 rows={4}
-                placeholder="Aqui pode deixar instruções especiais como, por exemplo, 'A campaínha não toca.'"
+                placeholder={t("notasEncomendaPlaceholder")}
               />
             </>
           </Form.Item>
@@ -450,11 +466,11 @@ const CheckoutForm = ({
         <Form.Item
           wrapperCol={24}
           name="payment_method"
-          label="Método de pagamento"
+          label={t("metodoPagamento")}
           rules={[
             {
               required: true,
-              message: "Tem de seleccionar um método de pagamento.",
+              message: t("seleccionarMetodoPagamento"),
             },
           ]}
         >
@@ -466,7 +482,7 @@ const CheckoutForm = ({
                   key={p.value}
                   value={p.value}
                 >
-                  {p.name}
+                  {t(toCamelCase(p.name))}
                 </Radio.Button>
               );
             })}
@@ -481,14 +497,14 @@ const CheckoutForm = ({
         rules={[
           {
             required: true,
-            message: "Tem de confirmar a leitura dos Termos e Condições.",
+            message: t("confirmarTermos"),
           },
         ]}
       >
         <Checkbox>
-          Declaro que li e aceito os{" "}
+          {t("declararTC")}{" "}
           <Link to="/termos-e-condicoes" target="_blank">
-            Termos e Condições
+            {t("termosCondicoes")}
           </Link>
         </Checkbox>
       </Form.Item>

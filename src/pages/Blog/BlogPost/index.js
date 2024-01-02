@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import moment from "moment";
 import { useLoading } from "reducers";
+import { useTranslation } from "react-i18next";
 
 import {
   Breadcrumbs,
@@ -14,11 +15,10 @@ import {
   Button,
 } from "components";
 import { SEOTags } from "fragments";
+import i18n from "i18next";
 
 const { TextArea } = Input;
 const { useForm } = Form;
-
-moment.locale("pt");
 
 const BlogPost = () => {
   const { postUrl } = useParams();
@@ -42,6 +42,10 @@ const BlogPost = () => {
   const [loadingButton, setLoadingButton] = useState(false);
 
   const [form] = useForm();
+  const { t } = useTranslation();
+  const lang = localStorage.getItem("lang");
+
+  moment.locale(lang);
 
   useEffect(() => {
     setLoadingPage(true);
@@ -115,7 +119,9 @@ const BlogPost = () => {
           post_id: post.id,
           comment: comment,
           commenter:
-            commenterName == "" ? "Anónimo" : commenterName.target.value,
+            commenterName == ""
+              ? `${t("anonimo")}`
+              : commenterName.target.value,
           commenter_email: commenterEmail.target.value,
         };
 
@@ -195,7 +201,7 @@ const BlogPost = () => {
               </StyledRow>
               <CommentSection>
                 <Row>
-                  <h3>Comentários</h3>
+                  <h3>{t("comentarios")}</h3>
                 </Row>
                 <CommentsContent>
                   <Col span={7}>
@@ -213,14 +219,14 @@ const BlogPost = () => {
                             rules={[
                               {
                                 required: true,
-                                message: "Por favor escreva o seu comentário.",
+                                message: t("escrevaComentario"),
                               },
                             ]}
                           >
                             <StyledTextarea
                               onChange={handleComment}
                               rows={4}
-                              placeholder="Escreva aqui o seu comentário..."
+                              placeholder={t("escrevaAquiComentario")}
                             />
                           </StyledFormItem>
                         </FormRow>
@@ -228,11 +234,11 @@ const BlogPost = () => {
                           <StyledFormItem
                             name="commenter_name"
                             wrapperCol={24}
-                            label="Nome"
+                            label={t("nome")}
                           >
                             <Input
                               onChange={handleCommenterName}
-                              placeholder="Escreva aqui o seu nome..."
+                              placeholder={t("escrevaNome")}
                             />
                           </StyledFormItem>
                         </FormRow>
@@ -240,21 +246,21 @@ const BlogPost = () => {
                           <StyledFormItem
                             name="commenter_email"
                             wrapperCol={24}
-                            label="E-mail"
+                            label={t("email")}
                             rules={[
                               {
                                 type: "email",
-                                message: "O e-mail inserido não é válido.",
+                                message: t("emailInvalido"),
                               },
                               {
                                 required: true,
-                                message: "Por favor insira o seu e-mail.",
+                                message: t("inserirEmail"),
                               },
                             ]}
                           >
                             <Input
                               onChange={handleCommenterEmail}
-                              placeholder="Escreva aqui o seu e-mail..."
+                              placeholder={t("escrevaAquiEmail")}
                             />
                           </StyledFormItem>
                         </FormRow>
@@ -262,7 +268,7 @@ const BlogPost = () => {
                           <StyledButton
                             size="large"
                             type="primary"
-                            text="Submeter ccmentário"
+                            text={t("submeterComentario")}
                             loading={loadingButton}
                             disabled={loadingButton}
                             onClick={() =>
@@ -286,11 +292,13 @@ const BlogPost = () => {
                       />
                     )}
                     {errorComments && !loadingComments && (
-                      <>Erro ao carregar os comentários.</>
+                      <>{t("erroCarregarComentarios")}</>
                     )}
                     {comments.length > 0 ? (
                       <div>
-                        <div>{totalComments} comentário(s).</div>
+                        <div>
+                          {totalComments} {t("comentario")}(s).
+                        </div>
                         {comments.map((c) => {
                           return (
                             <Comment key={c.id}>
@@ -299,7 +307,7 @@ const BlogPost = () => {
                                 {" a "}
                                 <b>
                                   {moment(c.date_created_gmt).format(
-                                    "DD [de] MMMM [de] YYYY[, às] HH:mm"
+                                    i18n.t("formatoData")
                                   )}
                                 </b>
                               </div>
@@ -309,10 +317,7 @@ const BlogPost = () => {
                         })}
                       </div>
                     ) : (
-                      <>
-                        Não existem comentários nesta publicação. O teu pode ser
-                        o primeiro!
-                      </>
+                      <>{t("naoExistemComentarios")}</>
                     )}
                   </CommentsContainer>
                 </CommentsContent>

@@ -18,39 +18,41 @@ const Image = ({ image }) => {
   return <StyledImg src={image} alt={image} />;
 };
 
-const tableColumnsCheckout = [
-  {
-    title: "Imagem",
-    dataIndex: "main_image_url",
-    key: "image",
-    render: (record) => <Image image={record} />,
-  },
-  {
-    title: "Nome",
-    key: "name",
-    render: (record) => <Text text={record.name} slug={record.slug} />,
-  },
-  {
-    title: "Extras",
-    dataIndex: "product_extras",
-    key: "extras",
-    render: (record) => {
-      return <div dangerouslySetInnerHTML={{ __html: record }} />;
+const tableColumnsCheckout = (t) => {
+  return [
+    {
+      title: t("imagem"),
+      dataIndex: "main_image_url",
+      key: "image",
+      render: (record) => <Image image={record} />,
     },
-  },
-  {
-    title: "Quantidade",
-    dataIndex: "product_qty",
-    key: "qty",
-    render: (record) => <Qty text={record} />,
-  },
-  {
-    title: "Preço",
-    dataIndex: "product_gross_revenue",
-    key: "price",
-    render: (record) => <Price text={`${parseFloat(record).toFixed(2)}€`} />,
-  },
-];
+    {
+      title: t("produto"),
+      key: "name",
+      render: (record) => <Text text={record.name} slug={record.slug} />,
+    },
+    {
+      title: t("extras"),
+      dataIndex: "product_extras",
+      key: "extras",
+      render: (record) => {
+        return <div dangerouslySetInnerHTML={{ __html: record }} />;
+      },
+    },
+    {
+      title: t("quantidade"),
+      dataIndex: "product_qty",
+      key: "qty",
+      render: (record) => <Qty text={record} />,
+    },
+    {
+      title: t("preco"),
+      dataIndex: "product_gross_revenue",
+      key: "price",
+      render: (record) => <Price text={`${parseFloat(record).toFixed(2)}€`} />,
+    },
+  ];
+};
 
 Text.propTypes = {
   text: PropTypes.string,

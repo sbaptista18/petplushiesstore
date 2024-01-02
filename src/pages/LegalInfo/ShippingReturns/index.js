@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { PageHeader } from "components";
 import { SEOTags } from "fragments";
 import { useLoading } from "reducers";
+import { useTranslation } from "react-i18next";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -15,6 +16,7 @@ const ShippingReturns = () => {
   const [error, setError] = useState(false);
   const [message, setMessage] = useState("");
   const { setLoadingPage } = useLoading();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setLoadingPage(true);
@@ -46,16 +48,16 @@ const ShippingReturns = () => {
   return (
     <>
       <SEOTags
-        title={`Envios e Devoluções - Pet Plushies`}
-        description="Toda a informação sobre a política de Envios e Devoluções da Pet Plushies."
+        title={`${t("enviosDevolucoes")} - Pet Plushies`}
+        description={t("enviosDevolucoesSEODesc")}
         name="PetPlushies"
         type="website"
         image={DummyImg}
       />
       <PageHeader
-        title="Envios e Devoluções"
+        title={t("enviosDevolucoes")}
         img={DummyImg}
-        alt="Envios e Devoluções - Pet Plushies"
+        alt={`${t("enviosDevolucoes")} - Pet Plushies`}
       />
       <Container>
         {loading && !error && (

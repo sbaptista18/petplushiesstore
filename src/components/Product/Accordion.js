@@ -1,37 +1,51 @@
 import { Collapse } from "antd";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 
 const { Panel } = Collapse;
 
 const Accordion = ({ desc }) => {
+  const { t } = useTranslation();
   const items = [
     {
       key: "1",
-      label: "Informações sobre o produto",
+      label: t("infoProduto"),
       children: desc,
     },
     {
       key: "2",
-      label: "Política de Retorno e Reembolso",
+      label: t("politicaRetorno"),
       children: `<p>
-          Nós fazemos o possível para enviar o melhor trabalho que o artesanato pode oferecer, no entanto também acreditamos que o cliente merece a oportunidade de devolver o produto caso não esteja satisfeito. Nós pagamos os portes para o envio de volta! Pode consultar mais informações na página de <a href='/termos-e-condicoes' target='_blank'>Termos e Condições</a> e na página <a href='/envios-e-devolucoes' target='_blank'>Envios e Devoluções</a>.
+          ${t(
+            "politicaRetornoText1"
+          )} <a href='/termos-e-condicoes' target='_blank'>${t(
+        "termosCondicoes"
+      )}</a> ${t(
+        "politicaRetornoText2"
+      )} <a href='/envios-e-devolucoes' target='_blank'>${t(
+        "enviosDevolucoes"
+      )}</a>.
         </p>`,
     },
     {
       key: "3",
-      label: "Informação de Envio",
+      label: t("infoEnvio"),
       children: `<p>
-          Os portes de envio serão calculados na página de Finalização de Compra. Pode consultar todas as informações e preços na página de <a href='/termos-e-condicoes' target='_blank'>Termos e Condições</a>.
+      ${t("infoEnvioText")} <a href='/termos-e-condicoes' target='_blank'>${t(
+        "termosCondicoes"
+      )}</a>.
         </p>`,
     },
     {
       key: "4",
-      label: "Nós ajudamos abrigos de animais",
+      label: t("ajudarAbrigos"),
       children: `<p>
-          A PetPlushies dedica-se a ajudar os abrigos/associações de animais por esse país fora. Todos os meses um abrigo/associação diferente será escolhido para que a ajuda chegue a mais patudos!
+      ${t("ajudarAbrigosText1")}
           <br>
-          <b>10% de todas as vendas serão doados ao abrigo/associação anunciados no nosso <a href='/blog' target='_blank'>Blog</a>.</b>
+          <b>${t(
+            "ajudarAbrigosText2"
+          )} <a href='/blog' target='_blank'>Blog</a>.</b>
         </p>`,
     },
   ];

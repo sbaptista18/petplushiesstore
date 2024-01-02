@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { PageHeader } from "components";
 import { SEOTags } from "fragments";
 import { useLoading } from "reducers";
+import { useTranslation } from "react-i18next";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -15,6 +16,7 @@ const TermsConditions = () => {
   const [error, setError] = useState(false);
   const [message, setMessage] = useState("");
   const { setLoadingPage } = useLoading();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setLoadingPage(true);
@@ -46,16 +48,16 @@ const TermsConditions = () => {
   return (
     <>
       <SEOTags
-        title={`Termos e Condições - Pet Plushies`}
-        description="Os nossos Termos e Condições são actualizados com frequência, consulte sempre antes de efectuar uma compra."
+        title={`${t("termosCondicoes")} - Pet Plushies`}
+        description={t("termosCondicoesSEODesc")}
         name="PetPlushies"
         type="website"
         image={DummyImg}
       />
       <PageHeader
-        title="Termos e Condições"
+        title={t("termosCondicoes")}
         img={DummyImg}
-        alt="Termos e Condições - Pet Plushies"
+        alt={`${t("termosCondicoes")} - Pet Plushies`}
       />
       <Container>
         {loading && !error && (

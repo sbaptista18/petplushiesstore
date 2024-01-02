@@ -213,6 +213,18 @@ const PPS_Header = () => {
     setIsOpenCart((prev) => !prev);
   };
 
+  const handleChangePT = () => {
+    localStorage.setItem("lang", "pt");
+    localStorage.removeItem("en");
+    return changeLanguage("pt");
+  };
+
+  const handleChangeEN = () => {
+    localStorage.setItem("lang", "en");
+    localStorage.removeItem("pt");
+    return changeLanguage("en");
+  };
+
   return (
     <StyledHeader
       key={updateHeader ? "update" : "no-update"}
@@ -270,7 +282,7 @@ const PPS_Header = () => {
           <IconButton
             location={location.pathname}
             style={{ color }}
-            onClick={() => changeLanguage("pt")}
+            onClick={() => handleChangePT()}
           >
             <Flag src={PT} alt="Ícone Bandeira Portuguesa" />
           </IconButton>
@@ -279,7 +291,7 @@ const PPS_Header = () => {
           <IconButton
             location={location.pathname}
             style={{ color }}
-            onClick={() => changeLanguage("en")}
+            onClick={() => handleChangeEN()}
           >
             <Flag src={EN} alt="Ícone Bandeira Inglesa" />
           </IconButton>

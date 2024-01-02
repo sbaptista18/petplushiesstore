@@ -1,6 +1,7 @@
 import { Row, Col, Form, Checkbox, Input, Select } from "antd";
 import styled from "styled-components";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "components";
 
@@ -16,6 +17,8 @@ const PersonalDataForm = ({
   disabled,
   loadingButton,
 }) => {
+  const { t } = useTranslation();
+
   const initialValues = {
     first_name: data?.billing.first_name,
     surname: data?.billing.last_name,
@@ -75,7 +78,7 @@ const PersonalDataForm = ({
         checked={disabled}
         onChange={(e) => setDisabled(e.target.checked)}
       >
-        Modo de edicao
+        {t("modoEdicao")}
       </Checkbox>
 
       <Form
@@ -87,31 +90,27 @@ const PersonalDataForm = ({
       >
         <FormRow>
           <Col span={11}>
-            <Form.Item wrapperCol={24} name="first_name" label="Nome">
+            <Form.Item wrapperCol={24} name="first_name" label={t("nome")}>
               <Input />
             </Form.Item>
           </Col>
           <Col span={11}>
-            <Form.Item wrapperCol={24} name="surname" label="Apelido">
+            <Form.Item wrapperCol={24} name="surname" label={t("apelido")}>
               <Input />
             </Form.Item>
           </Col>
         </FormRow>
-        <FormRow>Morada de Facturação</FormRow>
+        <FormRow>{t("moradaFaturacao")}</FormRow>
         <FormRow>
           <Col span={24}>
-            <Form.Item
-              wrapperCol={24}
-              name="company"
-              label="Empresa (opcional)"
-            >
+            <Form.Item wrapperCol={24} name="company" label={t("empresa")}>
               <Input />
             </Form.Item>
           </Col>
         </FormRow>
         <FormRow>
           <Col span={24}>
-            <Form.Item label="País" wrapperCol={24} name="country">
+            <Form.Item label={t("pais")} wrapperCol={24} name="country">
               <Select
                 value={country}
                 onChange={handleCountry}
@@ -134,19 +133,19 @@ const PersonalDataForm = ({
         </FormRow>
         <FormRow>
           <Col span={24}>
-            <Form.Item name="address" label="Morada" wrapperCol={24}>
+            <Form.Item name="address" label={t("morada")} wrapperCol={24}>
               <Input />
             </Form.Item>
           </Col>
         </FormRow>
         <FormRow>
           <Col span={11}>
-            <Form.Item wrapperCol={24} name="local" label="Localidade">
+            <Form.Item wrapperCol={24} name="local" label={t("localidade")}>
               <Input />
             </Form.Item>
           </Col>
           <Col span={11}>
-            <Form.Item label="Distrito/Região" wrapperCol={24} name="district">
+            <Form.Item label={t("distrito")} wrapperCol={24} name="district">
               <Select showSearch optionFilterProp="children">
                 {countries.map((c) => {
                   if (c.code === selectedBillingCountry) {
@@ -166,25 +165,29 @@ const PersonalDataForm = ({
         </FormRow>
         <FormRow>
           <Col span={24}>
-            <Form.Item wrapperCol={24} name="postcode" label="Código-postal">
+            <Form.Item
+              wrapperCol={24}
+              name="postcode"
+              label={t("codigoPostal")}
+            >
               <Input />
             </Form.Item>
           </Col>
         </FormRow>
         <FormRow>
           <Col span={11}>
-            <Form.Item wrapperCol={24} name="phone" label="Telefone">
+            <Form.Item wrapperCol={24} name="phone" label={t("telefone")}>
               <Input />
             </Form.Item>
           </Col>
           <Col span={11}>
             <Form.Item
               name="email"
-              label="E-mail"
+              label={t("email")}
               rules={[
                 {
                   type: "email",
-                  message: "O e-mail inserido não é válido.",
+                  message: t("emailInvalido"),
                 },
               ]}
               wrapperCol={24}
@@ -194,16 +197,24 @@ const PersonalDataForm = ({
           </Col>
         </FormRow>
 
-        <FormRow>Morada de Entrega</FormRow>
+        <FormRow>{t("moradaEntrega")}</FormRow>
 
         <FormRow>
           <Col span={11}>
-            <Form.Item wrapperCol={24} name="first_name_other" label="Nome">
+            <Form.Item
+              wrapperCol={24}
+              name="first_name_other"
+              label={t("nome")}
+            >
               <Input />
             </Form.Item>
           </Col>
           <Col span={11}>
-            <Form.Item wrapperCol={24} name="surname_other" label="Apelido">
+            <Form.Item
+              wrapperCol={24}
+              name="surname_other"
+              label={t("apelido")}
+            >
               <Input />
             </Form.Item>
           </Col>
@@ -213,7 +224,7 @@ const PersonalDataForm = ({
             <Form.Item
               wrapperCol={24}
               name="company_other"
-              label="Empresa (opcional)"
+              label={t("empresa")}
             >
               <Input />
             </Form.Item>
@@ -221,7 +232,7 @@ const PersonalDataForm = ({
         </FormRow>
         <FormRow>
           <Col span={24}>
-            <Form.Item label="País" wrapperCol={24} name="country_other">
+            <Form.Item label={t("pais")} wrapperCol={24} name="country_other">
               <Select
                 value={country}
                 onChange={handleCountryShipping}
@@ -244,20 +255,24 @@ const PersonalDataForm = ({
         </FormRow>
         <FormRow>
           <Col span={24}>
-            <Form.Item name="address_other" label="Morada" wrapperCol={24}>
+            <Form.Item name="address_other" label={t("morada")} wrapperCol={24}>
               <Input />
             </Form.Item>
           </Col>
         </FormRow>
         <FormRow>
           <Col span={11}>
-            <Form.Item wrapperCol={24} name="local_other" label="Localidade">
+            <Form.Item
+              wrapperCol={24}
+              name="local_other"
+              label={t("localidade")}
+            >
               <Input />
             </Form.Item>
           </Col>
           <Col span={11}>
             <Form.Item
-              label="Distrito/Região"
+              label={t("distrito")}
               wrapperCol={24}
               name="district_other"
             >
@@ -283,7 +298,7 @@ const PersonalDataForm = ({
             <Form.Item
               wrapperCol={24}
               name="postcode_other"
-              label="Código-postal"
+              label={t("codigoPostal")}
             >
               <Input />
             </Form.Item>
@@ -295,7 +310,7 @@ const PersonalDataForm = ({
             <Form.Item wrapperCol={24}>
               <StyledButton
                 size="large"
-                text="Actualizar dados pessoais"
+                text={t("actualizarDadosPessoais")}
                 type="primary"
                 htmlType="submit"
                 onClick={handleSubmitPersonalData}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 
 import { Button, PageHeader, ModalMessage } from "components";
+import { useTranslation } from "react-i18next";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -14,6 +15,7 @@ const RedefinePassword = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState();
   const [message, setMessage] = useState("");
+  const { t } = useTranslation();
 
   // Function to reset password
   const resetPassword = async () => {
@@ -52,9 +54,9 @@ const RedefinePassword = () => {
         onClose={() => setIsModalOpen(false)}
       />
       <PageHeader
-        title="Redefinir password"
+        title={`${t("redefinirPassword")}`}
         img={DummyImg}
-        alt="Redefinir password - Pet Plushies"
+        alt={`${t("redefinirPassword")} - Pet Plushies`}
       />
       <Container>
         <ContentLocked>
@@ -81,15 +83,15 @@ const RedefinePassword = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Por favor escolha a sua password.",
+                    message: t("escolherPassword"),
                   },
                   {
                     min: 8,
-                    message: "A password deve ter pelo menos 8 caracteres.",
+                    message: t("password8Caracteres"),
                   },
                   {
                     pattern: /[!@#$%^&*(),.?":{}|<>_]/,
-                    message: "A password deve incluir símbolos.",
+                    message: t("passwordSimbolos"),
                   },
                 ]}
                 hasFeedback
@@ -99,13 +101,13 @@ const RedefinePassword = () => {
               <Form.Item
                 wrapperCol={24}
                 name="confirm"
-                label="Confirmar Password"
+                label={t("confirmarPassword")}
                 dependencies={["password"]}
                 hasFeedback
                 rules={[
                   {
                     required: true,
-                    message: "Por favor confirme a password que escolheu.",
+                    message: t("confirmarPasswordError"),
                   },
                   ({ getFieldValue }) => ({
                     validator(_, value) {
@@ -113,7 +115,7 @@ const RedefinePassword = () => {
                         return Promise.resolve();
                       }
                       return Promise.reject(
-                        new Error("As passwords não correspondem.")
+                        new Error(t("passwordsDiferentes"))
                       );
                     },
                   }),
@@ -129,7 +131,7 @@ const RedefinePassword = () => {
               >
                 <StyledButton
                   size="large"
-                  text="Redefinir password"
+                  text={t("redefinirPassword")}
                   type="primary"
                   htmlType="submit"
                   loading={loadingButton}

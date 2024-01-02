@@ -4,108 +4,13 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 import { PageHeader } from "components";
 import { useLoading } from "reducers";
+import i18n from "i18next";
 
 import DummyImg from "assets/images/batcat-1.jpg";
-
-moment.locale("pt");
-
-const tableColumns = () => [
-  {
-    title: "No.",
-    dataIndex: "order_id",
-    key: "order_id",
-    render: (record) => {
-      return <div>{record}</div>;
-    },
-  },
-  {
-    title: "Data",
-    dataIndex: "order_date",
-    key: "order_date",
-    render: (record) => {
-      return (
-        <div>{moment(record).format("DD [de] MMMM [de] YYYY[, às] HH:mm")}</div>
-      );
-    },
-  },
-  {
-    title: "Estado",
-    dataIndex: "order_status",
-    key: "order_status",
-    render: (record) => {
-      let status;
-      switch (record) {
-        case "on-hold":
-          status = "Aguarda confirmação de pagamento";
-          break;
-        case "processing":
-          status = "Em processamento";
-          break;
-        case "shipment-sent":
-          status = "Encomenda enviada";
-          break;
-        default:
-          status = "default";
-          break;
-      }
-      return <div>{status}</div>;
-    },
-  },
-  {
-    title: "Morada",
-    key: "address",
-    render: (record, _) => {
-      return (
-        <div>
-          {_.shipping_data.shipping_address_1 != ""
-            ? _.shipping_data.shipping_address_1
-            : _.billing_data.billing_address_1}
-          {`, `}
-          {_.shipping_data.shipping_postcode != ""
-            ? _.shipping_data.shipping_postcode
-            : _.billing_data.billing_postcode}
-          {`, `}
-          {_.shipping_data.shipping_state != ""
-            ? _.shipping_data.shipping_state
-            : _.billing_data.billing_state}
-          {`, `}
-          {_.shipping_data.shipping_country != ""
-            ? _.shipping_data.shipping_country
-            : _.billing_data.billing_country}
-        </div>
-      );
-    },
-  },
-  {
-    title: "Total",
-    dataIndex: "total",
-    key: "total",
-    render: (record) => {
-      return (
-        <div>
-          {record}
-          &euro;
-        </div>
-      );
-    },
-  },
-  {
-    title: "IVA",
-    dataIndex: "total",
-    key: "total",
-    render: (record) => {
-      return (
-        <div>
-          {(record * 0.23).toFixed(2)}
-          &euro;
-        </div>
-      );
-    },
-  },
-];
 
 const Order = () => {
   const { orderId } = useParams();
@@ -113,6 +18,103 @@ const Order = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const { setLoadingPage } = useLoading();
+  const { t } = useTranslation();
+  const lang = localStorage.getItem("lang");
+
+  moment.locale(lang);
+
+  const tableColumns = () => [
+    {
+      title: `${t("numero")}`,
+      dataIndex: "order_id",
+      key: "order_id",
+      render: (record) => {
+        return <div>{record}</div>;
+      },
+    },
+    {
+      title: `${t("data")}`,
+      dataIndex: "order_date",
+      key: "order_date",
+      render: (record) => {
+        return <div>{moment(record).format(i18n.t("formatoData"))}</div>;
+      },
+    },
+    {
+      title: `${t("estado")}`,
+      dataIndex: "order_status",
+      key: "order_status",
+      render: (record) => {
+        let status;
+        switch (record) {
+          case "on-hold":
+            status = t("aguardaPagamento");
+            break;
+          case "processing":
+            status = t("emProcessamento");
+            break;
+          case "shipment-sent":
+            status = t("enviada");
+            break;
+          default:
+            status = "default";
+            break;
+        }
+        return <div>{status}</div>;
+      },
+    },
+    {
+      title: t("morada"),
+      key: "address",
+      render: (record, _) => {
+        return (
+          <div>
+            {_.shipping_data.shipping_address_1 != ""
+              ? _.shipping_data.shipping_address_1
+              : _.billing_data.billing_address_1}
+            {`, `}
+            {_.shipping_data.shipping_postcode != ""
+              ? _.shipping_data.shipping_postcode
+              : _.billing_data.billing_postcode}
+            {`, `}
+            {_.shipping_data.shipping_state != ""
+              ? _.shipping_data.shipping_state
+              : _.billing_data.billing_state}
+            {`, `}
+            {_.shipping_data.shipping_country != ""
+              ? _.shipping_data.shipping_country
+              : _.billing_data.billing_country}
+          </div>
+        );
+      },
+    },
+    {
+      title: "Total",
+      dataIndex: "total",
+      key: "total",
+      render: (record) => {
+        return (
+          <div>
+            {record}
+            &euro;
+          </div>
+        );
+      },
+    },
+    {
+      title: t("iva"),
+      dataIndex: "total",
+      key: "total",
+      render: (record) => {
+        return (
+          <div>
+            {(record * 0.23).toFixed(2)}
+            &euro;
+          </div>
+        );
+      },
+    },
+  ];
 
   useEffect(() => {
     setLoadingPage(true);
@@ -140,9 +142,9 @@ const Order = () => {
   return (
     <>
       <PageHeader
-        title={`Encomenda #${orderId}`}
+        title={`${t("encomenda")} #${orderId}`}
         img={DummyImg}
-        alt={`Encomenda #${orderId} - Pet Plushies`}
+        alt={`${t("encomenda")} #${orderId} - Pet Plushies`}
       />
       <Container>
         <ContentLocked>
@@ -166,12 +168,12 @@ const Order = () => {
                     <h3>Detalhes</h3>
                   </TableTitle>
                   <TableHeader>
-                    <StyledCol span={3}>Imagem</StyledCol>
-                    <StyledCol span={6}>Produto</StyledCol>
-                    <StyledCol span={6}>Extras</StyledCol>
-                    <StyledCol span={2}>Quantidade</StyledCol>
-                    <StyledCol span={3}>Preço</StyledCol>
-                    <StyledCol span={3}>IVA</StyledCol>
+                    <StyledCol span={3}>{t("imagem")}</StyledCol>
+                    <StyledCol span={6}>{t("produto")}</StyledCol>
+                    <StyledCol span={6}>{t("extras")}</StyledCol>
+                    <StyledCol span={2}>{t("quantidade")}</StyledCol>
+                    <StyledCol span={3}>{t("preco")}</StyledCol>
+                    <StyledCol span={3}>{t("iva")}</StyledCol>
                   </TableHeader>
                   {order[0].products.map((i) => {
                     const extras = i.product_extras;

@@ -8,6 +8,7 @@ import { PayPalButton } from "react-paypal-button-v2";
 import { Button, ModalMessage, PageHeader } from "components";
 import { tableColumnsCheckout } from "fragments";
 import { useCart } from "reducers";
+import { useTranslation } from "react-i18next";
 
 import CheckoutForm from "./form";
 
@@ -49,6 +50,7 @@ const Checkout = () => {
   const [orderNote, setOrderNote] = useState(undefined);
   const [loadingButton, setLoadingButton] = useState(false);
   const [loadingCouponButton, setLoadingCouponButton] = useState(false);
+  const { t } = useTranslation();
 
   const history = useHistory();
 
@@ -119,7 +121,7 @@ const Checkout = () => {
 
   const calculateShippingCost = (data, subtotal) => {
     if (subtotal > 50) {
-      setShippingTitle("Portes Gratuitos");
+      setShippingTitle(t("portesGratuitos"));
       return 0;
     }
 
@@ -152,11 +154,11 @@ const Checkout = () => {
           totalProductNetRevenue
         );
 
-        setShippingMessage("");
+        setShippingMessage(t("naoHaMetodosEnvio"));
         setShipMethods(true);
         setShippingCost(shippingCost);
       } else {
-        setShippingMessage("Não há métodos de envio associados a este país.");
+        setShippingMessage();
         setShipMethods(false);
       }
     } catch (error) {
@@ -183,7 +185,7 @@ const Checkout = () => {
         setLoadingCouponButton(false);
       }
     } catch (error) {
-      setMessage("Houve um erro na verificação do cupão. Tente novamente.");
+      setMessage(t("erroCupao"));
       setStatus("error");
       setIsModalOpen(true);
       setLoadingCouponButton(false);
@@ -368,7 +370,7 @@ const Checkout = () => {
       })
       .catch((errorInfo) => {
         console.log(errorInfo);
-        setMessage("Tem de preencher todos os campos obrigatórios.");
+        setMessage(t("preencherCampos"));
         setStatus("error");
         setIsModalOpen(true);
       });
@@ -412,14 +414,14 @@ const Checkout = () => {
 
   const handleOnPayPalError = (err) => {
     console.error("Transaction failed:", err);
-    setMessage("Erro na transacção.");
+    setMessage(t("erroTxPayPal"));
     setStatus("error");
     setIsModalOpen(true);
   };
 
   const handleOnPayPalCancel = (data) => {
     console.log("Transaction canceled:", data);
-    setMessage("Transacção cancelada.");
+    setMessage("canceladoTxPayPal");
     setStatus("error");
     setIsModalOpen(true);
   };
@@ -445,9 +447,9 @@ const Checkout = () => {
   return (
     <>
       <PageHeader
-        title="Finalizar Compra"
+        title={t("finalizarCompra")}
         img={DummyImg}
-        alt="Finalizar Compra - Pet Plushies"
+        alt={`${t("finalizarCompra")} - Pet Plushies`}
       />
       <Container>
         <ModalMessage
@@ -482,7 +484,7 @@ const Checkout = () => {
               </div>
             </Col>
             <Col span={11}>
-              <Title>O meu carrinho</Title>
+              <Title>{t("meuCarrinho")}</Title>
               <Border />
               <div style={{ position: "relative" }}>
                 {loading && !error && (
@@ -494,7 +496,7 @@ const Checkout = () => {
                 )}
                 {!loading && !error && (
                   <StyledTable
-                    columns={tableColumnsCheckout}
+                    columns={tableColumnsCheckout(t)}
                     dataSource={products}
                     pagination={false}
                     rowKey="product_id"
@@ -503,14 +505,14 @@ const Checkout = () => {
                 )}
               </div>
 
-              <Title>Resumo da compra</Title>
+              <Title>{t("resumoCompra")}</Title>
               <Border />
               <Subtotal>
                 <div>Subtotal</div>
                 <div>{totalProductNetRevenue.toFixed(2)}&euro;</div>
               </Subtotal>
               <Shipping>
-                <div>Estimativa de portes</div>
+                <div>{t("estimativaPortesValor")}</div>
                 {shippingMessage != "" ? (
                   <div>{shippingMessage}</div>
                 ) : (
@@ -530,7 +532,7 @@ const Checkout = () => {
                   span: 19,
                 }}
               >
-                <Form.Item name="coupon_code" label="Codigo promocional">
+                <Form.Item name="coupon_code" label={t("codigoPromocional")}>
                   <Input />
                 </Form.Item>
                 <Form.Item
@@ -539,7 +541,7 @@ const Checkout = () => {
                   <Button
                     size="small"
                     type="primary"
-                    text="Aplicar cupão"
+                    text={t("aplicarCupao")}
                     loading={loadingCouponButton}
                     disabled={loadingCouponButton}
                     onClick={() => fetchCoupon()}
@@ -548,7 +550,7 @@ const Checkout = () => {
               </Form>
               {coupon != "" && (
                 <Shipping>
-                  <div>Desconto do cupao</div>
+                  <div>{t("descontoCupao")}</div>
                   <div>
                     {coupon.discount_type === "fixed_cart"
                       ? coupon.amount
@@ -581,7 +583,7 @@ const Checkout = () => {
                 <StyledButton
                   size="large"
                   type="primary"
-                  text="Finalizar encomenda"
+                  text={t("encomendar")}
                   loading={loadingButton}
                   disabled={!shipMethods || loadingButton}
                   onClick={() => handlePlaceOrder()}

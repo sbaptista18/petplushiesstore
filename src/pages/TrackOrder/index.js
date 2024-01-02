@@ -3,12 +3,11 @@ import { Row, Col, Spin, Form, Input } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 import { Button, PageHeader } from "components";
 
 import DummyImg from "assets/images/batcat-1.jpg";
-
-moment.locale("pt");
 
 const TrackOrder = () => {
   const [order, setOrder] = useState({});
@@ -16,6 +15,10 @@ const TrackOrder = () => {
   const [error, setError] = useState(false);
   const [message, setMessage] = useState("");
   const [form] = Form.useForm();
+  const { t } = useTranslation();
+  const lang = localStorage.getItem("lang");
+
+  moment.locale(lang);
 
   const fetchOrder = async (values) => {
     const email = values.email;
@@ -48,13 +51,13 @@ const TrackOrder = () => {
     let status;
     switch (text) {
       case "on-hold":
-        status = "Aguarda confirmação de pagamento";
+        status = t("aguardaPagamento");
         break;
       case "processing":
-        status = "Em processamento";
+        status = t("emProcessamento");
         break;
       case "shipment-sent":
-        status = "Encomenda enviada";
+        status = t("enviada");
         break;
       default:
         status = "default";
@@ -66,9 +69,9 @@ const TrackOrder = () => {
   return (
     <>
       <PageHeader
-        title="Seguir Encomenda"
+        title={t("seguirEncomenda")}
         img={DummyImg}
-        alt="Seguir Encomenda - Pet Plushies"
+        alt={`${t("seguirEncomenda")} - Pet Plushies`}
       />
       <Container>
         <ContentLocked>
@@ -91,15 +94,15 @@ const TrackOrder = () => {
             >
               <Form.Item
                 name="email"
-                label="E-mail"
+                label={t("email")}
                 rules={[
                   {
                     type: "email",
-                    message: "O e-mail inserido não é válido.",
+                    message: t("emailInvalido"),
                   },
                   {
                     required: true,
-                    message: "Por favor insira o seu e-mail.",
+                    message: t("inserirEmail"),
                   },
                 ]}
               >
@@ -107,12 +110,12 @@ const TrackOrder = () => {
               </Form.Item>
 
               <Form.Item
-                label="Numero de encomenda"
+                label={t("encomendaNr")}
                 name="order_id"
                 rules={[
                   {
                     required: true,
-                    message: "Por favor insira o numero de encomenda !",
+                    message: t("inserirEncomendaNr"),
                   },
                 ]}
               >
@@ -127,7 +130,7 @@ const TrackOrder = () => {
               >
                 <StyledButton
                   size="large"
-                  text="Seguir encomenda"
+                  text={t("seguirEncomenda")}
                   type="primary"
                   htmlType="submit"
                 />
@@ -150,17 +153,15 @@ const TrackOrder = () => {
             {!error && !loading && Object.keys(order).length !== 0 && (
               <>
                 <TableHeader style={{ width: "100%" }}>
-                  <Col span={6}>Numero da encomenda</Col>
-                  <Col span={6}>Data</Col>
-                  <Col span={6}>Estado</Col>
+                  <Col span={6}>{t("encomendaNr")}</Col>
+                  <Col span={6}>{t("data")}</Col>
+                  <Col span={6}>{t("estado")}</Col>
                   <Col span={6}>Total</Col>
                 </TableHeader>
                 <Row style={{ width: "100%" }}>
                   <Col span={6}>{order.number}</Col>
                   <Col span={6}>
-                    {moment(order.date).format(
-                      "DD [de] MMMM [de] YYYY[, às] HH:mm"
-                    )}
+                    {moment(order.date).format(t("formatoData"))}
                   </Col>
                   <Col span={6}>{handleStatusText(order.status)}</Col>
                   <Col span={6}>{order.total}&euro;</Col>

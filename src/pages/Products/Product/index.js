@@ -4,12 +4,14 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 import { useCart, useLoading } from "reducers";
 import { getSessionDataFromLocalStorage } from "helpers";
 import { SEOTags } from "fragments";
 
 import Star from "assets/images/star.svg";
+import i18n from "i18next";
 
 const { TextArea } = Input;
 const { useForm } = Form;
@@ -24,24 +26,6 @@ import {
   Button,
   PageHeaderProduct,
 } from "components";
-
-moment.locale("pt");
-
-const flagText = (stock, status) => {
-  let text;
-
-  if (status == "instock") {
-    if (stock == null) return;
-    if (stock > 0) {
-      if (stock == 1) text = "Apenas 1 em stock!";
-      if (stock <= 5 && stock != 1) text = "Últimas unidades em stock!";
-    }
-  } else {
-    text = "Esgotado";
-  }
-
-  return text;
-};
 
 const Product = () => {
   const [sessionKey, setSessionKey] = useState(null);
@@ -71,12 +55,32 @@ const Product = () => {
   const [avgRating, setAvgRating] = useState(0);
   const [totalReviews, setTotalReviews] = useState(0);
   const [loadingButton, setLoadingButton] = useState(false);
+  const { t } = useTranslation();
 
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
   const { isLoggedIn } = useCart();
   const { setLoadingPage } = useLoading();
   const [form] = useForm();
+
+  const lang = localStorage.getItem("lang");
+
+  moment.locale(lang);
+
+  const flagText = (stock, status) => {
+    let text;
+
+    if (status == "instock") {
+      if (stock == null) return;
+      if (stock > 0) {
+        if (stock == 1) text = `${t("1InStock")}`;
+        if (stock <= 5 && stock != 1) text = `${t("lastUnits")}`;
+      }
+    } else {
+      text = `${t("outOfStock")}`;
+    }
+    return text;
+  };
 
   const handleDataFromChild = (data) => {
     setQty(data);
@@ -226,7 +230,9 @@ const Product = () => {
     if (petName === "" && shelter === "") {
       return variationString;
     } else {
-      return `${variationString}\n<b>Nome do pet:</b> ${petName};\n<b>Associação:</b> ${shelter}`;
+      return `${variationString}\n<b>${t("nomePet")}:</b> ${petName};\n<b>${t(
+        "associacao"
+      )}:</b> ${shelter}`;
     }
   };
 
@@ -435,7 +441,7 @@ const Product = () => {
 
   const handleSubmitReview = (review, rating, reviewerName, reviewerEmail) => {
     setLoadingButton(true);
-    if (rating == 0) setErrorRating("Tem de fornecer uma pontuação.");
+    if (rating == 0) setErrorRating(t("darPontuacao"));
     else {
       form
         .validateFields()
@@ -444,7 +450,9 @@ const Product = () => {
             product_id: product.id,
             review: review,
             reviewer:
-              reviewerName == "" ? "Anónimo" : reviewerName.target.value,
+              reviewerName == ""
+                ? `${t("anonimo")}`
+                : reviewerName.target.value,
             reviewer_email: reviewerEmail.target.value,
             rating: rating,
           };
@@ -474,13 +482,27 @@ const Product = () => {
           }
         })
         .catch((error) => {
-          setMessage("Erro na validação de campos:", error);
+          setMessage(`${t("erroValidacaoCampos")}:`, error);
           setStatus("error");
           setIsModalOpen(true);
           setLoadingButton(false);
         });
     }
   };
+
+  function removeDiacritics(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function toCamelCase(inputString) {
+    const withoutDiacritics = removeDiacritics(inputString);
+
+    return withoutDiacritics
+      .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
+        return index === 0 ? word.toLowerCase() : word.toUpperCase();
+      })
+      .replace(/\s+/g, "");
+  }
 
   return (
     <div style={{ position: "relative" }}>
@@ -489,251 +511,257 @@ const Product = () => {
           indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
         />
       )}
-      {error && !loading && <>Erro ao carregar o produto.</>}
-      {product != undefined && (
-        <>
-          <SEOTags
-            title={`${product.name} - Pet Plushies`}
-            description={product.desc_short}
-            name="PetPlushies"
-            type="website"
-            image={product.picture}
-          />
-          <PageHeaderProduct title={product.name} />
-          <Container>
-            <ModalMessage
-              status={status}
-              message={message}
-              isVisible={isModalOpen}
-              onClose={() => setIsModalOpen(false)}
+      {error && !loading && <>{t("erroCarregarProduto")}</>}
+      {product.length > 0 ||
+        (Object.keys(product).length !== 0 && (
+          <>
+            <SEOTags
+              title={`${product.name} - Pet Plushies`}
+              description={product.desc_short}
+              name="PetPlushies"
+              type="website"
+              image={product.picture}
             />
-            <ContentLocked>
-              <Breadcrumbs page="/loja" item={product.name} />
-              <StyledRow>
-                <Col span={11}>
-                  <ImageCarousel
-                    pictures={[product.slideshow]}
-                    settings={{
-                      dots: true,
-                      infinite: true,
-                      speed: 500,
-                      //add thumbnails after
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                    }}
-                    name={product.name}
-                  />
+            <PageHeaderProduct title={t(toCamelCase(product.name))} />
+            <Container>
+              <ModalMessage
+                status={status}
+                message={message}
+                isVisible={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+              />
+              <ContentLocked>
+                <Breadcrumbs page="/loja" item={t(toCamelCase(product.name))} />
+                <StyledRow>
+                  <Col span={11}>
+                    <ImageCarousel
+                      pictures={[product.slideshow]}
+                      settings={{
+                        dots: true,
+                        infinite: true,
+                        speed: 500,
+                        //add thumbnails after
+                        slidesToShow: 1,
+                        slidesToScroll: 1,
+                      }}
+                      name={product.name}
+                    />
 
-                  {product.flag != undefined && <Flag>{product.flag}</Flag>}
+                    {product.flag != undefined && <Flag>{product.flag}</Flag>}
 
-                  <ProductDesc
-                    dangerouslySetInnerHTML={{ __html: product.desc_short }}
-                  />
-                </Col>
-                <Col span={11}>
-                  <AvgRatingContainer>
-                    <div>{avgRating} </div>
-                    <StarRatingContainer>
-                      {[1, 2, 3, 4, 5].map((index) => (
-                        <StyledStarRating
-                          key={index}
-                          filled={index <= avgRating ? "true" : "false"}
-                        />
-                      ))}
-                    </StarRatingContainer>
-                    {totalReviews > 0 && (
-                      <div> (de um total de {totalReviews} avaliações.)</div>
-                    )}
-                  </AvgRatingContainer>
-                  <AddToCart
-                    onClick={() => addToCart(product)}
-                    loading={loadingAddToCart}
-                    sku={product.sku}
-                    price={product.price}
-                    stock={product.stock_status}
-                    onDataFromChild={handleDataFromChild}
-                    variations={variations}
-                    onUpdateTotalPrice={getTotalPrice}
-                    onPetName={handlePetName}
-                    onShelter={handleShelter}
-                    onChosenVariations={handleChosenVariations}
-                  />
-                  <Accordion desc={product.desc} />
-                  <ShareSocials
-                    item={{
-                      key: product.key,
-                      name: product.name,
-                      url: `${product.main_img_id}-large_default/${product.url}.jpg`,
-                      picture: product.picture,
-                      desc: product.desc_short,
-                    }}
-                    page="loja"
-                  />
-                </Col>
-              </StyledRow>
-              <ReviewSecion>
-                <Row>
-                  <h3>Avaliações</h3>
-                </Row>
-                <ReviewsContent>
-                  <Col span={7}>
-                    <div>
-                      <StyledForm
-                        form={form}
-                        name="reviews"
-                        layout="vertical"
-                        scrollToFirstError
-                      >
-                        <FormRow>
-                          <Form.Item name="rating" wrapperCol={24}>
-                            <>
-                              <InputNumber
-                                value={rating}
-                                style={{ display: "none" }}
+                    <ProductDesc
+                      dangerouslySetInnerHTML={{ __html: product.desc_short }}
+                    />
+                  </Col>
+                  <Col span={11}>
+                    <AvgRatingContainer>
+                      <div>{avgRating} </div>
+                      <StarRatingContainer>
+                        {[1, 2, 3, 4, 5].map((index) => (
+                          <StyledStarRating
+                            key={index}
+                            filled={index <= avgRating ? "true" : "false"}
+                          />
+                        ))}
+                      </StarRatingContainer>
+                      {totalReviews > 0 && (
+                        <div>
+                          {" "}
+                          ({t("totalDe")} {totalReviews} {t("avaliacoes")}.)
+                        </div>
+                      )}
+                    </AvgRatingContainer>
+                    <AddToCart
+                      onClick={() => addToCart(product)}
+                      loading={loadingAddToCart}
+                      sku={product.sku}
+                      price={product.price}
+                      stock={product.stock_status}
+                      onDataFromChild={handleDataFromChild}
+                      variations={variations}
+                      onUpdateTotalPrice={getTotalPrice}
+                      onPetName={handlePetName}
+                      onShelter={handleShelter}
+                      onChosenVariations={handleChosenVariations}
+                    />
+                    <Accordion desc={product.desc} />
+                    <ShareSocials
+                      item={{
+                        key: product.key,
+                        name: product.name,
+                        url: `${product.main_img_id}-large_default/${product.url}.jpg`,
+                        picture: product.picture,
+                        desc: product.desc_short,
+                      }}
+                      page="loja"
+                    />
+                  </Col>
+                </StyledRow>
+                <ReviewSecion>
+                  <Row>
+                    <h3>{t("avaliacoesUpperCase")}</h3>
+                  </Row>
+                  <ReviewsContent>
+                    <Col span={7}>
+                      <div>
+                        <StyledForm
+                          form={form}
+                          name="reviews"
+                          layout="vertical"
+                          scrollToFirstError
+                        >
+                          <FormRow>
+                            <Form.Item name="rating" wrapperCol={24}>
+                              <>
+                                <InputNumber
+                                  value={rating}
+                                  style={{ display: "none" }}
+                                />
+                                <StarsContainer>
+                                  <p>{t("pontuacao")}:</p>
+                                  {[1, 2, 3, 4, 5].map((index) => (
+                                    <StyledStar
+                                      key={index}
+                                      filled={
+                                        index <= rating ||
+                                        index <= hoveredRating
+                                          ? "true"
+                                          : "false"
+                                      }
+                                      onMouseEnter={() =>
+                                        handleMouseEnter(index)
+                                      }
+                                      onMouseLeave={handleMouseLeave}
+                                      onClick={() => handleRating(index)}
+                                    />
+                                  ))}
+                                </StarsContainer>
+                                <ErrorRating>{errorRating}</ErrorRating>
+                              </>
+                            </Form.Item>
+                          </FormRow>
+                          <FormRow>
+                            <StyledFormItem
+                              name="review"
+                              wrapperCol={24}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: t("escreverAvaliacao"),
+                                },
+                              ]}
+                            >
+                              <StyledTextarea
+                                onChange={handleReview}
+                                rows={4}
+                                placeholder={t("escreverAquiAvaliacao")}
                               />
-                              <StarsContainer>
-                                <p>Pontuação:</p>
+                            </StyledFormItem>
+                          </FormRow>
+                          <FormRow>
+                            <StyledFormItem
+                              name="reviewer_name"
+                              wrapperCol={24}
+                              label={t("nome")}
+                            >
+                              <Input
+                                onChange={handleReviewerName}
+                                placeholder={t("escrevaNome")}
+                              />
+                            </StyledFormItem>
+                          </FormRow>
+                          <FormRow>
+                            <StyledFormItem
+                              name="reviewer_email"
+                              wrapperCol={24}
+                              label={t("email")}
+                              rules={[
+                                {
+                                  type: "email",
+                                  message: t("emailInvalido"),
+                                },
+                                {
+                                  required: true,
+                                  message: t("inserirEmail"),
+                                },
+                              ]}
+                            >
+                              <Input
+                                onChange={handleReviewerEmail}
+                                placeholder={t("escrevaAquiEmail")}
+                              />
+                            </StyledFormItem>
+                          </FormRow>
+                          <FormRow>
+                            <StyledButton
+                              size="large"
+                              type="primary"
+                              text={t("submeterAvaliacao")}
+                              loading={loadingButton}
+                              disabled={loadingButton}
+                              onClick={() =>
+                                handleSubmitReview(
+                                  review,
+                                  rating,
+                                  reviewerName,
+                                  reviewerEmail
+                                )
+                              }
+                            />
+                          </FormRow>
+                        </StyledForm>
+                      </div>
+                    </Col>
+                    <ReviewsContainer span={17}>
+                      {loadingReviews && !errorReviews && (
+                        <SpinnerReviews
+                          indicator={
+                            <LoadingOutlined style={{ fontSize: 50 }} spin />
+                          }
+                        />
+                      )}
+                      {errorReviews && !loadingReviews && (
+                        <>{t("erroCarregarAvaliacoes")}</>
+                      )}
+                      {reviews.length > 0 ? (
+                        reviews.map((r) => {
+                          return (
+                            <Review key={r.id}>
+                              <div>
+                                <b>{r.name}</b>
+                                {" a "}
+                                <b>
+                                  {moment(r.date_created_gmt).format(
+                                    i18n.t("formatoData")
+                                  )}
+                                </b>
+                              </div>
+                              <StarRatingContainer>
                                 {[1, 2, 3, 4, 5].map((index) => (
-                                  <StyledStar
+                                  <StyledStarRating
                                     key={index}
                                     filled={
-                                      index <= rating || index <= hoveredRating
+                                      index <= r.rating.rating
                                         ? "true"
                                         : "false"
                                     }
-                                    onMouseEnter={() => handleMouseEnter(index)}
-                                    onMouseLeave={handleMouseLeave}
-                                    onClick={() => handleRating(index)}
                                   />
                                 ))}
-                              </StarsContainer>
-                              <ErrorRating>{errorRating}</ErrorRating>
-                            </>
-                          </Form.Item>
-                        </FormRow>
-                        <FormRow>
-                          <StyledFormItem
-                            name="review"
-                            wrapperCol={24}
-                            rules={[
-                              {
-                                required: true,
-                                message: "Por favor escreva a sua avaliação.",
-                              },
-                            ]}
-                          >
-                            <StyledTextarea
-                              onChange={handleReview}
-                              rows={4}
-                              placeholder="Escreva aqui a sua avaliação..."
-                            />
-                          </StyledFormItem>
-                        </FormRow>
-                        <FormRow>
-                          <StyledFormItem
-                            name="reviewer_name"
-                            wrapperCol={24}
-                            label="Nome"
-                          >
-                            <Input
-                              onChange={handleReviewerName}
-                              placeholder="Escreva aqui o seu nome..."
-                            />
-                          </StyledFormItem>
-                        </FormRow>
-                        <FormRow>
-                          <StyledFormItem
-                            name="reviewer_email"
-                            wrapperCol={24}
-                            label="E-mail"
-                            rules={[
-                              {
-                                type: "email",
-                                message: "O e-mail inserido não é válido.",
-                              },
-                              {
-                                required: true,
-                                message: "Por favor insira o seu e-mail.",
-                              },
-                            ]}
-                          >
-                            <Input
-                              onChange={handleReviewerEmail}
-                              placeholder="Escreva aqui o seu e-mail..."
-                            />
-                          </StyledFormItem>
-                        </FormRow>
-                        <FormRow>
-                          <StyledButton
-                            size="large"
-                            type="primary"
-                            text="Submeter avaliação"
-                            loading={loadingButton}
-                            disabled={loadingButton}
-                            onClick={() =>
-                              handleSubmitReview(
-                                review,
-                                rating,
-                                reviewerName,
-                                reviewerEmail
-                              )
-                            }
-                          />
-                        </FormRow>
-                      </StyledForm>
-                    </div>
-                  </Col>
-                  <ReviewsContainer span={17}>
-                    {loadingReviews && !errorReviews && (
-                      <SpinnerReviews
-                        indicator={
-                          <LoadingOutlined style={{ fontSize: 50 }} spin />
-                        }
-                      />
-                    )}
-                    {errorReviews && !loadingReviews && (
-                      <>Erro ao carregar as avaliações.</>
-                    )}
-                    {reviews.length > 0 ? (
-                      reviews.map((r) => {
-                        return (
-                          <Review key={r.id}>
-                            <div>
-                              <b>{r.name}</b>
-                              {" a "}
-                              <b>
-                                {moment(r.date_created_gmt).format(
-                                  "DD [de] MMMM [de] YYYY[, às] HH:mm"
-                                )}
-                              </b>
-                            </div>
-                            <StarRatingContainer>
-                              {[1, 2, 3, 4, 5].map((index) => (
-                                <StyledStarRating
-                                  key={index}
-                                  filled={
-                                    index <= r.rating.rating ? "true" : "false"
-                                  }
-                                />
-                              ))}
-                            </StarRatingContainer>
-                            <ReviewText>{r.review}</ReviewText>
-                          </Review>
-                        );
-                      })
-                    ) : (
-                      <>
-                        Não existem avaliações para este produto. A sua pode ser
-                        a primeira!
-                      </>
-                    )}
-                  </ReviewsContainer>
-                </ReviewsContent>
-              </ReviewSecion>
-            </ContentLocked>
-          </Container>
-        </>
-      )}
+                              </StarRatingContainer>
+                              <ReviewText>{r.review}</ReviewText>
+                            </Review>
+                          );
+                        })
+                      ) : (
+                        <>{t("naoExistemAvaliacoes")}</>
+                      )}
+                    </ReviewsContainer>
+                  </ReviewsContent>
+                </ReviewSecion>
+              </ContentLocked>
+            </Container>
+          </>
+        ))}
     </div>
   );
 };

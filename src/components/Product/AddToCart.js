@@ -2,6 +2,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { Col, Row, Form, InputNumber, Radio, Input } from "antd";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button, ModalMessage } from "components";
 
@@ -32,6 +33,7 @@ const AddToCart = ({
   const [message, setMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState();
+  const { t } = useTranslation();
 
   const onChange = (value) => {
     onDataFromChild(value);
@@ -138,6 +140,20 @@ const AddToCart = ({
     });
   };
 
+  function removeDiacritics(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function toCamelCase(inputString) {
+    const withoutDiacritics = removeDiacritics(inputString);
+
+    return withoutDiacritics
+      .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
+        return index === 0 ? word.toLowerCase() : word.toUpperCase();
+      })
+      .replace(/\s+/g, "");
+  }
+
   return (
     <Container>
       <ModalMessage
@@ -165,11 +181,11 @@ const AddToCart = ({
                 <Form.Item
                   wrapperCol={24}
                   name={v.name}
-                  label={v.name}
+                  label={t(toCamelCase(v.name))}
                   rules={[
                     {
                       required: true,
-                      message: "Tem de seleccionar uma opção.",
+                      message: t("seleccionarOpcao"),
                     },
                   ]}
                 >
@@ -186,7 +202,7 @@ const AddToCart = ({
                         key={value.name}
                         value={value.name}
                       >
-                        {value.name}
+                        {t(toCamelCase(value.name))}
                         {value.price != 0 && (
                           <span>
                             {" "}
@@ -205,11 +221,11 @@ const AddToCart = ({
               <Form.Item
                 wrapperCol={24}
                 name="name_pet"
-                label="Nome do pet"
+                label={t("nomePet")}
                 rules={[
                   {
                     required: true,
-                    message: "Tem de escrever um nome.",
+                    message: t("escreverNomePet"),
                   },
                 ]}
               >
@@ -221,18 +237,16 @@ const AddToCart = ({
             <Form.Item name="shelter" wrapperCol={24}>
               <>
                 <p>
-                  Associação para a qual reverte 10% da compra.
+                  {t("associacaoText1")}
                   <br />
-                  Pode escrever o nome e deixar um link de Instagram, Facebook,
-                  ou site. Nós tratamos de contactar a associação!
+                  {t("associacaoText2")}
                   <br />
-                  Se não escrever nada neste campo, os 10% irão reverter para a{" "}
-                  <b>Associação do Mês.</b>
+                  {t("associacaoText3")} <b>{t("associacaoText4")}.</b>
                 </p>
                 <TextArea
                   onChange={handleShelter}
                   rows={4}
-                  placeholder="Escreva aqui..."
+                  placeholder={t("escreverAqui")}
                 />
               </>
             </Form.Item>
@@ -244,24 +258,20 @@ const AddToCart = ({
         <>
           <Row>
             <Col span={24}>
-              <p>
-                Gostaria de saber quando este produto fica em stock? Pode
-                preencher este campo de email que nós trataremos de entrar em
-                contacto consigo!
-              </p>
+              <p>{t("semStockText")}</p>
             </Col>
           </Row>
           <Row>
             <Col span={24}>
               <Form form={form_stock} name="stock_notification">
-                <Form.Item wrapperCol={24} name="email" label="E-mail">
+                <Form.Item wrapperCol={24} name="email" label={t("email")}>
                   <Input />
                 </Form.Item>
                 <Form.Item wrapperCol={24}>
                   <Button
                     size="large"
                     type="primary"
-                    text="Notificar-me!"
+                    text={t("notificar")}
                     onClick={handleSendEmail}
                     loading={loadingButton}
                     disabled={loadingButton}
@@ -283,7 +293,7 @@ const AddToCart = ({
         <Button
           size="large"
           type="primary"
-          text="Adicionar ao carrinho"
+          text={t("adicionarCarrinho")}
           onClick={onClick}
           loading={loading}
           disabled={stock === "outofstock" || loading}

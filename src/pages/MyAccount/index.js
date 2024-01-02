@@ -7,45 +7,21 @@ import { useHistory, Link } from "react-router-dom";
 import { Button, ModalMessage, PageHeader } from "components";
 import { SEOTags } from "fragments";
 import { useCart, useLoading } from "reducers";
+import { useTranslation } from "react-i18next";
 
 import PersonalDataForm from "./Forms/PersonalDataForm";
 import AccountDataForm from "./Forms/AccountDataForm";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
-const CustomNoData = () => (
-  <div style={{ textAlign: "center", padding: "20px" }}>
-    Ainda não efectuou nenhuma encomenda.
-  </div>
-);
-
-const tableColumns = [
-  {
-    title: "N.º",
-    key: "number",
-    render: (record) => {
-      return <div key={record.order_id}>{record.order_id}</div>;
-    },
-  },
-  {
-    title: "Total",
-    key: "total",
-    render: (record) => {
-      return <div key={record.order_total}>{record.order_total}</div>;
-    },
-  },
-  {
-    title: "Detalhes",
-    key: "order",
-    render: (record) => {
-      return (
-        <Link key={record.order_id} to={`/encomendas/${record.order_id}`}>
-          <StyledButton size="large" text="Ver detalhes" type="primary" />
-        </Link>
-      );
-    },
-  },
-];
+const CustomNoData = () => {
+  const { t } = useTranslation();
+  return (
+    <div style={{ textAlign: "center", padding: "20px" }}>
+      {t("semEncomendas")}
+    </div>
+  );
+};
 
 const MyAccount = () => {
   const [error, setError] = useState("");
@@ -60,6 +36,7 @@ const MyAccount = () => {
   const [message, setMessage] = useState("");
   const [orders, setOrders] = useState([]);
   const [loadingButton, setLoadingButton] = useState(false);
+  const { t } = useTranslation();
 
   const history = useHistory();
 
@@ -71,6 +48,34 @@ const MyAccount = () => {
 
   const { isLoggedIn } = useCart();
   const { setLoadingPage } = useLoading();
+
+  const tableColumns = [
+    {
+      title: `${t("numero")}`,
+      key: "number",
+      render: (record) => {
+        return <div key={record.order_id}>{record.order_id}</div>;
+      },
+    },
+    {
+      title: "Total",
+      key: "total",
+      render: (record) => {
+        return <div key={record.order_total}>{record.order_total}</div>;
+      },
+    },
+    {
+      title: `${t("detalhes")}`,
+      key: "order",
+      render: (record) => {
+        return (
+          <Link key={record.order_id} to={`/encomendas/${record.order_id}`}>
+            <StyledButton size="large" text={t("verDetalhes")} type="primary" />
+          </Link>
+        );
+      },
+    },
+  ];
 
   useEffect(() => {
     setLoadingPage(true);
@@ -180,7 +185,7 @@ const MyAccount = () => {
           city: formValues.local,
           state: formValues.district,
           postcode: formValues.postcode,
-          country: formValues.country == "PT" ? "PT" : "",
+          country: formValues.country,
           email: formValues.email,
           phone: formValues.phone,
         },
@@ -194,7 +199,7 @@ const MyAccount = () => {
           city: formValues.local_other,
           state: formValues.district_other,
           postcode: formValues.postcode_other,
-          country: formValues.country_other == "PT" ? "PT" : "",
+          country: formValues.country_other,
         },
       };
 
@@ -240,14 +245,15 @@ const MyAccount = () => {
 
   const tabs = [
     {
-      label: `Dados da Conta`,
+      label: `${t("dadosConta")}`,
       key: "account_data",
       children: (
         <>
-          <div>E-mail: {user.user_email}</div>
           <div>
-            Nome (este nome é o que será usado para identificação nos
-            comentários e nas avaliações): {user.display_name}
+            {t("email")}: {user.user_email}
+          </div>
+          <div>
+            {t("nome")} ({t("nomeDesc")}): {user.display_name}
           </div>
           <AccountDataForm
             form={form}
@@ -261,7 +267,7 @@ const MyAccount = () => {
       ),
     },
     {
-      label: `Dados Pessoais`,
+      label: `${t("dadosPessoais")}`,
       key: "personal_data",
       children: (
         <PersonalDataForm
@@ -279,7 +285,7 @@ const MyAccount = () => {
       ),
     },
     {
-      label: `Encomendas`,
+      label: `${t("encomendas")}`,
       key: "orders",
       children: (
         <StyledTable
@@ -305,16 +311,16 @@ const MyAccount = () => {
   return (
     <>
       <SEOTags
-        title={`A minha conta - Pet Plushies`}
+        title={`${t("minhaConta")} - Pet Plushies`}
         description=""
         name="PetPlushies"
         type="website"
         image={DummyImg}
       />
       <PageHeader
-        title="A minha conta"
+        title={`${t("minhaConta")}`}
         img={DummyImg}
-        alt="A minha conta - Pet Plushies"
+        alt={`${t("minhaConta")} - Pet Plushies`}
       />
       <Container>
         <ModalMessage

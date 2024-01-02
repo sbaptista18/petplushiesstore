@@ -3,12 +3,17 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 
 import { KebabToTitleCase } from "fragments";
+import { useTranslation } from "react-i18next";
 
 const Breadcrumbs = ({ page, item }) => {
+  const { t } = useTranslation();
+
   return (
     <StyledBreadcrumb separator=">">
       <Breadcrumb.Item href={page}>
-        {page == "/" ? "Home" : KebabToTitleCase(page.replace("/", ""))}
+        {page == "/"
+          ? "Home"
+          : t(KebabToTitleCase(page.replace("/", "")).toLowerCase())}
       </Breadcrumb.Item>
       <Breadcrumb.Item>{item}</Breadcrumb.Item>
     </StyledBreadcrumb>

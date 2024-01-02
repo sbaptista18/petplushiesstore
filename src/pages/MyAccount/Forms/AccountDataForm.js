@@ -1,5 +1,6 @@
 import { Row, Col, Form, Checkbox, Input } from "antd";
 import styled from "styled-components";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "components";
 
@@ -10,13 +11,15 @@ const AccountDataForm = ({
   handleSubmitAccountData,
   loadingButton,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div>
       <Checkbox
         checked={disabled}
         onChange={(e) => setDisabled(e.target.checked)}
       >
-        Modo de edição
+        {t("modoEdicao")}
       </Checkbox>
 
       <Form
@@ -34,11 +37,11 @@ const AccountDataForm = ({
             <Form.Item
               wrapperCol={24}
               name="name"
-              label="Nome"
+              label={t("nome")}
               rules={[
                 {
                   max: 15,
-                  message: "O nome não pode ter mais de 15 caracteres.",
+                  message: `${t("nome15Caracteres")}`,
                 },
               ]}
             >
@@ -51,11 +54,11 @@ const AccountDataForm = ({
             <Form.Item
               wrapperCol={24}
               name="email"
-              label="E-mail"
+              label={t("email")}
               rules={[
                 {
                   type: "email",
-                  message: "O e-mail inserido não é válido.",
+                  message: `${t("emailInvalido")}`,
                 },
               ]}
             >
@@ -72,11 +75,11 @@ const AccountDataForm = ({
               rules={[
                 {
                   min: 8,
-                  message: "A password deve ter pelo menos 8 caracteres.",
+                  message: `${t("password8Caracteres")}`,
                 },
                 {
                   pattern: /[!@#$%^&*(),.?":{}|<>_]/,
-                  message: "A password deve incluir símbolos.",
+                  message: `${t("passwordSimbolos")}`,
                 },
               ]}
               hasFeedback
@@ -88,7 +91,7 @@ const AccountDataForm = ({
             <Form.Item
               wrapperCol={24}
               name="confirm"
-              label="Confirmar Password"
+              label={t("confirmarPassword")}
               dependencies={["password"]}
               hasFeedback
               rules={[
@@ -97,9 +100,7 @@ const AccountDataForm = ({
                     if (!value || getFieldValue("password") === value) {
                       return Promise.resolve();
                     }
-                    return Promise.reject(
-                      new Error("As passwords não correspondem.")
-                    );
+                    return Promise.reject(new Error(t("passwordsDiferentes")));
                   },
                 }),
               ]}
@@ -113,7 +114,7 @@ const AccountDataForm = ({
             <Form.Item wrapperCol={24}>
               <StyledButton
                 size="large"
-                text="Actualizar dados da conta"
+                text={t("actualizarDadosConta")}
                 type="primary"
                 htmlType="submit"
                 onClick={handleSubmitAccountData}

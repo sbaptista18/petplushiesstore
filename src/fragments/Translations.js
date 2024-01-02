@@ -13,9 +13,11 @@ const resources = {
   },
 };
 
+const lang = localStorage.getItem("lang");
+
 i18n.use(initReactI18next).init({
   resources,
-  lng: "pt", // Default language
+  lng: lang, // Default language
   interpolation: {
     escapeValue: false,
   },

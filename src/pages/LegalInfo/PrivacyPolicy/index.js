@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { PageHeader } from "components";
 import { SEOTags } from "fragments";
 import { useLoading } from "reducers";
+import { useTranslation } from "react-i18next";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -15,6 +16,7 @@ const PrivacyPolicy = () => {
   const [error, setError] = useState(false);
   const [message, setMessage] = useState("");
   const { setLoadingPage } = useLoading();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setLoadingPage(true);
@@ -46,16 +48,16 @@ const PrivacyPolicy = () => {
   return (
     <>
       <SEOTags
-        title={`Política de Privacidade - Pet Plushies`}
-        description="Consulte a nossa Política de Privacidade e esteja a par das actualizações."
+        title={`${t("politicaPrivacidade")} - Pet Plushies`}
+        description={t("politicaPrivacidadeSEODesc")}
         name="PetPlushies"
         type="website"
         image={DummyImg}
       />
       <PageHeader
-        title="Política de Privacidade"
+        title={t("politicaPrivacidade")}
         img={DummyImg}
-        alt="Política de Privacidade - Pet Plushies"
+        alt={`${t("politicaPrivacidade")} - Pet Plushies`}
       />
       <Container>
         {loading && !error && (

@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { Button, ModalMessage, PageHeader } from "components";
 import { tableColumns } from "fragments";
 import { useCart } from "reducers";
+import { useTranslation } from "react-i18next";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 
@@ -28,6 +29,7 @@ const Cart = () => {
 
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
+  const { t } = useTranslation();
 
   const calculateTotalNetRevenue = (items) => {
     return items.reduce(
@@ -229,9 +231,9 @@ const Cart = () => {
   return (
     <>
       <PageHeader
-        title="Carrinho"
+        title={t("meuCarrinho")}
         img={DummyImg}
-        alt="Carrinho - Pet Plushies"
+        alt={`${t("meuCarrinho")} - Pet Plushies`}
       />
       <Container>
         <ModalMessage
@@ -253,7 +255,11 @@ const Cart = () => {
                 )}
                 {!loading && !error && (
                   <StyledTable
-                    columns={tableColumns(handleQuantityChange, handleDelete)}
+                    columns={tableColumns(
+                      handleQuantityChange,
+                      handleDelete,
+                      t
+                    )}
                     dataSource={products}
                     pagination={false}
                     rowKey="id"
@@ -263,7 +269,7 @@ const Cart = () => {
               </div>
             </Col>
             <Col span={5}>
-              <Title>Resumo da compra</Title>
+              <Title>{t("resumoCompra")}</Title>
               <Border />
               <div style={{ position: "relative" }}>
                 {loading && !error && (
@@ -280,9 +286,7 @@ const Cart = () => {
                       <div>{totalProductNetRevenue.toFixed(2)}&euro;</div>
                     </Subtotal>
                     <Shipping>
-                      <div>
-                        Estimativa de portes será feita no próximo passo
-                      </div>
+                      <div>{t("estimativaPortes")}</div>
                       <div></div>
                     </Shipping>
                     <Border />
@@ -294,7 +298,7 @@ const Cart = () => {
                       <StyledButton
                         size="large"
                         type="primary"
-                        text="Finalizar compra"
+                        text={t("finalizarCompra")}
                       />
                     </Link>
                   </>
