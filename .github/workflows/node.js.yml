@@ -23,15 +23,15 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
 
-      - name: Check and Delete Build Folder
+      - name: Check and Delete Dist Folder
         run: |
-          if [ -d "build" ]; then
-            echo "Deleting existing build folder."
-            rm -rf build
+          if [ -d "dist" ]; then
+            echo "Deleting existing `dist` folder."
+            rm -rf dist
           fi
-      - name: Create Build Folder
+      - name: Create Dist Folder
         run: |
-          mkdir -p build
+          mkdir -p dist
       - name: Install Dependencies
         run: |
           yarn install
@@ -46,14 +46,14 @@ jobs:
           echo "Listing files in the current directory:"
           ls -R
           echo "Current directory: $PWD"
-      - name: Archive Build Folder
+      - name: Archive Dist Folder
         run: |
-          zip -r build.zip build
-      - name: Upload Build Artifacts
+          zip -r dist.zip dist
+      - name: Upload Dist Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: build
-          path: build
+          name: dist
+          path: dist
 
   deploy:
     needs: build
@@ -68,18 +68,18 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
 
-      - name: Download and Extract Build Archive
+      - name: Download and Extract Dist Archive
         uses: actions/download-artifact@v2
         with:
-          name: build
-          path: build
+          name: dist
+          path: dist
 
-      - name: Commit and Push Build Files
+      - name: Commit and Push Dist Files
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add build
-          git commit -m "Update and deploy 'build' files with GitHub Actions workflow"
+          git add dist
+          git commit -m "Update and deploy 'dist' files with GitHub Actions workflow"
           git push origin HEAD:develop
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
