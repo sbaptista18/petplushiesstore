@@ -715,7 +715,7 @@ const Product = () => {
                         </StyledForm>
                       </div>
                     </Col>
-                    <ReviewsContainer span={isMobile ? 24 : 17}>
+                    <ReviewsContainer span={isMobile ? 24 : 16}>
                       {loadingReviews && !errorReviews && (
                         <SpinnerReviews
                           indicator={

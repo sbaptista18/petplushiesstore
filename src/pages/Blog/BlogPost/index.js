@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import moment from "moment";
 import { useLoading } from "reducers";
 import { useTranslation } from "react-i18next";
+import { useMediaQuery } from "react-responsive";
 
 import {
   Breadcrumbs,
@@ -44,6 +45,8 @@ const BlogPost = () => {
   const [form] = useForm();
   const { t } = useTranslation();
   const lang = localStorage.getItem("lang");
+
+  const isMobile = useMediaQuery({ maxWidth: 992 });
 
   moment.locale(lang);
 
@@ -204,7 +207,7 @@ const BlogPost = () => {
                   <h3>{t("comentarios")}</h3>
                 </Row>
                 <CommentsContent>
-                  <Col span={7}>
+                  <Col span={isMobile ? 24 : 7}>
                     <div>
                       <StyledForm
                         form={form}
@@ -283,7 +286,7 @@ const BlogPost = () => {
                       </StyledForm>
                     </div>
                   </Col>
-                  <CommentsContainer span={17}>
+                  <CommentsContainer span={isMobile ? 24 : 16}>
                     {loadingComments && !errorComments && (
                       <SpinnerComments
                         indicator={
@@ -336,6 +339,10 @@ const CommentsContainer = styled(Col)`
   overflow: auto;
   max-height: 520px;
   min-height: 400px;
+
+  @media screen and (max-width: 992px) {
+    margin: 20px 0;
+  }
 `;
 
 const Comment = styled.div`
@@ -360,6 +367,10 @@ const CommentsContent = styled(Row)`
 
 const StyledForm = styled(Form)`
   width: 300px;
+
+  @media screen and (max-width: 992px) {
+    width: 100%;
+  }
 `;
 
 const FormRow = styled(Row)`
@@ -424,6 +435,10 @@ const ContentLocked = styled(Content)`
 
 const StyledRow = styled(Row)`
   justify-content: space-between;
+
+  @media screen and (max-width: 992px) {
+    width: 100%;
+  }
 `;
 
 export default {
