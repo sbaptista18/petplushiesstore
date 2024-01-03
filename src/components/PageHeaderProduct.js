@@ -31,7 +31,7 @@ const Container = styled.div`
   position: relative;
   height: 300px;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     height: 150px;
   }
 `;
@@ -51,7 +51,7 @@ const ContentLocked = styled(Content)`
   justify-content: center;
   background-color: var(--light-blue);
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     height: 150px;
   }
 `;
@@ -60,7 +60,7 @@ const StyledH1 = styled.h1`
   font-size: 52px;
   color: var(--black);
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     font-size: 40px;
     text-align: center;
     line-height: 1.2;

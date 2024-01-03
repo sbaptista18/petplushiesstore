@@ -39,7 +39,7 @@ const Container = styled.div`
   position: relative;
   height: 500px;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     height: 250px;
   }
 `;
@@ -66,7 +66,7 @@ const ContentLocked = styled(Content)`
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.4);
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     height: 250px;
   }
 `;
@@ -75,6 +75,12 @@ const StyledH1 = styled.h1`
   margin-top: 30px;
   font-size: 52px;
   color: var(--white);
+
+  @media screen and (max-width: 992px) {
+    font-size: 40px;
+    text-align: center;
+    line-height: 1.2;
+  }
 `;
 
 export default PageHeader;

@@ -364,7 +364,7 @@ const StyledHeader = styled(Header)`
       : "0px 5px 30px 0px rgba(0, 0, 0, 0.1)"};
   transition: 0.5s;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     padding: 25px;
     height: var(--menu-height-mobile);
     justify-content: space-between;
@@ -379,7 +379,7 @@ const StyledHeader = styled(Header)`
     font-size: 16px;
     width: 700px;
 
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 992px) {
       width: 50px;
     }
 
