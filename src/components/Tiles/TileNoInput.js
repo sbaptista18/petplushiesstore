@@ -20,7 +20,7 @@ const Tile = ({
   url,
 }) => {
   const { t } = useTranslation();
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const isMobile = useMediaQuery({ maxWidth: 992 });
   const mobileTiles = isMobile ? 24 : 5;
   const mobileTilesLarge = isMobile ? 24 : 8;
 
@@ -62,7 +62,7 @@ const Container = styled(Col)`
   flex-direction: column;
   margin: 10px 18px;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     margin: 10px 0;
   }
 `;

@@ -55,7 +55,7 @@ const SlideshowContainer = styled.div`
   position: relative;
   height: 750px;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     height: 400px;
   }
 `;
@@ -75,7 +75,7 @@ const StyledSlider = styled(Slider)`
   top: 0;
   z-index: 0;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     height: 400px;
   }
 

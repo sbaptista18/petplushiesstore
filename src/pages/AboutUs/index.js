@@ -16,7 +16,7 @@ import Recycling from "assets/images/about-us/recycling.png";
 
 const AboutUs = () => {
   const { t } = useTranslation();
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const isMobile = useMediaQuery({ maxWidth: 992 });
   return (
     <>
       <SEOTags
@@ -118,7 +118,7 @@ const Title = styled.div`
   font-weight: 600;
   margin-top: 20px;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     text-align: center;
   }
 `;
@@ -133,7 +133,7 @@ const Content = styled(Row)`
   width: 100%;
   flex-direction: column;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     padding: 25px;
   }
 `;
@@ -157,7 +157,7 @@ const HighlightSection = styled(Content)`
   padding-bottom: 100px;
   position: relative;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     flex-direction: column;
   }
 
@@ -167,7 +167,7 @@ const HighlightSection = styled(Content)`
     margin: auto;
     justify-content: space-between;
 
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 992px) {
       flex-direction: column;
     }
   }
@@ -187,7 +187,7 @@ const TextContainer = styled(Col)`
   flex-direction: column;
   justify-content: center;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     margin-top: 20px;
   }
 `;
@@ -208,7 +208,7 @@ const SpaceBetween = styled(Row)`
   display: flex;
   justify-content: space-between;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     flex-direction: column-reverse;
   }
 `;

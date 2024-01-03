@@ -68,7 +68,7 @@ const PPS_Header = () => {
   const [cartItems, setCartItems] = useState([]);
   const { i18n } = useTranslation();
 
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const isMobile = useMediaQuery({ maxWidth: 992 });
 
   const mainMenuItems = MainMenuItems();
 

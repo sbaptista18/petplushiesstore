@@ -31,7 +31,7 @@ const Cart = () => {
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
   const { t } = useTranslation();
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const isMobile = useMediaQuery({ maxWidth: 992 });
 
   const calculateTotalNetRevenue = (items) => {
     return items.reduce(
@@ -326,7 +326,7 @@ const Spinner = styled(Spin)`
   align-items: center;
   justify-content: center;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     height: 150px;
     overflow: hidden;
   }
@@ -354,7 +354,7 @@ const StyledRow = styled(Row)`
   margin-top: 50px;
   min-height: 500px;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     width: 100%;
   }
 `;
@@ -363,7 +363,7 @@ const StyledTable = styled(Table)`
   && {
     margin-bottom: 50px;
 
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 992px) {
       width: 100%;
     }
 

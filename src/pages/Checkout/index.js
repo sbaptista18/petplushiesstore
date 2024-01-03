@@ -52,7 +52,7 @@ const Checkout = () => {
   const [loadingButton, setLoadingButton] = useState(false);
   const [loadingCouponButton, setLoadingCouponButton] = useState(false);
   const { t } = useTranslation();
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const isMobile = useMediaQuery({ maxWidth: 992 });
 
   const history = useHistory();
 

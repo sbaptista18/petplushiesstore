@@ -69,7 +69,7 @@ const Products = () => {
 
   const [isUpToDate, setIsUpToDate] = useState(true);
 
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const isMobile = useMediaQuery({ maxWidth: 992 });
 
   const findLatestModifiedPost = (posts) => {
     if (posts.length === 0) {
@@ -637,7 +637,7 @@ const ProductListContainer = styled(Col)`
 const SortSelect = styled(Select)`
   min-width: 200px;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     width: 100%;
     margin-top: 20px;
   }
@@ -668,7 +668,7 @@ const ContentLocked = styled(Content)`
 const StyledRow = styled(Row)`
   justify-content: space-between;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     flex-direction: column;
   }
 `;

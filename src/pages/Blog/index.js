@@ -26,7 +26,7 @@ const Blog = () => {
   const pageSize = 12;
   const { t } = useTranslation();
 
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const isMobile = useMediaQuery({ maxWidth: 992 });
 
   const fetchBlogPosts = async () => {
     try {
@@ -261,7 +261,7 @@ const Span = styled.span`
 const StyledRow = styled(Row)`
   justify-content: space-between;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     flex-direction: column;
   }
 `;
@@ -272,7 +272,7 @@ const PostListContainer = styled(Col)`
   flex-wrap: wrap;
   justify-content: space-between;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     margin-bottom: 20px;
   }
 `;

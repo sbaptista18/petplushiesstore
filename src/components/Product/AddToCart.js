@@ -320,7 +320,7 @@ AddToCart.propTypes = {
 };
 
 const StyledButton = styled(Button)`
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     width: 100%;
   }
 `;
@@ -361,7 +361,7 @@ const InputContainer = styled.div`
   align-items: center;
   margin-top: 15px;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     justify-content: space-between;
   }
 `;

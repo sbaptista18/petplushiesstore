@@ -11,7 +11,7 @@ import { LazyImage } from "fragments";
 
 const Tile = ({ picture, name, category, url, excerpt, size }) => {
   const { t } = useTranslation();
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const isMobile = useMediaQuery({ maxWidth: 992 });
   const mobileTiles = isMobile ? 24 : 5;
   const mobileTilesLarge = isMobile ? 24 : 10;
   return (
@@ -45,7 +45,7 @@ const Container = styled(Col)`
   flex-direction: column;
   margin: 10px 18px;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     margin: 10px 0;
   }
 `;
