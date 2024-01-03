@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { Layout, Menu, Row, Col } from "antd";
 import { Link, useHistory } from "react-router-dom";
+import { useMediaQuery } from "react-responsive";
 
 import Logo from "assets/images/logo.png";
 import BottomBar from "assets/images/bottom-bar.svg";
@@ -46,16 +47,18 @@ const PPS_Footer = () => {
   const legalMenuItems = LegalMenuItems();
   const { t } = useTranslation();
 
+  const isMobile = useMediaQuery({ maxWidth: 992 });
+
   return (
     <StyledFooter>
       <StyledTopBar />
       <Container>
-        <Col span={6}>
+        <Col span={isMobile ? 24 : 6}>
           <Link to="/" name="Pet Plushies">
             <LogoImg src={Logo} alt="Logo da Pet Plushies" />
           </Link>
         </Col>
-        <Col span={6}>
+        <Col span={isMobile ? 12 : 6}>
           <StyledH3>Menu</StyledH3>
           <StyledMenu
             mode="vertical"
@@ -65,7 +68,7 @@ const PPS_Footer = () => {
             }}
           />
         </Col>
-        <Col span={6}>
+        <Col span={isMobile ? 12 : 6}>
           <StyledH3>{t("contactos")}</StyledH3>
           <p>
             <a href="mailto:geral@petplushies.pt">geral@petplushies.pt</a>
@@ -79,7 +82,7 @@ const PPS_Footer = () => {
             }}
           />
         </Col>
-        <Col span={6}>
+        <Col span={isMobile ? 24 : 6}>
           <StyledH3>{t("sigaRedes")}</StyledH3>
           <p>
             <SocialLink
@@ -153,6 +156,10 @@ const StyledFooter = styled(Footer)`
   position: relative;
   color: var(--white);
 
+  @media screen and (max-width: 992px) {
+    padding: 25px;
+  }
+
   & a {
     color: var(--white);
     transition: 0.5s;
@@ -185,6 +192,22 @@ const Container = styled(Row)`
   max-width: 1440px;
   width: 100%;
   margin: auto;
+
+  @media screen and (max-width: 992px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    & > div {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+
+      &:first-child,
+      &:last-child {
+        align-items: center;
+      }
+    }
+  }
 `;
 
 const StyledH3 = styled.h3`
@@ -212,9 +235,20 @@ const StyledMenu = styled(Menu)`
 const LegalMenu = styled(StyledMenu)`
   flex-direction: row;
 
+  @media screen and (max-width: 992px) {
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
   && > li {
     padding: 0 16px;
     color: var(--white);
+
+    @media screen and (max-width: 992px) {
+      text-align: center;
+    }
 
     &:hover {
       color: var(--light-blue);
