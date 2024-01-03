@@ -4,6 +4,7 @@ import { Row, Col } from "antd";
 import { PageHeader } from "components";
 import { LazyImage, SEOTags } from "fragments";
 import { useTranslation } from "react-i18next";
+import { useMediaQuery } from "react-responsive";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 import BottomBar from "assets/images/bottom-bar.svg";
@@ -15,6 +16,7 @@ import Recycling from "assets/images/about-us/recycling.png";
 
 const AboutUs = () => {
   const { t } = useTranslation();
+  const isMobile = useMediaQuery({ maxWidth: 768 });
   return (
     <>
       <SEOTags
@@ -34,7 +36,7 @@ const AboutUs = () => {
           <VerticalContent span={24}>
             <StyledH2>{t("sobreNosTitulo")}</StyledH2>
             <SpaceBetween>
-              <TextContainer span={11}>
+              <TextContainer span={isMobile ? 24 : 11}>
                 <p>
                   {t("sobreNosPageP1_1")}
                   <br />
@@ -44,7 +46,7 @@ const AboutUs = () => {
                 <p>{t("sobreNosPageP3")}</p>
                 <p>{t("sobreNosPageP4")}</p>
               </TextContainer>
-              <Col span={11}>
+              <Col span={isMobile ? 24 : 11}>
                 <LazyImage src={DummyImg} alt={"Foto da gata Ysera"} />
               </Col>
             </SpaceBetween>
@@ -53,7 +55,7 @@ const AboutUs = () => {
         <HighlightSection>
           <StyledTopBar />
           <Row>
-            <Cell span={11}>
+            <Cell span={isMobile ? 24 : 11}>
               <Icon>
                 <img
                   src={Portugal}
@@ -63,7 +65,7 @@ const AboutUs = () => {
               <Title>{t("100PT")}</Title>
               <Text>{t("100PT_P")}</Text>
             </Cell>
-            <Cell span={11}>
+            <Cell span={isMobile ? 24 : 11}>
               <Icon>
                 <img
                   src={Needle}
@@ -75,14 +77,14 @@ const AboutUs = () => {
             </Cell>
           </Row>
           <Row>
-            <Cell span={11}>
+            <Cell span={isMobile ? 24 : 11}>
               <Icon>
                 <img src={Charity} alt="Ícone de caridade - Pet Plushies" />
               </Icon>
               <Title>{t("ajudarAbrigos")}</Title>
               <Text>{t("ajudarAbrigos_P")}</Text>
             </Cell>
-            <Cell span={11}>
+            <Cell span={isMobile ? 24 : 11}>
               <Icon>
                 <img src={Recycling} alt="Ícone de reciclagem - Pet Plushies" />
               </Icon>
@@ -115,6 +117,10 @@ const Title = styled.div`
   font-size: 20px;
   font-weight: 600;
   margin-top: 20px;
+
+  @media screen and (max-width: 768px) {
+    text-align: center;
+  }
 `;
 
 const Text = styled.div`
@@ -126,6 +132,10 @@ const Content = styled(Row)`
   padding: 0 65px;
   width: 100%;
   flex-direction: column;
+
+  @media screen and (max-width: 768px) {
+    padding: 25px;
+  }
 `;
 
 const StyledBottomBar = styled(BottomBar)`
@@ -147,11 +157,19 @@ const HighlightSection = styled(Content)`
   padding-bottom: 100px;
   position: relative;
 
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+  }
+
   & > div {
     max-width: 1440px;
     width: 100%;
     margin: auto;
     justify-content: space-between;
+
+    @media screen and (max-width: 768px) {
+      flex-direction: column;
+    }
   }
 `;
 
@@ -168,6 +186,10 @@ const TextContainer = styled(Col)`
   display: flex;
   flex-direction: column;
   justify-content: center;
+
+  @media screen and (max-width: 768px) {
+    margin-top: 20px;
+  }
 `;
 
 const ContentLocked = styled(Content)`
@@ -185,6 +207,10 @@ const VerticalContent = styled(Col)`
 const SpaceBetween = styled(Row)`
   display: flex;
   justify-content: space-between;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column-reverse;
+  }
 `;
 
 export default {

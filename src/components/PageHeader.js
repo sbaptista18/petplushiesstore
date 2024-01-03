@@ -38,6 +38,10 @@ const Container = styled.div`
   width: 100%;
   position: relative;
   height: 500px;
+
+  @media screen and (max-width: 768px) {
+    height: 250px;
+  }
 `;
 
 const ImgContainer = styled.div`
@@ -61,6 +65,10 @@ const ContentLocked = styled(Content)`
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.4);
+
+  @media screen and (max-width: 768px) {
+    height: 250px;
+  }
 `;
 
 const StyledH1 = styled.h1`
