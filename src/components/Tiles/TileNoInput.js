@@ -61,6 +61,10 @@ const Container = styled(Col)`
   position: relative;
   flex-direction: column;
   margin: 10px 18px;
+
+  @media screen and (max-width: 768px) {
+    margin: 10px 0;
+  }
 `;
 
 const Flag = styled.div`
