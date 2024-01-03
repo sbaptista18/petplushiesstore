@@ -17,15 +17,15 @@ const Tile = ({
   category,
   flag,
   size,
-  stock,
   url,
 }) => {
   const { t } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const mobileTiles = isMobile ? 24 : 5;
+  const mobileTilesLarge = isMobile ? 24 : 8;
 
   return (
-    <Container span={size == "large" ? "8" : mobileTiles}>
+    <Container span={size == "large" ? mobileTilesLarge : mobileTiles}>
       {flag && <Flag>{flag}</Flag>}
       {category && <Category>{category}</Category>}
       <LazyImage src={picture} alt={name + " - Pet Plushies"} />
