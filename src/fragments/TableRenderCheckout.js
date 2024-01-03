@@ -25,6 +25,7 @@ const tableColumnsCheckout = (t) => {
       dataIndex: "main_image_url",
       key: "image",
       render: (record) => <Image image={record} />,
+      responsive: ["md"],
     },
     {
       title: t("produto"),
@@ -38,6 +39,7 @@ const tableColumnsCheckout = (t) => {
       render: (record) => {
         return <div dangerouslySetInnerHTML={{ __html: record }} />;
       },
+      responsive: ["md"],
     },
     {
       title: t("quantidade"),

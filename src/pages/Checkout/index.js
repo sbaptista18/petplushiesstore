@@ -9,6 +9,7 @@ import { Button, ModalMessage, PageHeader } from "components";
 import { tableColumnsCheckout } from "fragments";
 import { useCart } from "reducers";
 import { useTranslation } from "react-i18next";
+import { useMediaQuery } from "react-responsive";
 
 import CheckoutForm from "./form";
 
@@ -51,6 +52,7 @@ const Checkout = () => {
   const [loadingButton, setLoadingButton] = useState(false);
   const [loadingCouponButton, setLoadingCouponButton] = useState(false);
   const { t } = useTranslation();
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const history = useHistory();
 
@@ -376,14 +378,6 @@ const Checkout = () => {
       });
   };
 
-  // const totalWeight = products.reduce((total, item) => {
-  //   const productQty = parseInt(item.product_qty, 10);
-  //   const productWeight = parseFloat(item.weight);
-  //   const itemWeight = productQty * productWeight;
-
-  //   return total + itemWeight;
-  // }, 0);
-
   const handleOrderNote = (e) => {
     setOrderNote(e.target.value);
   };
@@ -460,7 +454,7 @@ const Checkout = () => {
         />
         <ContentLocked>
           <StyledRow>
-            <Col span={12}>
+            <Col span={isMobile ? 24 : 12}>
               <div>
                 <CheckoutForm
                   disabled={lockForm}
@@ -483,7 +477,7 @@ const Checkout = () => {
                 />
               </div>
             </Col>
-            <Col span={11}>
+            <Col span={isMobile ? 24 : 11}>
               <Title>{t("meuCarrinho")}</Title>
               <Border />
               <div style={{ position: "relative" }}>
@@ -526,15 +520,15 @@ const Checkout = () => {
                 form={form_coupon}
                 name="coupon"
                 labelCol={{
-                  span: 5,
+                  span: 7,
                 }}
                 wrapperCol={{
-                  span: 19,
+                  span: 15,
                 }}
               >
-                <Form.Item name="coupon_code" label={t("codigoPromocional")}>
+                <FormItem name="coupon_code" label={t("codigoPromocional")}>
                   <Input />
-                </Form.Item>
+                </FormItem>
                 <Form.Item
                   style={{ display: "flex", justifyContent: "flex-end" }}
                 >
@@ -597,6 +591,18 @@ const Checkout = () => {
   );
 };
 
+const FormItem = styled(Form.Item)`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  & > div {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+`;
+
 const Spinner = styled(Spin)`
   position: absolute;
   background-color: var(--white);
@@ -608,6 +614,10 @@ const Spinner = styled(Spin)`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media screen and (max-width: 992px) {
+    height: 420px;
+  }
 `;
 
 const Container = styled.div`
@@ -625,11 +635,6 @@ const ContentLocked = styled(Content)`
   max-width: 1440px;
   margin: auto;
   margin-bottom: 50px;
-`;
-
-const StyledH1 = styled.h1`
-  margin-top: 30px;
-  font-size: 52px;
 `;
 
 const StyledRow = styled(Row)`
@@ -660,6 +665,10 @@ const StyledTable = styled(Table)`
 
 const Title = styled.p`
   font-size: 19px;
+
+  @media screen and (max-width: 992px) {
+    margin-top: 20px;
+  }
 `;
 
 const Border = styled.div`

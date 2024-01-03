@@ -64,7 +64,7 @@ const Container = styled.div`
   transform: translateX(200%);
   transition: 0.5s;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     height: calc(100vh - var(--menu-height-mobile));
     top: var(--menu-height-mobile);
     width: 100vw;
@@ -74,7 +74,7 @@ const Container = styled.div`
   &.open {
     transform: translateX(0%);
 
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 992px) {
       transform: translateX(0%) translateY(0%);
     }
   }
@@ -85,7 +85,7 @@ const CloseBtn = styled(CloseOutlined)`
   right: 20px;
   top: 20px;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 992px) {
     right: 40px;
     top: 40px;
   }

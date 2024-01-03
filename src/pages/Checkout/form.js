@@ -85,9 +85,6 @@ const CheckoutForm = ({
       layout="vertical"
       form={form}
       name="checkout"
-      style={{
-        maxWidth: 600,
-      }}
       scrollToFirstError
     >
       <FormRow>
