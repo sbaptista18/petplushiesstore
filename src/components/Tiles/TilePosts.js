@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { Col } from "antd";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useMediaQuery } from "react-responsive";
 
 import { Button } from "components";
 
@@ -10,8 +11,10 @@ import { LazyImage } from "fragments";
 
 const Tile = ({ picture, name, category, url, excerpt, size }) => {
   const { t } = useTranslation();
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const mobileTiles = isMobile ? 24 : 5;
   return (
-    <Container span={size == "large" ? "10" : "5"}>
+    <Container span={size == "large" ? "10" : mobileTiles}>
       {category && <Category>{category}</Category>}
       <LazyImage src={picture} alt={name + " - Pet Plushies"} />
       <Text>

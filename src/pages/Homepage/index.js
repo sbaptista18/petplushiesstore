@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { Slideshow, TileNoInput, Button, TilePosts } from "components";
 import { LazyImage, SEOTags } from "fragments";
 import { useTranslation } from "react-i18next";
+import { useMediaQuery } from "react-responsive";
 
 import SlideshowData from "./slideshow_data";
 
@@ -27,6 +28,8 @@ const Homepage = () => {
   const [messagePosts, setMessagePosts] = useState("");
   const slideshowData = SlideshowData();
   const { t } = useTranslation();
+
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   useEffect(() => {
     fetchFeaturedProducts();
@@ -168,11 +171,11 @@ const Homepage = () => {
         </ContentLocked>
         <HighlightSection>
           <StyledTopBar />
-          <Row>
-            <Col span={11}>
+          <HighlightRow>
+            <Col span={isMobile ? 24 : 11}>
               <LazyImage src={Img} alt={`Qualquer coisa - Pet Plushies`} />
             </Col>
-            <TextContainer span={11}>
+            <TextContainer span={isMobile ? 24 : 11}>
               <Row>
                 <StyledH2Left>{t("petPlushies")}</StyledH2Left>
               </Row>
@@ -190,7 +193,7 @@ const Homepage = () => {
                 </Link>
               </VerticalContent>
             </TextContainer>
-          </Row>
+          </HighlightRow>
           <StyledBottomBar />
         </HighlightSection>
         <ContentLocked>
@@ -236,10 +239,19 @@ const Homepage = () => {
   );
 };
 
+const HighlightRow = styled(Row)`
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
 const TextContainer = styled(Col)`
   justify-content: center;
   display: flex;
   flex-direction: column;
+  @media screen and (max-width: 768px) {
+    margin-top: 20px;
+  }
 `;
 
 const Container = styled.div`
@@ -254,12 +266,20 @@ const Spinner = styled(Spin)`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media screen and (max-width: 768px) {
+    height: 100px;
+  }
 `;
 
 const Content = styled(Row)`
   padding: 0 65px;
   width: 100%;
   flex-direction: column;
+
+  @media screen and (max-width: 768px) {
+    padding: 25px;
+  }
 `;
 
 const ContentLocked = styled(Content)`
@@ -325,6 +345,11 @@ const FeaturedContainer = styled(Row)`
   justify-content: space-between;
   position: relative;
   align-items: center;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    min-height: 100px;
+  }
 `;
 
 export default {

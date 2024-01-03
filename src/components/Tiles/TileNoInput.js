@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 import { Button } from "components";
 import { useTranslation } from "react-i18next";
+import { useMediaQuery } from "react-responsive";
 
 import { LazyImage } from "fragments";
 
@@ -20,9 +21,11 @@ const Tile = ({
   url,
 }) => {
   const { t } = useTranslation();
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const mobileTiles = isMobile ? 24 : 5;
 
   return (
-    <Container span={size == "large" ? "8" : "5"}>
+    <Container span={size == "large" ? "8" : mobileTiles}>
       {flag && <Flag>{flag}</Flag>}
       {category && <Category>{category}</Category>}
       <LazyImage src={picture} alt={name + " - Pet Plushies"} />

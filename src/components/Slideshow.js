@@ -54,6 +54,10 @@ const Overlay = styled.div`
 const SlideshowContainer = styled.div`
   position: relative;
   height: 750px;
+
+  @media screen and (max-width: 768px) {
+    height: 400px;
+  }
 `;
 
 const StyledBottomBar = styled(BottomBar)`
@@ -70,6 +74,10 @@ const StyledSlider = styled(Slider)`
   width: 100%;
   top: 0;
   z-index: 0;
+
+  @media screen and (max-width: 768px) {
+    height: 400px;
+  }
 
   & div {
     height: 100%;

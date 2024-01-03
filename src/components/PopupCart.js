@@ -64,8 +64,19 @@ const Container = styled.div`
   transform: translateX(200%);
   transition: 0.5s;
 
+  @media screen and (max-width: 768px) {
+    height: calc(100vh - var(--menu-height-mobile));
+    top: var(--menu-height-mobile);
+    width: 100vw;
+    transform: translateX(0%) translateY(200%);
+  }
+
   &.open {
     transform: translateX(0%);
+
+    @media screen and (max-width: 768px) {
+      transform: translateX(0%) translateY(0%);
+    }
   }
 `;
 
@@ -73,6 +84,11 @@ const CloseBtn = styled(CloseOutlined)`
   position: absolute;
   right: 20px;
   top: 20px;
+
+  @media screen and (max-width: 768px) {
+    right: 40px;
+    top: 40px;
+  }
 `;
 
 const Title = styled.div`
