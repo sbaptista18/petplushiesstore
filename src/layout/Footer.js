@@ -273,6 +273,10 @@ const SubFooter = styled(Container)`
 const LogoImg = styled.img`
   width: 200px;
   height: auto;
+
+  @media screen and (max-width: 992px) {
+    margin: 20px 0;
+  }
 `;
 
 export default PPS_Footer;
