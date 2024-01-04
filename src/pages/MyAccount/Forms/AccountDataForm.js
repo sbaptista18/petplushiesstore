@@ -26,9 +26,6 @@ const AccountDataForm = ({
         layout="vertical"
         form={form}
         name="change_email"
-        style={{
-          maxWidth: 600,
-        }}
         scrollToFirstError
         disabled={!disabled}
       >
@@ -136,6 +133,10 @@ const FormRow = styled(Row)`
 const StyledButton = styled(Button)`
   max-width: 250px;
   width: 100%;
+
+  @media screen and (max-width: 992px) {
+    max-width: 400px;
+  }
 `;
 
 export default AccountDataForm;

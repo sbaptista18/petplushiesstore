@@ -115,6 +115,76 @@ const Order = () => {
       },
     },
   ];
+  const tableColumnsProducts = () => [
+    {
+      title: `${t("imagem")}`,
+      key: "image",
+      render: (record) => {
+        return (
+          <img
+            src={record.images.main.src}
+            style={{ width: "200px", height: "auto" }}
+            alt={`${record.name} - Pet Plushies`}
+          />
+        );
+      },
+    },
+    {
+      title: `${t("produto")}`,
+      key: "product",
+      render: (record) => {
+        return (
+          <Link target="_blank" to={`/loja/${record.slug}`}>
+            {record.name}
+          </Link>
+        );
+      },
+    },
+    {
+      title: `${t("extras")}`,
+      key: "extras",
+      render: (record) => {
+        const extras_info = record.product_extras;
+
+        Object.keys(extras_info).map((key) => (
+          <span key={key}>
+            <strong>{key}:</strong> {extras_info[key]}
+          </span>
+        ));
+      },
+    },
+    {
+      title: t("quantidade"),
+      key: "qtd",
+      render: (record) => {
+        return <div>{record.quantity}</div>;
+      },
+    },
+    {
+      title: t("preco"),
+      key: "total",
+      render: (record) => {
+        return (
+          <div>
+            {record.total_price}
+            &euro;
+          </div>
+        );
+      },
+    },
+    {
+      title: t("iva"),
+      key: "iva",
+      render: (record) => {
+        return (
+          <div>
+            {record.tax}
+            &euro;
+          </div>
+        );
+      },
+    },
+  ];
 
   useEffect(() => {
     setLoadingPage(true);
@@ -148,7 +218,7 @@ const Order = () => {
       />
       <Container>
         <ContentLocked>
-          <div style={{ position: "relative" }}>
+          <div style={{ position: "relative", width: "100%" }}>
             {loading && !error && (
               <Spinner
                 indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
@@ -162,61 +232,19 @@ const Order = () => {
                   dataSource={order}
                   pagination={false}
                   rowKey="order_id"
+                  scroll={{ x: "100%" }}
                 />
                 <div>
                   <TableTitle>
                     <h3>Detalhes</h3>
                   </TableTitle>
-                  <TableHeader>
-                    <StyledCol span={3}>{t("imagem")}</StyledCol>
-                    <StyledCol span={6}>{t("produto")}</StyledCol>
-                    <StyledCol span={6}>{t("extras")}</StyledCol>
-                    <StyledCol span={2}>{t("quantidade")}</StyledCol>
-                    <StyledCol span={3}>{t("preco")}</StyledCol>
-                    <StyledCol span={3}>{t("iva")}</StyledCol>
-                  </TableHeader>
-                  {order[0].products.map((i) => {
-                    const extras = i.product_extras;
-                    return (
-                      <StyledRow key={i.id}>
-                        <StyledCol span={3}>
-                          <img
-                            src={i.images.main.src}
-                            style={{ width: "100%", height: "auto" }}
-                            alt={`${i.name} - Pet Plushies`}
-                          />
-                        </StyledCol>
-                        <StyledCol span={6}>
-                          <Link target="_blank" to={`/loja/${i.slug}`}>
-                            {i.name}
-                          </Link>
-                        </StyledCol>
-                        <StyledCol
-                          span={6}
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "flex-start",
-                          }}
-                        >
-                          {Object.keys(extras).map((key) => (
-                            <span key={key}>
-                              <strong>{key}:</strong> {extras[key]}
-                            </span>
-                          ))}
-                        </StyledCol>
-                        <StyledCol span={2}>{i.quantity}</StyledCol>
-                        <StyledCol span={3}>
-                          {i.total_price}
-                          &euro;
-                        </StyledCol>
-                        <StyledCol span={3}>
-                          {i.tax}
-                          &euro;
-                        </StyledCol>
-                      </StyledRow>
-                    );
-                  })}
+                  <StyledTable
+                    columns={tableColumnsProducts()}
+                    dataSource={order[0].products}
+                    pagination={false}
+                    rowKey="id"
+                    scroll={{ x: "100%" }}
+                  />
                 </div>
               </div>
             )}
@@ -244,24 +272,10 @@ const TableTitle = styled(Row)`
   }
 `;
 
-const TableHeader = styled(Row)`
-  justify-content: space-between;
-  height: 80px;
-`;
-
-const StyledRow = styled(Row)`
-  justify-content: space-between;
-  border-top: 1px solid var(--black);
-  border-bottom: 1px solid var(--black);
-  padding: 15px 0;
-`;
-
-const StyledCol = styled(Col)`
-  display: flex;
-  align-items: center;
-`;
-
 const StyledTable = styled(Table)`
+  @media screen and (max-width: 992px) {
+    margin-bottom: 30px;
+  }
   && {
     & .ant-table-empty {
       text-align: center;

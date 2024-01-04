@@ -25,7 +25,6 @@ const tableColumns = (onQuantityChange, onDelete, t) => {
       render: (record, _, recordIndex) => {
         return <Image image={record} recordIndex={recordIndex} />;
       },
-      responsive: ["md"],
     },
     {
       title: t("produto"),
@@ -47,7 +46,6 @@ const tableColumns = (onQuantityChange, onDelete, t) => {
       render: (record) => {
         return <div dangerouslySetInnerHTML={{ __html: record }} />;
       },
-      responsive: ["md"],
     },
     {
       title: t("quantidade"),
@@ -110,6 +108,10 @@ const StyledImg = styled.img`
   max-width: 200px;
   width: 100%;
   height: auto;
+
+  @media screen and (max-width: 992px) {
+    width: 150px;
+  }
 `;
 
 const DeleteBtn = styled(CloseOutlined)`

@@ -247,7 +247,7 @@ const Cart = () => {
         <ContentLocked>
           <StyledRow>
             <Col span={isMobile ? 24 : 15}>
-              <div style={{ position: "relative" }}>
+              <div style={{ position: "relative", width: "100%" }}>
                 {loading && !error && (
                   <Spinner
                     indicator={
@@ -266,6 +266,7 @@ const Cart = () => {
                     pagination={false}
                     rowKey="id"
                     locale={{ emptyText: <CustomNoData /> }}
+                    scroll={{ x: "100%" }}
                   />
                 )}
               </div>

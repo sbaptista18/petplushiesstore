@@ -480,7 +480,7 @@ const Checkout = () => {
             <Col span={isMobile ? 24 : 11}>
               <Title>{t("meuCarrinho")}</Title>
               <Border />
-              <div style={{ position: "relative" }}>
+              <div style={{ position: "relative", width: "100%" }}>
                 {loading && !error && (
                   <Spinner
                     indicator={
@@ -495,6 +495,7 @@ const Checkout = () => {
                     pagination={false}
                     rowKey="product_id"
                     locale={{ emptyText: <CustomNoData /> }}
+                    scroll={{ x: "100%" }}
                   />
                 )}
               </div>
@@ -640,6 +641,7 @@ const ContentLocked = styled(Content)`
 const StyledRow = styled(Row)`
   justify-content: space-between;
   margin-top: 50px;
+  width: 100%;
 `;
 
 const StyledTable = styled(Table)`
