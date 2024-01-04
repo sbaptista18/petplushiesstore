@@ -209,6 +209,8 @@ const PPS_Header = () => {
       setLoggedIn(false);
     } catch (error) {
       console.log(error);
+      clearCartState();
+      setLoggedIn(false);
     }
   };
 

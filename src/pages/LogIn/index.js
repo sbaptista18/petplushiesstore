@@ -125,10 +125,7 @@ const LogIn = () => {
               form={form}
               name="basic"
               labelCol={{
-                span: 4,
-              }}
-              wrapperCol={{
-                span: 16,
+                span: 5,
               }}
               style={{
                 maxWidth: 600,
@@ -171,10 +168,7 @@ const LogIn = () => {
               </Form.Item>
 
               <Form.Item
-                wrapperCol={{
-                  offset: 4,
-                  span: 16,
-                }}
+                style={{ display: "flex", justifyContent: "flex-end" }}
               >
                 <StyledButton
                   size="large"
@@ -186,21 +180,11 @@ const LogIn = () => {
                 />
               </Form.Item>
 
-              <Form.Item
-                wrapperCol={{
-                  offset: 4,
-                  span: 16,
-                }}
-              >
+              <Form.Item>
                 <Link to="/recuperar-password">{t("recuperarPassword")}</Link>
               </Form.Item>
 
-              <Form.Item
-                wrapperCol={{
-                  offset: 4,
-                  span: 16,
-                }}
-              >
+              <Form.Item>
                 <Link to="/registar">{t("naoTemConta")}</Link>
               </Form.Item>
             </Form>
