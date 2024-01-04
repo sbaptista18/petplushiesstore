@@ -56,56 +56,48 @@ const ResetPassword = () => {
       />
       <Container>
         <ContentLocked>
-          <div>
-            <Form
-              form={form}
-              name="initiate-reset-password"
-              labelCol={{
-                span: 8,
-              }}
-              wrapperCol={{
-                span: 16,
-              }}
-              style={{
-                maxWidth: 600,
-              }}
-              onFinish={initiatePasswordReset}
-              autoComplete="off"
+          <Form
+            form={form}
+            name="initiate-reset-password"
+            labelCol={{
+              span: 5,
+            }}
+            style={{
+              maxWidth: 600,
+              width: "100%",
+              alignSelf: "center",
+            }}
+            onFinish={initiatePasswordReset}
+            autoComplete="off"
+          >
+            <Form.Item
+              name="email"
+              label={t("email")}
+              rules={[
+                {
+                  type: "email",
+                  message: t("emailInvalido"),
+                },
+                {
+                  required: true,
+                  message: t("inserirEmail"),
+                },
+              ]}
             >
-              <Form.Item
-                name="email"
-                label={t("email")}
-                rules={[
-                  {
-                    type: "email",
-                    message: t("emailInvalido"),
-                  },
-                  {
-                    required: true,
-                    message: t("inserirEmail"),
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
+              <Input />
+            </Form.Item>
 
-              <Form.Item
-                wrapperCol={{
-                  offset: 8,
-                  span: 16,
-                }}
-              >
-                <StyledButton
-                  size="large"
-                  text={t("enviarEmailRecuperacao")}
-                  type="primary"
-                  htmlType="submit"
-                  loading={loadingButton}
-                  disabled={loadingButton}
-                />
-              </Form.Item>
-            </Form>
-          </div>
+            <Form.Item>
+              <StyledButton
+                size="large"
+                text={t("enviarEmailRecuperacao")}
+                type="primary"
+                htmlType="submit"
+                loading={loadingButton}
+                disabled={loadingButton}
+              />
+            </Form.Item>
+          </Form>
         </ContentLocked>
       </Container>
     </>

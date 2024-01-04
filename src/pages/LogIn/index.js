@@ -167,9 +167,7 @@ const LogIn = () => {
                 <Input.Password />
               </Form.Item>
 
-              <Form.Item
-                style={{ display: "flex", justifyContent: "flex-end" }}
-              >
+              <Form.Item>
                 <StyledButton
                   size="large"
                   text={t("entrar")}
@@ -199,6 +197,10 @@ const FormContainer = styled.div`
   padding: 65px 0;
   display: flex;
   justify-content: center;
+
+  .ant-form-horizontal .ant-form-item-label {
+    text-align: left;
+  }
 `;
 
 const Container = styled.div`

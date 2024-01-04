@@ -75,3 +75,7 @@ html {
 .ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-submenu-selected::after {
   border-bottom: 2px solid var(--dark-gray);
 }
+
+.ant-form-horizontal .ant-form-item-label {
+  text-align: left;
+}

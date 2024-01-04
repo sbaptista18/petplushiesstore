@@ -42,6 +42,11 @@ const StyledButton = styled(Button)`
     height: unset;
     background-color: var(--light-blue);
     color: var(--black);
+
+    @media screen and (max-width: 992px) {
+      width: 100%;
+      max-width: 100%;
+    }
   }
 
   &.ant-btn-sm {
