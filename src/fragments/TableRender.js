@@ -108,6 +108,10 @@ const StyledImg = styled.img`
   max-width: 200px;
   width: 100%;
   height: auto;
+
+  @media screen and (max-width: 992px) {
+    width: 150px;
+  }
 `;
 
 const DeleteBtn = styled(CloseOutlined)`

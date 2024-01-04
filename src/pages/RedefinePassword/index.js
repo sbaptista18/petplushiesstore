@@ -65,13 +65,12 @@ const RedefinePassword = () => {
               form={form}
               name="redefine-password"
               labelCol={{
-                span: 8,
-              }}
-              wrapperCol={{
-                span: 16,
+                span: 5,
               }}
               style={{
                 maxWidth: 600,
+                width: "100%",
+                alignSelf: "center",
               }}
               onFinish={resetPassword}
               autoComplete="off"
@@ -123,12 +122,7 @@ const RedefinePassword = () => {
               >
                 <Input.Password />
               </Form.Item>
-              <Form.Item
-                wrapperCol={{
-                  offset: 8,
-                  span: 16,
-                }}
-              >
+              <Form.Item>
                 <StyledButton
                   size="large"
                   text={t("redefinirPassword")}

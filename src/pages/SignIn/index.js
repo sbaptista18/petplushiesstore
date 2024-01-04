@@ -100,10 +100,6 @@ const SignIn = () => {
               layout="vertical"
               form={form}
               name="register"
-              style={{
-                maxWidth: 600,
-                width: "100%",
-              }}
               scrollToFirstError
             >
               <FormRow>

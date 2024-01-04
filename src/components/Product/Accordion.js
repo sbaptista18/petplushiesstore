@@ -66,6 +66,13 @@ Accordion.propTypes = {
 
 const Container = styled(Collapse)`
   margin-top: 30px;
+
+  & img {
+    @media screen and (max-width: 992px) {
+      width: 100%;
+      height: auto;
+    }
+  }
 `;
 
 export default Accordion;

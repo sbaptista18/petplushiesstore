@@ -125,10 +125,7 @@ const LogIn = () => {
               form={form}
               name="basic"
               labelCol={{
-                span: 4,
-              }}
-              wrapperCol={{
-                span: 16,
+                span: 5,
               }}
               style={{
                 maxWidth: 600,
@@ -170,12 +167,7 @@ const LogIn = () => {
                 <Input.Password />
               </Form.Item>
 
-              <Form.Item
-                wrapperCol={{
-                  offset: 4,
-                  span: 16,
-                }}
-              >
+              <Form.Item>
                 <StyledButton
                   size="large"
                   text={t("entrar")}
@@ -186,21 +178,11 @@ const LogIn = () => {
                 />
               </Form.Item>
 
-              <Form.Item
-                wrapperCol={{
-                  offset: 4,
-                  span: 16,
-                }}
-              >
+              <Form.Item>
                 <Link to="/recuperar-password">{t("recuperarPassword")}</Link>
               </Form.Item>
 
-              <Form.Item
-                wrapperCol={{
-                  offset: 4,
-                  span: 16,
-                }}
-              >
+              <Form.Item>
                 <Link to="/registar">{t("naoTemConta")}</Link>
               </Form.Item>
             </Form>
@@ -215,6 +197,10 @@ const FormContainer = styled.div`
   padding: 65px 0;
   display: flex;
   justify-content: center;
+
+  .ant-form-horizontal .ant-form-item-label {
+    text-align: left;
+  }
 `;
 
 const Container = styled.div`

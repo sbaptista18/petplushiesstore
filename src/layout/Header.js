@@ -3,6 +3,7 @@ import { Layout, Menu, Col } from "antd";
 import { useState, useEffect } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import axios from "axios";
+import { useMediaQuery } from "react-responsive";
 
 import { useCart, CreateCartKey } from "reducers";
 import {
@@ -66,6 +67,8 @@ const PPS_Header = () => {
 
   const [cartItems, setCartItems] = useState([]);
   const { i18n } = useTranslation();
+
+  const isMobile = useMediaQuery({ maxWidth: 992 });
 
   const mainMenuItems = MainMenuItems();
 
@@ -206,6 +209,8 @@ const PPS_Header = () => {
       setLoggedIn(false);
     } catch (error) {
       console.log(error);
+      clearCartState();
+      setLoggedIn(false);
     }
   };
 
@@ -242,16 +247,18 @@ const PPS_Header = () => {
         </StyledLink>
       </Col>
       <MenuContainer span={18}>
-        <StyledMenu
-          mode="horizontal"
-          overflowedIndicator={<MenuOutlined />}
-          items={mainMenuItems.map(buildMenuItemProps)}
-          onClick={({ key }) => {
-            onClickSectionRegistry[key](history);
-          }}
-          location={location.pathname}
-          style={{ color }}
-        />
+        {!isMobile && (
+          <StyledMenu
+            mode="horizontal"
+            overflowedIndicator={<MenuOutlined />}
+            items={mainMenuItems.map(buildMenuItemProps)}
+            onClick={({ key }) => {
+              onClickSectionRegistry[key](history);
+            }}
+            location={location.pathname}
+            style={{ color }}
+          />
+        )}
         <IconButton
           location={location.pathname}
           style={{ color }}
@@ -272,11 +279,9 @@ const PPS_Header = () => {
           {isLoggedIn ? <LoggedUserIcon /> : <UserOutlined />}
         </IconLink>
         {isLoggedIn && (
-          <LogOutBtn
-            location={location.pathname}
-            style={{ color }}
-            onClick={() => handleLogOut()}
-          />
+          <IconButton onClick={() => handleLogOut()}>
+            <LogOutBtn location={location.pathname} style={{ color }} />
+          </IconButton>
         )}
         {i18n.language === "en" && (
           <IconButton
@@ -295,6 +300,18 @@ const PPS_Header = () => {
           >
             <Flag src={EN} alt="Ícone Bandeira Inglesa" />
           </IconButton>
+        )}
+        {isMobile && (
+          <StyledMenu
+            mode="horizontal"
+            overflowedIndicator={<MenuOutlined />}
+            items={mainMenuItems.map(buildMenuItemProps)}
+            onClick={({ key }) => {
+              onClickSectionRegistry[key](history);
+            }}
+            location={location.pathname}
+            style={{ color }}
+          />
         )}
       </MenuContainer>
     </StyledHeader>
@@ -349,6 +366,12 @@ const StyledHeader = styled(Header)`
       : "0px 5px 30px 0px rgba(0, 0, 0, 0.1)"};
   transition: 0.5s;
 
+  @media screen and (max-width: 992px) {
+    padding: 25px;
+    height: var(--menu-height-mobile);
+    justify-content: space-between;
+  }
+
   & .ant-menu {
     height: 100%;
     display: flex;
@@ -357,6 +380,10 @@ const StyledHeader = styled(Header)`
     border: none;
     font-size: 16px;
     width: 700px;
+
+    @media screen and (max-width: 992px) {
+      width: 50px;
+    }
 
     & li {
       display: flex;

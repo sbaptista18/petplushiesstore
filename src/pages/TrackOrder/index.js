@@ -80,10 +80,7 @@ const TrackOrder = () => {
               form={form}
               name="track-order"
               labelCol={{
-                span: 8,
-              }}
-              wrapperCol={{
-                span: 16,
+                span: 5,
               }}
               style={{
                 maxWidth: 600,
@@ -123,10 +120,7 @@ const TrackOrder = () => {
               </Form.Item>
 
               <Form.Item
-                wrapperCol={{
-                  offset: 8,
-                  span: 16,
-                }}
+                style={{ display: "flex", justifyContent: "flex-end" }}
               >
                 <StyledButton
                   size="large"

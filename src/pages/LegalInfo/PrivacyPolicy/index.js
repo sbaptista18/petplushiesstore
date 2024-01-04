@@ -93,6 +93,10 @@ const Container = styled.div`
   width: 100%;
   background-color: var(--white);
   position: relative;
+
+  @media screen and (max-width: 992px) {
+    margin-bottom: 20px;
+  }
 `;
 
 const Content = styled(Row)`

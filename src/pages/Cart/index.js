@@ -3,6 +3,7 @@ import { Row, Col, Table, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useMediaQuery } from "react-responsive";
 
 import { Button, ModalMessage, PageHeader } from "components";
 import { tableColumns } from "fragments";
@@ -30,6 +31,7 @@ const Cart = () => {
   const { cartId } = useCart();
   const { updateProductsNr } = useCart();
   const { t } = useTranslation();
+  const isMobile = useMediaQuery({ maxWidth: 992 });
 
   const calculateTotalNetRevenue = (items) => {
     return items.reduce(
@@ -244,8 +246,8 @@ const Cart = () => {
         />
         <ContentLocked>
           <StyledRow>
-            <Col span={15}>
-              <div style={{ position: "relative" }}>
+            <Col span={isMobile ? 24 : 15}>
+              <div style={{ position: "relative", width: "100%" }}>
                 {loading && !error && (
                   <Spinner
                     indicator={
@@ -264,11 +266,12 @@ const Cart = () => {
                     pagination={false}
                     rowKey="id"
                     locale={{ emptyText: <CustomNoData /> }}
+                    scroll={{ x: "100%" }}
                   />
                 )}
               </div>
             </Col>
-            <Col span={5}>
+            <Col span={isMobile ? 24 : 5}>
               <Title>{t("resumoCompra")}</Title>
               <Border />
               <div style={{ position: "relative" }}>
@@ -323,6 +326,11 @@ const Spinner = styled(Spin)`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media screen and (max-width: 992px) {
+    height: 150px;
+    overflow: hidden;
+  }
 `;
 
 const Container = styled.div`
@@ -346,11 +354,20 @@ const StyledRow = styled(Row)`
   justify-content: space-between;
   margin-top: 50px;
   min-height: 500px;
+
+  @media screen and (max-width: 992px) {
+    width: 100%;
+  }
 `;
 
 const StyledTable = styled(Table)`
   && {
     margin-bottom: 50px;
+
+    @media screen and (max-width: 992px) {
+      width: 100%;
+    }
+
     & .ant-table-empty {
       text-align: center;
     }

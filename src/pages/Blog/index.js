@@ -3,6 +3,7 @@ import { Row, Spin, Collapse, Col, Pagination } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import _ from "lodash";
+import { useMediaQuery } from "react-responsive";
 
 import { PageHeader, TilePosts, Breadcrumbs } from "components";
 import { SEOTags } from "fragments";
@@ -24,6 +25,8 @@ const Blog = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 12;
   const { t } = useTranslation();
+
+  const isMobile = useMediaQuery({ maxWidth: 992 });
 
   const fetchBlogPosts = async () => {
     try {
@@ -150,7 +153,7 @@ const Blog = () => {
         <ContentLocked>
           <Breadcrumbs page="/" item="Blog" />
           <StyledRow>
-            <Col span={6}>
+            <Col span={isMobile ? 24 : 6}>
               <Span>{t("filtrarPor")}:</Span>
               <Collapse defaultActiveKey={["1"]} accordion>
                 <Panel header={t("categoria")} key="1">
@@ -176,7 +179,7 @@ const Blog = () => {
                 </Panel>
               </Collapse>
             </Col>
-            <PostListContainer span={16}>
+            <PostListContainer span={isMobile ? 24 : 16}>
               {loading && !error && (
                 <Spinner
                   indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
@@ -257,6 +260,10 @@ const Span = styled.span`
 
 const StyledRow = styled(Row)`
   justify-content: space-between;
+
+  @media screen and (max-width: 992px) {
+    flex-direction: column;
+  }
 `;
 
 const PostListContainer = styled(Col)`
@@ -264,6 +271,10 @@ const PostListContainer = styled(Col)`
   align-items: flex-start;
   flex-wrap: wrap;
   justify-content: space-between;
+
+  @media screen and (max-width: 992px) {
+    margin-bottom: 20px;
+  }
 `;
 
 const Spinner = styled(Spin)`

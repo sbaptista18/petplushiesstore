@@ -27,6 +27,10 @@ Breadcrumbs.propTypes = {
 
 const StyledBreadcrumb = styled(Breadcrumb)`
   margin-bottom: 15px;
+
+  @media screen and (max-width: 992px) {
+    margin-top: 20px;
+  }
   a {
     color: var(--light-blue);
 

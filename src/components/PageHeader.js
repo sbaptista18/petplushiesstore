@@ -38,6 +38,10 @@ const Container = styled.div`
   width: 100%;
   position: relative;
   height: 500px;
+
+  @media screen and (max-width: 992px) {
+    height: 250px;
+  }
 `;
 
 const ImgContainer = styled.div`
@@ -61,12 +65,22 @@ const ContentLocked = styled(Content)`
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.4);
+
+  @media screen and (max-width: 992px) {
+    height: 250px;
+  }
 `;
 
 const StyledH1 = styled.h1`
   margin-top: 30px;
   font-size: 52px;
   color: var(--white);
+
+  @media screen and (max-width: 992px) {
+    font-size: 40px;
+    text-align: center;
+    line-height: 1.2;
+  }
 `;
 
 export default PageHeader;

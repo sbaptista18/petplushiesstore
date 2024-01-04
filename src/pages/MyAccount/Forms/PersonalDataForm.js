@@ -332,6 +332,10 @@ const FormRow = styled(Row)`
 const StyledButton = styled(Button)`
   max-width: 250px;
   width: 100%;
+
+  @media screen and (max-width: 992px) {
+    max-width: 400px;
+  }
 `;
 
 export default PersonalDataForm;

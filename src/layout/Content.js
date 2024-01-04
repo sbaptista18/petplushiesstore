@@ -30,6 +30,13 @@ const Container = styled.div`
   margin-top: ${(props) =>
     props.location == "/" ? "0" : "var(--menu-height)"};
   min-height: calc(100vh - var(--menu-height) - 277px);
+  background-color: var(--white);
+
+  @media screen and (max-width: 992px) {
+    margin-top: ${(props) =>
+      props.location == "/" ? "0" : "var(--menu-height-mobile)"};
+    min-height: calc(100vh - var(--menu-height-mobile) - 277px);
+  }
 `;
 
 export default Content;

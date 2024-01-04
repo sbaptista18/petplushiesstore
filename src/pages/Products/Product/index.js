@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
+import { useMediaQuery } from "react-responsive";
 
 import { useCart, useLoading } from "reducers";
 import { getSessionDataFromLocalStorage } from "helpers";
@@ -62,6 +63,8 @@ const Product = () => {
   const { isLoggedIn } = useCart();
   const { setLoadingPage } = useLoading();
   const [form] = useForm();
+
+  const isMobile = useMediaQuery({ maxWidth: 992 });
 
   const lang = localStorage.getItem("lang");
 
@@ -533,7 +536,7 @@ const Product = () => {
               <ContentLocked>
                 <Breadcrumbs page="/loja" item={t(toCamelCase(product.name))} />
                 <StyledRow>
-                  <Col span={11}>
+                  <Col span={isMobile ? 24 : 11}>
                     <ImageCarousel
                       pictures={[product.slideshow]}
                       settings={{
@@ -553,7 +556,7 @@ const Product = () => {
                       dangerouslySetInnerHTML={{ __html: product.desc_short }}
                     />
                   </Col>
-                  <Col span={11}>
+                  <Col span={isMobile ? 24 : 11}>
                     <AvgRatingContainer>
                       <div>{avgRating} </div>
                       <StarRatingContainer>
@@ -602,7 +605,7 @@ const Product = () => {
                     <h3>{t("avaliacoesUpperCase")}</h3>
                   </Row>
                   <ReviewsContent>
-                    <Col span={7}>
+                    <Col span={isMobile ? 24 : 7}>
                       <div>
                         <StyledForm
                           form={form}
@@ -712,7 +715,7 @@ const Product = () => {
                         </StyledForm>
                       </div>
                     </Col>
-                    <ReviewsContainer span={17}>
+                    <ReviewsContainer span={isMobile ? 24 : 16}>
                       {loadingReviews && !errorReviews && (
                         <SpinnerReviews
                           indicator={
@@ -787,6 +790,10 @@ const ReviewsContainer = styled(Col)`
   height: 100%;
   overflow: auto;
   max-height: 520px;
+
+  @media screen and (max-width: 992px) {
+    margin: 20px 0;
+  }
 `;
 
 const Review = styled.div`
@@ -815,6 +822,10 @@ const ReviewsContent = styled(Row)`
 
 const StyledForm = styled(Form)`
   width: 300px;
+
+  @media screen and (max-width: 992px) {
+    width: 100%;
+  }
 `;
 
 const FormRow = styled(Row)`
@@ -925,10 +936,18 @@ const ContentLocked = styled(Content)`
 
 const StyledRow = styled(Row)`
   justify-content: space-between;
+
+  @media screen and (max-width: 992px) {
+    width: 100%;
+  }
 `;
 
 const ProductDesc = styled.div`
   margin-top: 50px;
+
+  @media screen and (max-width: 992px) {
+    margin-top: 20px;
+  }
 `;
 
 const Flag = styled.div`

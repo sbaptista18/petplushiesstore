@@ -31602,6 +31602,7 @@ div.ant-typography-edit-content.ant-typography-rtl {
   --light-blue: #add8e6;
   --green: #008000;
   --menu-height: 150px;
+  --menu-height-mobile: 100px;
 }
 
 body {
@@ -31662,4 +31663,8 @@ html.no-scroll {
 .ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item-selected::after,
 .ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-submenu-selected::after {
   border-bottom: 2px solid var(--dark-gray);
+}
+
+.ant-form-horizontal .ant-form-item-label {
+  text-align: left;
 }

@@ -48,6 +48,7 @@ const NotFound = () => {
 const StyledButton = styled(Button)`
   max-width: 250px;
   width: 100%;
+  margin-top: 20px;
 `;
 
 const Container = styled.div`
@@ -66,8 +67,9 @@ const ContentLocked = styled(Content)`
   margin: auto;
   min-height: 200px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  text-align: center;
 `;
 
 export default NotFound;

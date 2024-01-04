@@ -7,6 +7,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { Button, ModalMessage, PageHeader } from "components";
 import { SEOTags } from "fragments";
 import { useTranslation } from "react-i18next";
+import { useMediaQuery } from "react-responsive";
 
 import DummyImg from "assets/images/batcat-1.jpg";
 import FacebookIcon from "assets/images/fb-icon.svg";
@@ -25,6 +26,8 @@ const ContactUs = () => {
 
   const [textAreaValue, setTextAreaValue] = useState("");
   const { t } = useTranslation();
+
+  const isMobile = useMediaQuery({ maxWidth: 992 });
 
   const handleTextAreaChange = (e) => {
     setTextAreaValue(e.target.value);
@@ -108,7 +111,7 @@ const ContactUs = () => {
           onClose={() => setIsModalOpen(false)}
         />
         <ContentLocked>
-          <TextContainer span={11}>
+          <TextContainer span={isMobile ? 24 : 11}>
             <p>{t("contactosP1")}</p>
             <p>{t("contactosP2")}</p>
             <p>{t("contactosP3")}</p>
@@ -136,14 +139,11 @@ const ContactUs = () => {
               </SocialLink>
             </p>
           </TextContainer>
-          <Col span={11}>
+          <Col span={isMobile ? 24 : 11}>
             <Form
               layout="vertical"
               form={form}
               name="checkout"
-              style={{
-                maxWidth: 600,
-              }}
               scrollToFirstError
             >
               <FormRow>
@@ -296,6 +296,10 @@ const TextContainer = styled(Col)`
   align-items: center;
   justify-content: center;
   text-align: center;
+
+  @media screen and (max-width: 992px) {
+    margin-top: 20px;
+  }
 `;
 
 const SocialLink = styled.a`

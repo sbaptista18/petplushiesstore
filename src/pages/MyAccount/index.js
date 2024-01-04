@@ -3,6 +3,7 @@ import { Row, Form, Tabs, Spin, Table } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { useHistory, Link } from "react-router-dom";
+import { useMediaQuery } from "react-responsive";
 
 import { Button, ModalMessage, PageHeader } from "components";
 import { SEOTags } from "fragments";
@@ -48,6 +49,7 @@ const MyAccount = () => {
 
   const { isLoggedIn } = useCart();
   const { setLoadingPage } = useLoading();
+  const isMobile = useMediaQuery({ maxWidth: 992 });
 
   const tableColumns = [
     {
@@ -61,7 +63,7 @@ const MyAccount = () => {
       title: "Total",
       key: "total",
       render: (record) => {
-        return <div key={record.order_total}>{record.order_total}</div>;
+        return <div key={record.order_total}>{record.order_total}&euro;</div>;
       },
     },
     {
@@ -330,7 +332,7 @@ const MyAccount = () => {
           onClose={() => setIsModalOpen(false)}
         />
         <ContentLocked>
-          <div style={{ position: "relative" }}>
+          <div style={{ position: "relative", width: "100%" }}>
             {loading && !error && (
               <Spinner
                 indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />}
@@ -340,7 +342,8 @@ const MyAccount = () => {
             {!loading && !error && (
               <div>
                 <Tabs
-                  tabPosition={"left"}
+                  style={{ width: "100%" }}
+                  tabPosition={isMobile ? "top" : "left"}
                   items={tabs}
                   onChange={handleTabChange}
                 />

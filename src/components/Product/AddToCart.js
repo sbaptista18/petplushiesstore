@@ -290,7 +290,7 @@ const AddToCart = ({
           defaultValue={1}
           onChange={onChange}
         />
-        <Button
+        <StyledButton
           size="large"
           type="primary"
           text={t("adicionarCarrinho")}
@@ -318,6 +318,12 @@ AddToCart.propTypes = {
   onChosenVariations: PropTypes.func,
   loading: PropTypes.bool,
 };
+
+const StyledButton = styled(Button)`
+  @media screen and (max-width: 992px) {
+    width: 100%;
+  }
+`;
 
 const StyledInputNumber = styled(InputNumber)`
   margin-right: 15px;
@@ -354,6 +360,10 @@ const InputContainer = styled.div`
   display: flex;
   align-items: center;
   margin-top: 15px;
+
+  @media screen and (max-width: 992px) {
+    justify-content: space-between;
+  }
 `;
 
 export default AddToCart;

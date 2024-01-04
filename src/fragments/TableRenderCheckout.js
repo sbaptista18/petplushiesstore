@@ -75,6 +75,10 @@ const StyledImg = styled.img`
   max-width: 100px;
   width: 100%;
   height: auto;
+
+  @media screen and (max-width: 992px) {
+    width: 100px;
+  }
 `;
 
 export default tableColumnsCheckout;

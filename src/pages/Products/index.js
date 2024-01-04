@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Row, Col, Collapse, Slider, Select, Spin, Pagination } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import _ from "lodash";
+import { useMediaQuery } from "react-responsive";
 
 import { Breadcrumbs, TileNoInput, PageHeader } from "components";
 import DummyImg from "assets/images/batcat-1.jpg";
@@ -67,6 +68,8 @@ const Products = () => {
   const [cachedMaxPrice, setCachedMaxPrice] = useState(null);
 
   const [isUpToDate, setIsUpToDate] = useState(true);
+
+  const isMobile = useMediaQuery({ maxWidth: 992 });
 
   const findLatestModifiedPost = (posts) => {
     if (posts.length === 0) {
@@ -504,7 +507,7 @@ const Products = () => {
           <div>
             <Breadcrumbs page="/" item={t("loja")} />
             <StyledRow>
-              <Col span={6}>
+              <Col span={isMobile ? 24 : 6}>
                 <Span>{t("filtrarPor")}:</Span>
                 <Collapse defaultActiveKey={["1"]} accordion>
                   <Panel header={t("categoria")} key="1">
@@ -543,7 +546,7 @@ const Products = () => {
                   </Panel>
                 </Collapse>
               </Col>
-              <ProductListContainer span={16}>
+              <ProductListContainer span={isMobile ? 24 : 16}>
                 <SortDropdown onSelect={handleSortChange} />
                 {loading && !error && (
                   <Spinner
@@ -633,6 +636,11 @@ const ProductListContainer = styled(Col)`
 
 const SortSelect = styled(Select)`
   min-width: 200px;
+
+  @media screen and (max-width: 992px) {
+    width: 100%;
+    margin-top: 20px;
+  }
 `;
 
 const Container = styled.div`
@@ -659,6 +667,10 @@ const ContentLocked = styled(Content)`
 
 const StyledRow = styled(Row)`
   justify-content: space-between;
+
+  @media screen and (max-width: 992px) {
+    flex-direction: column;
+  }
 `;
 
 const ProductRow = styled(Row)`
