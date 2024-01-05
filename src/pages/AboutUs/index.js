@@ -159,6 +159,8 @@ const HighlightSection = styled(Content)`
 
   @media screen and (max-width: 992px) {
     flex-direction: column;
+    padding-top: 15%;
+    padding-bottom: 15%;
   }
 
   & > div {

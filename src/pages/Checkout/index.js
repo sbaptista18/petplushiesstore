@@ -156,11 +156,11 @@ const Checkout = () => {
           totalProductNetRevenue
         );
 
-        setShippingMessage(t("naoHaMetodosEnvio"));
+        setShippingMessage("");
         setShipMethods(true);
         setShippingCost(shippingCost);
       } else {
-        setShippingMessage();
+        setShippingMessage(t("naoHaMetodosEnvio"));
         setShipMethods(false);
       }
     } catch (error) {
@@ -209,22 +209,38 @@ const Checkout = () => {
   const formatMetaFromExtras = (productExtras) => {
     if (!productExtras) return "";
 
-    const cleanedString = productExtras.replace(/<\/?b>/gi, "");
-    const keyValuePairs = cleanedString.split(";").map((pair) => pair.trim());
     const resultObject = {};
 
-    keyValuePairs.forEach((pair) => {
-      const [rawKey, value] = pair.split(":");
-      if (rawKey && value) {
-        const key = rawKey.trim();
-        resultObject[key] = value.trim();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(productExtras, "text/html");
+
+    // Select all <b> elements
+    const boldElements = doc.querySelectorAll("b");
+
+    boldElements.forEach((boldElement, index) => {
+      let key = boldElement.textContent.trim();
+      let value;
+      key = key.replace(/:$/, "");
+
+      // If it's the last <b> element with 'Images' as the key, process links
+      if (index === boldElements.length - 1 && key === "Images") {
+        const imagesLinks = [];
+        const images = doc.querySelectorAll('a[target="_blank"]');
+        images.forEach((image) => {
+          imagesLinks.push(image.getAttribute("href"));
+        });
+        value = imagesLinks;
+      } else {
+        // Otherwise, get the next sibling text content as the value
+        value = boldElement.nextSibling.textContent.trim();
       }
+
+      value = String(value).replace(/;$/, "");
+
+      resultObject[key] = value;
     });
 
-    return Object.keys(resultObject).map((key) => ({
-      key,
-      value: resultObject[key],
-    }));
+    return resultObject;
   };
 
   const buildBillingDetails = (formValues) => ({
@@ -365,8 +381,6 @@ const Checkout = () => {
           orderId,
           coupon.coupon_code
         );
-
-        console.log(dataOrder);
 
         createOrder(dataOrder);
       })

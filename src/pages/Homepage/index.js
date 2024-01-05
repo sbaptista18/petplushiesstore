@@ -302,6 +302,11 @@ const HighlightSection = styled(Content)`
   padding-bottom: 5%;
   position: relative;
 
+  @media screen and (max-width: 992px) {
+    padding-top: 15%;
+    padding-bottom: 15%;
+  }
+
   & > div {
     max-width: 1440px;
     width: 100%;

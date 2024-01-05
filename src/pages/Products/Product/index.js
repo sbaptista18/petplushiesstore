@@ -225,7 +225,13 @@ const Product = () => {
     if (!chosenVariations) return "";
 
     function formatData(data) {
-      return `<b>${data.radio}:</b> ${data.name};`;
+      let imgs = "";
+      if (data.radio === "Images") {
+        data.name.map((i, index) => {
+          imgs += `<a target='_blank' href='${i}'>Image ${index + 1}</a> | `;
+        });
+      }
+      return `<b>${data.radio}:</b> ${imgs != "" ? imgs : data.name};`;
     }
 
     const variationString = chosenVariations.map(formatData).join("\n");
