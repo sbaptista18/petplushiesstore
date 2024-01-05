@@ -29,21 +29,24 @@ const PrivacyPolicy = () => {
 
         if (data.success) {
           setPost(data.post[0]);
-          setLoading(false);
           setLoadingPage(false);
+          setLoading(false);
         } else {
-          setLoading(false);
-          setLoadingPage(false);
           setMessage(data.message);
+          setLoadingPage(false);
+          setLoading(false);
         }
       } catch (error) {
         setError(true);
         setMessage(error);
+        setLoadingPage(false);
       }
     };
 
     fetchPrivacyPolicy();
   }, []);
+
+  console.log(loading);
 
   return (
     <>
@@ -66,7 +69,7 @@ const PrivacyPolicy = () => {
           />
         )}
         {error && !loading && <>{message}</>}
-        {post != undefined && (
+        {!loading && post != undefined && (
           <ContentLocked
             dangerouslySetInnerHTML={{ __html: post.post_content }}
           />
@@ -80,7 +83,8 @@ const Spinner = styled(Spin)`
   position: absolute;
   background-color: var(--white);
   width: 100%;
-  height: 100vh;
+  height: 100%;
+  min-height: 300px;
   left: 0;
   top: 0;
   z-index: 1;

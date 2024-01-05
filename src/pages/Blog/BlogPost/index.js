@@ -419,6 +419,7 @@ const Container = styled.div`
   width: 100%;
   background-color: var(--white);
   padding-top: 50px;
+  position: relative;
 `;
 
 const Content = styled(Row)`

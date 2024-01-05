@@ -107,6 +107,7 @@ const ResetPassword = () => {
 const Container = styled.div`
   width: 100%;
   background-color: var(--white);
+  position: relative;
 `;
 
 const Content = styled(Row)`

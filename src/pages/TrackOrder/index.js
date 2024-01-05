@@ -194,6 +194,7 @@ const Spinner = styled(Spin)`
 
 const Container = styled.div`
   width: 100%;
+  position: relative;
   background-color: var(--white);
 `;
 

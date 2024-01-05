@@ -66,7 +66,7 @@ const TermsConditions = () => {
           />
         )}
         {error && !loading && <>{message}</>}
-        {post != undefined && (
+        {!loading && post != undefined && (
           <ContentLocked
             dangerouslySetInnerHTML={{ __html: post.post_content }}
           />
@@ -80,7 +80,8 @@ const Spinner = styled(Spin)`
   position: absolute;
   background-color: var(--white);
   width: 100%;
-  height: 100vh;
+  height: 100%;
+  min-height: 300px;
   left: 0;
   top: 0;
   z-index: 1;

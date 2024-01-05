@@ -48,7 +48,6 @@ const ImgContainer = styled.div`
   width: 100%;
   position: fixed;
   height: 500px;
-  z-index: -1;
 `;
 
 const Content = styled(Row)`

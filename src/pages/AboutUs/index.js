@@ -180,6 +180,7 @@ const StyledH2 = styled.h2`
 const Container = styled.div`
   width: 100%;
   background-color: var(--white);
+  position: relative;
 `;
 
 const TextContainer = styled(Col)`
