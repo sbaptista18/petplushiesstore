@@ -46,8 +46,6 @@ const PrivacyPolicy = () => {
     fetchPrivacyPolicy();
   }, []);
 
-  console.log(loading);
-
   return (
     <>
       <SEOTags

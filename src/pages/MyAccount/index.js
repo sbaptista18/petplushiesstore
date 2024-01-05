@@ -217,7 +217,6 @@ const MyAccount = () => {
           }
         );
         const responseData = await response.json();
-        console.log(responseData);
         if (responseData.success) {
           setMessage(responseData.message);
           setStatus("success");
