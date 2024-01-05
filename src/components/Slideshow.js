@@ -24,7 +24,11 @@ const Slideshow = ({ slides, settings }) => {
                   <span>{p.title}</span>
 
                   <Link to={p.url}>
-                    <Button size="large" type="primary" text={t("saberMais")} />
+                    <StyledButton
+                      size="large"
+                      type="primary"
+                      text={t("saberMais")}
+                    />
                   </Link>
                 </Text>
               </Container>
@@ -41,6 +45,15 @@ Slideshow.propTypes = {
   slides: PropTypes.array,
   settings: PropTypes.object,
 };
+
+const StyledButton = styled(Button)`
+  &&& {
+    @media screen and (max-width: 992px) {
+      max-width: 90vw;
+      margin-top: 10px;
+    }
+  }
+`;
 
 const Overlay = styled.div`
   width: 100%;
@@ -116,7 +129,7 @@ const Text = styled.span`
   text-align: center;
   color: var(--white);
   position: absolute;
-  bottom: 70px;
+  bottom: 15%;
   left: 50%;
   transform: translateX(-50%);
   padding: 10px 0;

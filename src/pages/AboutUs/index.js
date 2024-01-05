@@ -153,8 +153,8 @@ const StyledTopBar = styled(StyledBottomBar)`
 const HighlightSection = styled(Content)`
   height: auto;
   background-color: var(--light-blue);
-  padding-top: 100px;
-  padding-bottom: 100px;
+  padding-top: 5%;
+  padding-bottom: 5%;
   position: relative;
 
   @media screen and (max-width: 992px) {

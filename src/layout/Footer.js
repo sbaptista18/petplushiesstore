@@ -151,7 +151,7 @@ const StyledFooter = styled(Footer)`
   display: flex;
   flex-direction: column;
   padding: 20px 65px;
-  padding-top: 100px;
+  padding-top: 5%;
   background-color: var(--dark-gray);
   position: relative;
   color: var(--white);
