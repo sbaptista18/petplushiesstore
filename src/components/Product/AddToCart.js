@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { Col, Row, Form, InputNumber, Radio, Input } from "antd";
+import { Col, Row, Form, InputNumber, Radio, Input, Space, Upload } from "antd";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -30,9 +30,11 @@ const AddToCart = ({
   const [form_variations] = Form.useForm();
   const [form_stock] = Form.useForm();
   const [loadingButton, setLoadingButton] = useState(false);
+  const [loadingFilesButton, setLoadingFilesButton] = useState(false);
   const [message, setMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState();
+  const [fileList, setFileList] = useState([]);
   const { t } = useTranslation();
 
   const onChange = (value) => {
@@ -154,6 +156,37 @@ const AddToCart = ({
       .replace(/\s+/g, "");
   }
 
+  const handleChange = (info) => {
+    setFileList(info.fileList);
+  };
+
+  const handleUpload = async () => {
+    setLoadingFilesButton(true);
+
+    const formData = new FormData();
+    fileList.map((file) => {
+      formData.append("pet_pictures[]", file.originFileObj);
+    });
+
+    try {
+      const response = await fetch(
+        "https://backoffice.petplushies.pt/wp-json/wc/v3/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      const data = await response.json();
+      setLoadingFilesButton(false);
+      handleVariation("Images", data, 0);
+    } catch (error) {
+      setMessage(data.message);
+      setStatus("error");
+      setIsModalOpen(true);
+      setLoadingFilesButton(false);
+    }
+  };
+
   return (
     <Container>
       <ModalMessage
@@ -216,6 +249,40 @@ const AddToCart = ({
               </FormRow>
             );
           })}
+          {sku == "pp-ppersonalizado" && (
+            <FormRow>
+              <Space
+                direction="vertical"
+                style={{
+                  width: "100%",
+                }}
+                size="large"
+              >
+                <Upload
+                  fileList={fileList}
+                  onChange={handleChange}
+                  beforeUpload={() => false}
+                  maxCount={3}
+                  multiple
+                >
+                  <Button
+                    size="large"
+                    type="primary"
+                    text="Procurar imagens (Max: 3)"
+                  />
+                </Upload>
+
+                <Button
+                  onClick={handleUpload}
+                  type="primary"
+                  size="large"
+                  text="Carregar"
+                  loading={loadingFilesButton}
+                  disabled={loadingFilesButton}
+                />
+              </Space>
+            </FormRow>
+          )}
           {hasName && (
             <FormRow>
               <Form.Item
